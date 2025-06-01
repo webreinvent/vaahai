@@ -6,12 +6,16 @@ This module implements the 'review' command, which performs code reviews with AI
 
 from pathlib import Path
 from typing import List, Optional
+import os
 
 import typer
 from rich.console import Console
+from rich.table import Table
+from rich import box
 
 from vaahai.core.config import config_manager, ReviewDepth, ReviewFocus, OutputFormat
-from vaahai.cli.utils import resolve_path, collect_files
+from vaahai.cli.utils import resolve_path, scan_files
+from vaahai.core.scanner import FileInfo
 
 console = Console()
 
@@ -26,15 +30,15 @@ def main(
         exists=True,
     ),
     depth: ReviewDepth = typer.Option(
-        None,
+        ReviewDepth.STANDARD,
         help="Review depth",
     ),
     focus: ReviewFocus = typer.Option(
-        None,
+        ReviewFocus.ALL,
         help="Review focus",
     ),
     output: OutputFormat = typer.Option(
-        None,
+        OutputFormat.TERMINAL,
         help="Output format",
     ),
     output_file: Optional[Path] = typer.Option(
@@ -64,6 +68,10 @@ def main(
     private: bool = typer.Option(
         False,
         help="Use only local resources",
+    ),
+    max_file_size: int = typer.Option(
+        1024 * 1024,  # 1MB default
+        help="Maximum file size in bytes",
     ),
 ) -> None:
     """
@@ -97,18 +105,42 @@ def main(
     # Resolve path
     resolved_path = resolve_path(path)
     
-    console.print(f"Reviewing: {resolved_path}")
-    console.print(f"Depth: {review_config.depth}")
-    console.print(f"Focus: {review_config.focus}")
+    console.print(f"Reviewing: [bold]{resolved_path}[/bold]")
+    console.print(f"Depth: [bold]{review_config.depth}[/bold]")
+    console.print(f"Focus: [bold]{review_config.focus}[/bold]")
     
-    # Collect files to review
-    if resolved_path.is_dir():
-        files = collect_files(
-            resolved_path, 
-            include_patterns=include, 
-            exclude_patterns=exclude
+    with console.status("[bold green]Scanning files...[/bold green]"):
+        # Use the new code scanner to scan files
+        files = scan_files(
+            path=resolved_path,
+            include_patterns=include,
+            exclude_patterns=exclude,
+            max_file_size=max_file_size
         )
-        console.print(f"Found {len(files)} files to review")
+    
+    # Display results
+    if files:
+        console.print(f"Found [bold green]{len(files)}[/bold green] files to review")
+        
+        # Create a table to display file information
+        table = Table(box=box.SIMPLE)
+        table.add_column("File", style="cyan")
+        table.add_column("Size", style="green")
+        table.add_column("Language", style="yellow")
+        
+        # Add rows for each file
+        for file_info in files:
+            size_str = f"{file_info.size / 1024:.1f} KB" if file_info.size >= 1024 else f"{file_info.size} bytes"
+            rel_path = os.path.relpath(file_info.path, str(resolved_path)) if resolved_path.is_dir() else file_info.filename
+            table.add_row(
+                rel_path,
+                size_str,
+                file_info.language or "Unknown"
+            )
+        
+        console.print(table)
+    else:
+        console.print("[bold red]No files found matching the criteria[/bold red]")
     
     # Placeholder for actual implementation
     console.print("[yellow]This is a skeleton implementation. Actual review functionality will be implemented in future tasks.[/yellow]")

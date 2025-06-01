@@ -4,3 +4,6 @@
 * [Usage](usage.md)
 * [Commands](commands.md)
 * [Configuration](configuration.md)
+* [Code Scanner](scanner.md)
+* [Project Structure](project_structure.md)
+* [Implementation Status](implementation_status.md)

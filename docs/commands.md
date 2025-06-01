@@ -47,43 +47,51 @@ vaahai review [options] PATH [PATH...]
 
 | Option | Description | Default |
 |--------|-------------|---------|
-| `--depth {quick,standard,deep}` | Review depth | `standard` |
-| `--llm-provider PROVIDER` | LLM provider to use | From config |
-| `--model MODEL` | Model to use for review | From config |
-| `--analyzers LIST` | Comma-separated list of analyzers to use | All enabled |
-| `--ignore LIST` | Comma-separated list of issue codes to ignore | None |
-| `--include-related` | Include related files for context | `false` |
-| `--context TEXT` | Additional context for the review | None |
-| `--apply-fixes` | Interactively apply suggested fixes | `false` |
-| `--auto-apply-safe` | Automatically apply safe fixes | `false` |
-| `--generate-patches` | Generate patch files instead of applying fixes | `false` |
-| `--focus {general,security,performance,style}` | Focus area for the review | `general` |
-| `--diff` | Review only changes since last commit | `false` |
-| `--ci` | Run in CI mode (non-interactive) | `false` |
-| `--exit-code` | Return non-zero exit code if issues found | `false` |
-| `--template FILE` | Custom prompt template file | From config |
+| `--depth {quick,standard,thorough}` | Review depth | `standard` |
+| `--focus {all,security,performance,style}` | Focus area for the review | `all` |
+| `--output {terminal,markdown,html}` | Output format | `terminal` |
+| `--output-file FILE` | Save output to a file | None |
+| `--interactive` | Enable interactive fix application | `false` |
+| `--include PATTERN` | Patterns to include (can be used multiple times) | None |
+| `--exclude PATTERN` | Patterns to exclude (can be used multiple times) | None |
+| `--config FILE` | Path to configuration file | None |
+| `--save-history` | Save review results to history | `false` |
+| `--private` | Use only local resources | `false` |
+| `--max-file-size SIZE` | Maximum file size in bytes | 1048576 (1MB) |
 
 #### Examples
 
 ```bash
 # Review a single file
-vaahai review path/to/file.py
-
-# Review multiple files
-vaahai review file1.py file2.py file3.py
+vaahai review main path/to/file.py
 
 # Review a directory recursively
-vaahai review src/
+vaahai review main src/
 
-# Deep review with interactive fix application
-vaahai review important_module.py --depth deep --apply-fixes
+# Review with specific include/exclude patterns
+vaahai review main src/ --include="*.py" --exclude="*_test.py"
 
-# Security-focused review
-vaahai review auth.py --focus security
+# Review with specific focus and depth
+vaahai review main important_module.py --depth thorough --focus security
 
-# Review in CI environment
-vaahai review src/ --ci --format markdown --output review.md --exit-code
+# Review with interactive fix application
+vaahai review main src/ --interactive
+
+# Review with custom file size limit (500KB)
+vaahai review main src/ --max-file-size=512000
 ```
+
+#### Code Scanner Integration
+
+The review command uses the Vaahai Code Scanner to identify and filter files for review. The scanner:
+
+1. Automatically excludes common directories like `.git`, `node_modules`, and cache directories
+2. Supports glob patterns for including and excluding files
+3. Detects programming languages based on file extensions
+4. Provides file metadata including size, language, and encoding
+5. Can filter files based on content
+
+For more details on the Code Scanner, see the [Code Scanner](scanner.md) documentation.
 
 ### `analyze`
 

@@ -6,10 +6,13 @@ This module provides common utilities used across CLI commands.
 
 import os
 from pathlib import Path
-from typing import List, Set, Optional
+from typing import List, Set, Optional, Union
 
 from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, TextColumn
+
+from vaahai.core.scanner import code_scanner, FileInfo
+from vaahai.core.scanner.filters import LanguageFilter, PatternFilter, CompositeFilter
 
 console = Console()
 
@@ -60,23 +63,79 @@ def collect_files(
     Returns:
         List of file paths to process
     """
-    # Placeholder implementation
-    # In a real implementation, this would use pathspec or similar to handle glob patterns
+    # Reset the scanner to default settings
+    code_scanner.reset()
     
-    result = []
+    # Configure the scanner
+    if supported_extensions:
+        code_scanner.set_include_extensions(list(supported_extensions))
     
-    if path.is_file():
-        if is_supported_file(path, supported_extensions):
-            result.append(path)
-    else:  # Directory
-        for root, _, files in os.walk(path):
-            root_path = Path(root)
-            for file in files:
-                file_path = root_path / file
-                if is_supported_file(file_path, supported_extensions):
-                    result.append(file_path)
+    if include_patterns:
+        code_scanner.set_include_patterns(include_patterns)
     
-    return result
+    if exclude_patterns:
+        code_scanner.set_exclude_patterns(exclude_patterns)
+    
+    # Scan the path
+    file_infos = code_scanner.scan_path(str(path))
+    
+    # Convert FileInfo objects to Path objects for backward compatibility
+    return [Path(file_info.path) for file_info in file_infos]
+
+def file_infos_to_paths(file_infos: List[FileInfo]) -> List[Path]:
+    """
+    Convert a list of FileInfo objects to Path objects.
+    
+    Args:
+        file_infos: List of FileInfo objects
+        
+    Returns:
+        List of Path objects
+    """
+    return [Path(file_info.path) for file_info in file_infos]
+
+def scan_files(
+    path: Union[str, Path],
+    include_patterns: List[str] = None,
+    exclude_patterns: List[str] = None,
+    supported_extensions: Optional[List[str]] = None,
+    max_file_size: int = 1024 * 1024,  # 1MB default
+    load_content: bool = False
+) -> List[FileInfo]:
+    """
+    Scan files using the code scanner.
+    
+    Args:
+        path: Path to file or directory
+        include_patterns: List of glob patterns to include
+        exclude_patterns: List of glob patterns to exclude
+        supported_extensions: List of supported file extensions
+        max_file_size: Maximum file size in bytes
+        load_content: Whether to load file content
+        
+    Returns:
+        List of FileInfo objects
+    """
+    # Reset the scanner to default settings
+    code_scanner.reset()
+    
+    # Configure the scanner
+    if supported_extensions:
+        code_scanner.set_include_extensions(supported_extensions)
+    
+    if include_patterns:
+        code_scanner.set_include_patterns(include_patterns)
+    
+    if exclude_patterns:
+        code_scanner.set_exclude_patterns(exclude_patterns)
+    
+    code_scanner.set_max_file_size(max_file_size)
+    
+    # Scan the path
+    if load_content:
+        return code_scanner.scan_and_load_content([str(path)])
+    else:
+        return code_scanner.scan_path(str(path))
 
 def create_spinner(text: str) -> Progress:
     """
