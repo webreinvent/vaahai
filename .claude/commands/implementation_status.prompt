@@ -1,0 +1,51 @@
+# Vaahai Implementation Status Prompt
+
+## Purpose
+
+This prompt helps AI tools understand the current implementation status of the Vaahai project, including which components and features have been completed, which are in progress, and which are pending. Use this information to ensure generated code aligns with the current state of the project.
+
+## Current Implementation Status
+
+The implementation status is tracked in detail in `/specs/implementation/implementation_status.md` and `/specs/implementation/task_tracking.md`. Please review these documents to understand the current state of the project.
+
+Key points to understand:
+
+1. **Project Phase**: The project is currently in {project_phase}
+2. **Completed Components**: {completed_components}
+3. **In-Progress Components**: {in_progress_components}
+4. **Next Tasks**: {next_tasks}
+
+## Task Dependencies
+
+When implementing a component, be aware of its dependencies:
+
+```
+{task_dependencies}
+```
+
+## How to Update Status
+
+After completing implementation work, please update the status in the implementation tracking documents:
+
+1. In `/specs/implementation/implementation_status.md`:
+   - Update the component status from 🔴 to 🟡 or 🟢
+   - Add the completed task to the "Recently Completed Tasks" section
+   - Update the "Currently In Progress" section
+
+2. In `/specs/implementation/task_tracking.md`:
+   - Update the task status from "not_started" to "in_progress" or "completed"
+   - Update the "last_updated" field
+   - Set the "completion_date" when marking a task as completed
+
+## Your Task
+
+Based on the current implementation status:
+
+1. Identify which components and features are already implemented
+2. Understand the dependencies of the component you're working on
+3. Ensure your implementation is compatible with existing components
+4. Update the status tracking after completing your work
+
+## Current Task Context
+
+{task_context}
