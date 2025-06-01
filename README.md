@@ -30,6 +30,28 @@ docsify serve docs
 # Access at http://localhost:3001
 ```
 
+### `/vaahai/core`
+
+Contains core functionality of the application, including:
+
+- **Configuration System**: A modular configuration system using the singleton pattern
+  - `config/` - Package with specialized modules for configuration management
+  - `config/models.py` - Pydantic data models for configuration
+  - `config/validation.py` - Configuration validation logic
+  - `config/migration.py` - Schema versioning and migration
+  - `config/manager.py` - ConfigManager with singleton implementation
+
+```python
+# Using the configuration system
+from vaahai.core.config import config_manager
+
+# Get a configuration value
+api_key = config_manager.get("llm.api_key")
+
+# Set a configuration value
+config_manager.set("llm.model", "gpt-4", save=True)
+```
+
 ### `/specs`
 
 Contains technical specifications, requirements documents, and design proposals for the project. These documents outline the planned functionality and implementation details.
