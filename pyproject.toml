@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "vaahai"
-version = "0.1.0"
+version = "0.0.1"
 description = "AI-augmented code review CLI tool"
 authors = ["WebReinvent <info@webreinvent.com>"]
 readme = "README.md"
@@ -31,7 +31,7 @@ pylint = "^2.17.0"
 flake8 = "^6.0.0"
 bandit = "^1.7.5"
 openai = "^1.0.0"
-autogen = "^0.2.0"
+# pyautogen will be added when implementing agent orchestration
 pathspec = "^0.11.1"
 colorama = "^0.4.6"
 markdown = "^3.4.3"
