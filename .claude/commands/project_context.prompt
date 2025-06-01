@@ -1,0 +1,142 @@
+# Vaahai Project Context Prompt
+
+## Purpose
+
+This prompt helps AI tools build a comprehensive understanding of the Vaahai project before contributing code. Review this context carefully to ensure generated code aligns with the project's architecture, standards, and vision.
+
+## Project Overview
+
+Vaahai is an AI-augmented code review CLI tool that combines static analysis with LLM capabilities to provide comprehensive code reviews, suggestions, and automated fixes. 
+
+**Key Value Proposition**: Enhance code quality by combining traditional static analysis with AI-powered insights to provide actionable, contextual feedback.
+
+## System Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                       CLI Application (Typer)                    │
+└───────────────────────────────┬─────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                     Configuration Manager                        │
+└───────────────────────────────┬─────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐
+│    Code     │  │   Static    │  │    Agent    │  │   Output    │
+│   Scanner   │◄─┤  Analysis   │◄─┤ Orchestrator│◄─┤  Formatter  │
+│             │  │ Integration │  │             │  │             │
+└──────┬──────┘  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘
+       │                │                │                │
+       │                │                ▼                │
+       │                │         ┌─────────────┐        │
+       │                │         │     LLM     │        │
+       │                │         │  Providers  │        │
+       │                │         └─────────────┘        │
+       │                │                                │
+       └────────────────┴────────────┬─────────────────┐│
+                                     │                 ││
+                                     ▼                 ▼▼
+                              ┌─────────────┐  ┌─────────────┐
+                              │ Interactive │  │   Report    │
+                              │     Fix     │  │ Generation  │
+                              └─────────────┘  └─────────────┘
+```
+
+### Core Components
+
+1. **CLI Application**
+   - Built with Typer framework
+   - Handles command parsing, validation, and routing
+   - Implements commands: review, analyze, config, explain, document
+
+2. **Configuration Manager**
+   - Loads config from multiple sources with precedence
+   - Validates against schema (Pydantic)
+   - Provides typed access to settings
+
+3. **Code Scanner**
+   - Resolves file paths, directories, and glob patterns
+   - Filters files based on inclusion/exclusion rules
+   - Extracts file metadata and content
+
+4. **Static Analysis Integration**
+   - Runs appropriate analyzers based on file type
+   - Normalizes results from multiple tools
+   - Supports Python (pylint, flake8, bandit), JavaScript (ESLint), etc.
+
+5. **Agent Orchestration**
+   - Manages LLM agents for code review
+   - Prepares prompts with code and context
+   - Processes and structures outputs
+
+6. **LLM Providers**
+   - Supports multiple providers (OpenAI, Ollama)
+   - Handles authentication, rate limiting, error handling
+   - Optimizes token usage
+
+7. **Output Formatting**
+   - Formats results for terminal, Markdown, HTML
+   - Applies consistent styling and structure
+   - Handles output to console or file
+
+8. **Interactive Fix Application**
+   - Presents suggested changes with diffs
+   - Handles user confirmation
+   - Applies accepted changes to files
+
+## Key Data Flows
+
+1. **Review Process Flow**:
+   ```
+   User Command → File Scanning → Static Analysis → LLM Review → 
+   Result Processing → Output Generation → [Optional] Fix Application
+   ```
+
+2. **Key Data Models**:
+   - `FileInfo`: File metadata and content
+   - `AnalysisResult`: Static analysis findings
+   - `ReviewIssue`: Identified code issues
+   - `ReviewResult`: Complete review output
+
+## Development Principles
+
+1. **Modularity**: Clear separation of concerns between components
+2. **Extensibility**: Plugin system for analyzers, LLM providers, formatters
+3. **User-Centricity**: Focus on actionable, contextual feedback
+4. **Privacy**: Options for local LLM usage to maintain code privacy
+5. **Performance**: Efficient handling of large codebases
+
+## Technology Stack
+
+- **Core**: Python 3.9+, Poetry
+- **CLI**: Typer, Rich
+- **Data Validation**: Pydantic
+- **LLM Integration**: OpenAI API, Ollama
+- **Static Analysis**: pylint, flake8, bandit, ESLint, etc.
+- **Testing**: pytest, hypothesis
+
+## Documentation Structure
+
+- `/ai_docs`: AI-specific technical documentation
+- `/docs`: User-facing documentation
+- `/specs`: Technical specifications and requirements
+- `/.claude`: Claude AI integration templates
+
+## Your Task
+
+After reviewing this context:
+
+1. Summarize your understanding of Vaahai's architecture
+2. Explain how the component we're working on fits into the system
+3. Identify the key interfaces and data flows for our task
+4. Proceed with development following project standards
+
+## Documentation References
+
+{documentation_references}
+
+## Current Task Context
+
+{task_context}
