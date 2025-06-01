@@ -373,8 +373,10 @@ markdown_format = "github"
 
 1. **Phase 1: Core Framework**
    - Set up project structure and CLI framework
+   - Create first hello world command
+   - Make it publishable using poetry
    - Implement configuration management
-   - Create basic code scanner
+   - Create a basic code scanner
    - Build simple LLM integration (OpenAI only)
    - Develop terminal output formatter
    - Support Python files only with pylint integration
