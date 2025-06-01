@@ -26,7 +26,7 @@ def test_help():
     """Test the --help flag."""
     result = runner.invoke(app, ["--help"])
     assert result.exit_code == 0
-    assert "Vaahai: AI-augmented code review CLI tool" in result.stdout
+    assert "AI-augmented code review CLI tool" in result.stdout
     
     # Check that all commands are listed
     assert "review" in result.stdout

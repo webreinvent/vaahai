@@ -14,7 +14,7 @@ This document tracks the implementation status of Vaahai components and features
 | Component | Status | Related User Stories | Notes |
 |-----------|--------|----------------------|-------|
 | CLI Application | 🟢 Completed | US-01, US-02 | Basic CLI structure with command registration and argument parsing |
-| Configuration Manager | 🔴 Not Started | US-06 | Handles settings from multiple sources |
+| Configuration Manager | 🟢 Completed | US-06 | Handles settings from multiple sources |
 | Code Scanner | 🔴 Not Started | US-02 | Identifies and processes code files |
 | Static Analysis Integration | 🔴 Not Started | US-03 | Runs and processes static analysis tools |
 | Agent Orchestration | 🔴 Not Started | US-04, US-05 | Manages LLM agents for code reviews |
@@ -31,7 +31,7 @@ This document tracks the implementation status of Vaahai components and features
 | Static Analysis Integration | 🔴 Not Started | US-03 | Integrate with static analysis tools |
 | Interactive Fix Application | 🔴 Not Started | US-04 | Apply suggested fixes interactively |
 | Multiple LLM Provider Support | 🔴 Not Started | US-05 | Support for OpenAI, Ollama, etc. |
-| Configuration Management | 🔴 Not Started | US-06 | Load and validate configuration |
+| Configuration Management | 🟢 Completed | US-06 | Load and validate configuration |
 | Multiple Output Formats | 🔴 Not Started | US-07 | Terminal, Markdown, HTML output |
 | Explanation Mode | 🔴 Not Started | US-08 | Explain code in natural language |
 | Documentation Generation | 🔴 Not Started | US-09 | Generate documentation from code |
@@ -41,7 +41,7 @@ This document tracks the implementation status of Vaahai components and features
 
 ### Phase 1: Core Infrastructure (Current)
 - ✅ CLI Application skeleton
-- ⬜ Configuration Manager
+- ✅ Configuration Manager
 - ⬜ Code Scanner
 - ⬜ Basic Output Formatting
 
@@ -63,6 +63,7 @@ This document tracks the implementation status of Vaahai components and features
 ## Recently Completed Tasks
 
 - CLI Application Skeleton (TASK-001) - Implemented the basic CLI structure using Typer, including command registration and argument parsing for all commands (review, analyze, config, explain, document)
+- Configuration Manager (TASK-002) - Implemented the configuration manager to handle settings from multiple sources
 
 ## Currently In Progress
 
@@ -70,9 +71,8 @@ This document tracks the implementation status of Vaahai components and features
 
 ## Next Tasks to Implement
 
-1. Configuration Manager (TASK-002)
-2. Code Scanner (TASK-003)
-3. Basic Output Formatting (TASK-004)
+1. Code Scanner (TASK-003)
+2. Basic Output Formatting (TASK-004)
 
 ## Implementation Notes
 
