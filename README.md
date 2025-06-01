@@ -54,7 +54,8 @@ vaahai review main important_module.py --depth thorough --focus security
 | LLM Integration | ⏳ Planned | Support for multiple LLM providers |
 | Interactive Fixes | ⏳ Planned | Interactive application of suggested fixes |
 
-For detailed implementation status, see the [Implementation Status](docs/implementation_status.md) documentation.
+For detailed implementation status, see the [Implementation Status](/specs/implementation/implementation_status.md) documentation.
+For the complete development roadmap, see the [Implementation Roadmap](/specs/implementation/implementation_roadmap.md).
 
 ## Available Commands
 
