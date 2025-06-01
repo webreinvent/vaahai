@@ -287,11 +287,6 @@ Follow these steps to give AI tools full context of the project:
 
 To ensure AI assistants have a complete understanding of the Vaahai project before contributing code, we've created a specialized prompt template in `.claude/commands/project_context.prompt`. This prompt guides AI tools through the project documentation and helps them build a comprehensive mental model of the architecture, components, and design principles.
 
-<div align="center">
-  <img src="https://raw.githubusercontent.com/webreinvent/vaahai/main/docs/assets/images/ai_context_flow.png" alt="AI Context Flow" width="650">
-  <p><em>Figure: Process flow for providing context to AI tools</em></p>
-</div>
-
 ### Quick Start Guide
 
 ```mermaid
