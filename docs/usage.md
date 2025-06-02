@@ -225,6 +225,113 @@ max_rounds = 10
 speaker_selection_method = "auto"
 ```
 
+## Advanced Features
+
+### Multi-Agent Code Review
+
+Vaahai uses Microsoft's Autogen framework to implement a sophisticated multi-agent system for code review. This approach allows specialized agents to collaborate on different aspects of code analysis.
+
+#### Using the Multi-Agent System
+
+The multi-agent system is enabled by default for all code reviews. It includes specialized agents for:
+
+- Language detection
+- Framework/CMS detection
+- Standards analysis
+- Security auditing
+- Review coordination
+
+To customize the agent system, you can provide a custom configuration file:
+
+```bash
+vaahai review path/to/file.py --agent-config path/to/agent_config.toml
+```
+
+#### Agent Configuration
+
+A basic agent configuration file looks like this:
+
+```toml
+[agents]
+# Global agent settings
+max_rounds = 10
+termination_message = "REVIEW_COMPLETE"
+
+[agents.language_detector]
+name = "LanguageDetector"
+model = "gpt-4"
+temperature = 0.2
+system_message = """You are a Language Detector Agent..."""
+
+# Additional agent configurations...
+```
+
+For more details, see the [Autogen Integration](autogen_integration.md) documentation.
+
+### Docker-Based Code Execution
+
+Vaahai can execute code during the review process to identify runtime issues and verify suggested fixes.
+
+#### Enabling Code Execution
+
+Code execution is disabled by default for security reasons. To enable it:
+
+```bash
+vaahai review path/to/file.py --execute-code
+```
+
+#### Customizing Code Execution
+
+You can customize the Docker image used for code execution:
+
+```bash
+vaahai review path/to/file.py --execute-code --docker-image="python:3.10-slim"
+```
+
+Set a custom execution timeout:
+
+```bash
+vaahai review path/to/file.py --execute-code --execution-timeout=30
+```
+
+Configure resource limits:
+
+```bash
+# Set memory limit to 1GB
+vaahai review path/to/file.py --execute-code --memory-limit=1g
+
+# Set CPU limit to 2 cores
+vaahai review path/to/file.py --execute-code --cpu-limit=2.0
+```
+
+Enable network access (disabled by default for security):
+
+```bash
+vaahai review path/to/file.py --execute-code --network-enabled
+```
+
+#### Supported Languages
+
+The Docker-based code execution supports multiple programming languages with appropriate Docker images:
+
+| Language | Default Docker Image |
+|----------|---------------------|
+| Python | python:3.9-slim |
+| JavaScript | node:16-alpine |
+| Java | openjdk:11-jdk-slim |
+| Go | golang:1.17-alpine |
+| Rust | rust:1.56-slim |
+
+#### Security Considerations
+
+When using code execution:
+
+- Code is executed in isolated Docker containers
+- Network access is disabled by default
+- Resource limits are applied to prevent abuse
+- Execution timeouts prevent infinite loops
+- Containers are automatically cleaned up after execution
+
 ## Static Analysis Options
 
 ### Selecting Specific Analyzers

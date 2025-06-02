@@ -147,12 +147,22 @@ Code to review:
 
 1. Add Autogen as a dependency
 2. Create basic agent infrastructure
+   - Define base agent classes and interfaces
+   - Implement agent factory for creating specialized agents
+   - Create Docker-based code executor integration
 3. Implement agent configuration loading
 
 ### Phase 2: Agent Development
 
 1. Implement specialized agents
+   - Language Detector Agent (Priority 1)
+   - Framework/CMS Detector Agent
+   - Standards Analyzer Agent
+   - Security Auditor Agent
+   - Review Coordinator Agent
 2. Create prompt templates for each agent
+   - Base templates for common analysis tasks
+   - Language-specific templates for specialized analysis
 3. Define agent capabilities and limitations
 
 ### Phase 3: Orchestration
@@ -166,6 +176,90 @@ Code to review:
 1. Connect Autogen system to the CLI
 2. Implement output formatting for agent results
 3. Add configuration options for agent customization
+
+## Docker-Based Code Execution
+
+The Autogen integration includes Docker-based code execution capabilities to enable agents to run and debug code during the review process. This feature allows for:
+
+1. **Dynamic Code Analysis**: Run code to identify runtime issues not visible in static analysis
+2. **Verification of Fixes**: Test suggested fixes to ensure they resolve the identified issues
+3. **Language-Specific Testing**: Execute code in appropriate language-specific Docker containers
+4. **Secure Execution Environment**: Isolate code execution in containers for security
+
+### Implementation Details
+
+The Docker-based code execution is implemented through the `VaahaiDockerCommandLineCodeExecutor` class, which extends Autogen's `DockerCommandLineCodeExecutor` with Vaahai-specific features:
+
+```python
+class VaahaiDockerCommandLineCodeExecutor:
+    """Docker-based code execution environment for Autogen agents."""
+    
+    def __init__(self, config: Dict[str, Any]):
+        # Initialize with configuration for resource limits, timeouts, etc.
+        pass
+        
+    def execute_code(self, code: str, language: str) -> Dict[str, Any]:
+        # Execute code in a Docker container for the specified language
+        # Returns execution results, stdout, stderr, and execution time
+        pass
+```
+
+Key features of the implementation include:
+
+1. **Language Detection Integration**: Works with the Language Detector Agent to select appropriate Docker images
+2. **Resource Limiting**: Configurable memory and CPU limits to prevent resource abuse
+3. **Security Controls**: Network isolation by default with optional network access
+4. **Timeout Management**: Configurable execution timeouts to prevent infinite loops
+5. **Container Lifecycle Management**: Automatic cleanup of containers after execution
+
+### Docker Executor Configuration
+
+```toml
+[code_executor]
+enabled = true
+timeout = 60  # seconds
+memory_limit = "512m"
+cpu_limit = 1.0
+network_enabled = false
+
+[code_executor.languages]
+python = "python:3.9-slim"
+javascript = "node:16-alpine"
+java = "openjdk:11-jdk-slim"
+go = "golang:1.17-alpine"
+rust = "rust:1.56-slim"
+```
+
+### Usage in CLI
+
+The code execution capabilities can be controlled via CLI flags:
+
+```bash
+# Enable code execution during review
+vaahai review path/to/file.py --execute-code
+
+# Disable code execution (default)
+vaahai review path/to/file.py --no-execute-code
+
+# Specify custom Docker image for execution
+vaahai review path/to/file.py --execute-code --docker-image="python:3.10-slim"
+
+# Set resource limits
+vaahai review path/to/file.py --execute-code --memory-limit=1g --cpu-limit=2.0
+
+# Enable network access (disabled by default)
+vaahai review path/to/file.py --execute-code --network-enabled
+```
+
+### Integration with Agents
+
+The Docker-based code executor is integrated with the specialized agents in the following ways:
+
+1. **Language Detector Agent**: Determines the appropriate language for code execution
+2. **Framework Detector Agent**: Identifies required dependencies for execution
+3. **Standards Analyzer Agent**: Verifies that code meets standards by running tests
+4. **Security Auditor Agent**: Tests for security vulnerabilities through execution
+5. **Review Coordinator Agent**: Orchestrates code execution requests between agents
 
 ## Configuration
 

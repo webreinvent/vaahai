@@ -163,17 +163,46 @@ This document outlines the implementation roadmap for the Vaahai AI-augmented co
 - Language Detector Agent
 - Framework/CMS Detector Agent
 - Standards Analyzer Agent
-- Review Coordinator Agent
 - Security Auditor Agent
+- Review Coordinator Agent
 - Agent communication system
+- Docker-based code execution capabilities
 - Output formatting for agent results
 
 **Implementation**:
-- In progress
-- Setup Phase: Add Autogen as a dependency and create basic agent infrastructure
-- Agent Development Phase: Implement specialized agents with defined capabilities
-- Orchestration Phase: Implement coordinator agent and define workflow
-- Integration Phase: Connect Autogen system to the CLI and implement output formatting
+- Setup Phase: 
+  - ✅ Add Autogen as a dependency
+    - ✅ Add pyautogen to requirements.txt
+    - ✅ Configure version constraints
+  - ✅ Create basic agent infrastructure
+    - ✅ Define base agent classes and interfaces
+    - ✅ Implement agent factory pattern
+    - 🔄 Docker code executor integration
+  - ✅ Implement agent configuration loading
+    - ✅ Define TOML schema
+    - ✅ Add CLI option for configuration file
+- Agent Development Phase: 
+  - 🔄 Language Detector Agent (Priority 1)
+    - ✅ Define interface and responsibilities
+    - ✅ Create prompt templates
+    - 🔄 Implement language detection logic
+  - ⬜ Framework/CMS Detector Agent
+  - ⬜ Standards Analyzer Agent
+  - ⬜ Security Auditor Agent
+  - ⬜ Review Coordinator Agent
+- Orchestration Phase: 
+  - ⬜ Implement coordinator agent
+  - ⬜ Define workflow between agents
+  - ⬜ Create fallback mechanisms
+- Integration Phase: 
+  - ⬜ Connect Autogen system to the CLI
+  - ⬜ Implement output formatting
+  - ⬜ Add configuration options
+
+**Next Steps**:
+1. Complete Docker code executor integration
+2. Finish Language Detector Agent implementation
+3. Begin Framework Detector Agent implementation
 
 ### Phase 2: LLM Integration
 

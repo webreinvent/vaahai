@@ -94,6 +94,37 @@ class AgentConfig:
         pass
 ```
 
+#### Docker Code Executor
+
+```python
+class VaahaiDockerCommandLineCodeExecutor:
+    """Docker-based code execution environment for Autogen agents."""
+    
+    def __init__(self, config: Dict[str, Any]):
+        """Initialize the Docker code executor with configuration."""
+        pass
+        
+    def execute_code(self, code: str, language: str) -> Dict[str, Any]:
+        """Execute code in a Docker container for the specified language."""
+        pass
+        
+    def setup_container(self, language: str) -> str:
+        """Set up a Docker container for the specified language."""
+        pass
+        
+    def cleanup_container(self, container_id: str) -> None:
+        """Clean up a Docker container after execution."""
+        pass
+        
+    def apply_resource_limits(self, container_id: str) -> None:
+        """Apply resource limits to a Docker container."""
+        pass
+        
+    def get_language_image(self, language: str) -> str:
+        """Get the Docker image for the specified language."""
+        pass
+```
+
 #### Review Orchestrator
 
 ```python
