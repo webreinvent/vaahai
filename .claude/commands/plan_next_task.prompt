@@ -5,19 +5,26 @@ Help me identify and plan the next implementation task for the Vaahai Autogen in
    - ./specs/implementation/implementation_roadmap.md
    - ./specs/implementation/task_tracking.md
 
-2. Identify the highest priority task that is currently marked as "in progress" or "not started" based on:
+2. Consider the recently completed Hello World Agent MVP:
+   - Base agent architecture is now established
+   - Agent factory pattern is implemented
+   - CLI integration mechanism is validated
+   - Testing approach for agents is demonstrated
+
+3. Identify the highest priority task that is currently marked as "in progress" or "not started" based on:
    - Task priority (P1 > P2 > P3)
    - Task dependencies (tasks with completed dependencies should be prioritized)
    - Current implementation phase progress
    - Strategic importance to the project
 
-3. For the identified next task:
+4. For the identified next task:
    - Provide a detailed implementation plan
    - List any dependencies or prerequisites
    - Suggest a file structure or location in the codebase
    - Outline key functions, classes, or methods to implement
    - Identify potential challenges and solutions
 
-4. Include relevant code snippets or templates to kickstart the implementation.
+5. Include relevant code snippets or templates to kickstart the implementation.
+6. After task completion, take an approval before implementation status, roadmap, task tracking documents, specs, ai_docs, docs and readme.md are updated.
 
 Please be specific and actionable in your recommendations, focusing on concrete next steps rather than general advice.
