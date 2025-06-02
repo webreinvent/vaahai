@@ -37,6 +37,16 @@ Reviews code files using static analysis and LLM-powered contextual review.
 vaahai review [options] PATH [PATH...]
 ```
 
+#### Alternative Simplified Usage
+
+You can also use the simplified command syntax:
+
+```
+vaahai review-file [options] PATH [PATH...]
+```
+
+This simplified command provides the same functionality but with a more direct syntax.
+
 #### Arguments
 
 | Argument | Description |

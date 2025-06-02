@@ -23,7 +23,7 @@ console = Console()
 app = typer.Typer(help="Review code with AI assistance")
 
 @app.command()
-def main(
+def review(
     path: Path = typer.Argument(
         ...,
         help="Path to file or directory to review",
