@@ -119,6 +119,9 @@ def scan_files(
     # Reset the scanner to default settings
     code_scanner.reset()
     
+    # Convert path to string if it's a Path object
+    path_str = str(path)
+    
     # Configure the scanner
     if supported_extensions:
         code_scanner.set_include_extensions(supported_extensions)
@@ -132,10 +135,14 @@ def scan_files(
     code_scanner.set_max_file_size(max_file_size)
     
     # Scan the path
-    if load_content:
-        return code_scanner.scan_and_load_content([str(path)])
-    else:
-        return code_scanner.scan_path(str(path))
+    try:
+        if load_content:
+            return code_scanner.scan_and_load_content([path_str])
+        else:
+            return code_scanner.scan_path(path_str)
+    except Exception as e:
+        console.print(f"[bold red]Error scanning path:[/bold red] {e}")
+        return []
 
 def create_spinner(text: str) -> Progress:
     """
