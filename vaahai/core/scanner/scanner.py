@@ -204,9 +204,32 @@ class CodeScanner:
         return self
         
     def _is_excluded_dir(self, path: str) -> bool:
-        """Check if a directory should be excluded."""
+        """
+        Check if a directory should be excluded.
+        
+        Args:
+            path: Path to the directory
+            
+        Returns:
+            True if the directory should be excluded, False otherwise
+        """
+        # Get the directory name (last part of the path)
+        dir_name = os.path.basename(path)
+        
+        # Check if the directory name is in the excluded list
+        if dir_name in self._exclude_dirs:
+            return True
+            
+        # Also check if any part of the path matches excluded directories
         path_parts = Path(path).parts
-        return any(excluded in path_parts for excluded in self._exclude_dirs)
+        if any(excluded in path_parts for excluded in self._exclude_dirs):
+            return True
+            
+        # Check if the path matches any exclude patterns
+        if self._matches_pattern(path, self._exclude_patterns):
+            return True
+            
+        return False
         
     def _matches_pattern(self, path: str, patterns: List[str]) -> bool:
         """Check if a path matches any of the patterns."""
@@ -296,37 +319,43 @@ class CodeScanner:
         Returns:
             List of FileInfo objects for matching files
         """
-        results = []
+        results: List[FileInfo] = []
         
         # Normalize path
-        path = os.path.expanduser(path)
+        path = os.path.abspath(os.path.expanduser(path))
         
         # Handle glob patterns
         if any(char in path for char in ['*', '?', '[']):
             root_path = os.path.dirname(path) or '.'
             for file_path in glob.glob(path, recursive=True):
                 if os.path.isfile(file_path):
-                    size = os.path.getsize(file_path)
-                    if self._should_include_file(file_path, size):
-                        file_info = self._create_file_info(file_path, root_path)
-                        if self._apply_filters(file_info):
-                            results.append(file_info)
+                    try:
+                        size = os.path.getsize(file_path)
+                        if self._should_include_file(file_path, size):
+                            file_info = self._create_file_info(file_path, root_path)
+                            if self._apply_filters(file_info):
+                                results.append(file_info)
+                    except OSError as e:
+                        logger.warning(f"Error accessing {file_path}: {str(e)}")
             return results
             
         # Handle single file
         if os.path.isfile(path):
-            size = os.path.getsize(path)
-            if self._should_include_file(path, size):
-                file_info = self._create_file_info(path, os.path.dirname(path) or '.')
-                if self._apply_filters(file_info):
-                    results.append(file_info)
+            try:
+                size = os.path.getsize(path)
+                if self._should_include_file(path, size):
+                    file_info = self._create_file_info(path, os.path.dirname(path) or '.')
+                    if self._apply_filters(file_info):
+                        results.append(file_info)
+            except OSError as e:
+                logger.warning(f"Error accessing {path}: {str(e)}")
             return results
             
         # Handle directory
         if os.path.isdir(path):
             for root, dirs, files in os.walk(path):
                 # Modify dirs in-place to skip excluded directories
-                dirs[:] = [d for d in dirs if d not in self._exclude_dirs]
+                dirs[:] = [d for d in dirs if not self._is_excluded_dir(os.path.join(root, d))]
                 
                 for file in files:
                     file_path = os.path.join(root, file)

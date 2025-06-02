@@ -29,17 +29,17 @@ def main(
         help="Path to file or directory to review",
         exists=True,
     ),
-    depth: ReviewDepth = typer.Option(
-        ReviewDepth.STANDARD,
-        help="Review depth",
+    depth: str = typer.Option(
+        "standard",
+        help="Review depth (quick, standard, thorough)",
     ),
-    focus: ReviewFocus = typer.Option(
-        ReviewFocus.ALL,
-        help="Review focus",
+    focus: str = typer.Option(
+        "all",
+        help="Review focus (all, security, performance, style)",
     ),
-    output: OutputFormat = typer.Option(
-        OutputFormat.TERMINAL,
-        help="Output format",
+    output: str = typer.Option(
+        "terminal",
+        help="Output format (terminal, markdown, html)",
     ),
     output_file: Optional[Path] = typer.Option(
         None,
@@ -83,9 +83,9 @@ def main(
     """
     # Load config with CLI args
     cli_args = {
-        "review.depth": depth,
-        "review.focus": focus,
-        "review.output_format": output,
+        "review.depth": ReviewDepth(depth),
+        "review.focus": ReviewFocus(focus),
+        "review.output_format": OutputFormat(output),
         "review.interactive": interactive,
         "review.save_history": save_history,
         "review.private": private,
