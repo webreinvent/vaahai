@@ -1,0 +1,26 @@
+Help me plan the next implementation task for the Vaahai Autogen integration:
+
+1. Review the current implementation status and roadmap.
+
+2. Based on the implementation plan phases:
+   - Phase 1: Setup (Autogen dependency, basic agent infrastructure)
+   - Phase 2: Agent Development (specialized agents, prompt templates)
+   - Phase 3: Orchestration (coordinator agent, workflow definition)
+   - Phase 4: Integration (CLI connection, output formatting)
+
+3. Ask me clarifying questions about:
+   - Which specific component should be prioritized next
+   - Any technical constraints or preferences
+   - Required level of test coverage
+   - Documentation needs alongside implementation
+
+4. Propose a detailed implementation plan for the next task including:
+   - Directory structure and file organization
+   - Key classes, methods, and interfaces
+   - Dependencies and integration points
+   - Test approach
+   - Expected challenges and mitigation strategies
+
+5. Update the implementation roadmap and status documents if needed.
+
+6. Provide a checklist of subtasks to track progress.

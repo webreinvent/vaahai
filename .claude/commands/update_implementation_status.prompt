@@ -1,0 +1,26 @@
+Update the implementation status documents to reflect the current state of the Vaahai project:
+
+1. Review the current implementation status in:
+   - specs/implementation/implementation_status.md
+   - specs/implementation/implementation_roadmap.md
+   - README.md (implementation status table)
+
+2. Update the status of tasks based on recent progress:
+   - Mark completed tasks with ✅
+   - Mark in-progress tasks with 🔄
+   - Mark not started tasks with ⬜
+   - Mark deprioritized tasks with ⏳
+
+3. For in-progress tasks, update the detailed notes with:
+   - Current progress and milestones achieved
+   - Next steps and remaining work
+   - Any blockers or challenges
+
+4. For completed tasks, add detailed implementation notes:
+   - Key components implemented
+   - Design decisions and trade-offs
+   - Integration points with other components
+
+5. Update the "Last Updated" date at the bottom of the status document.
+
+6. Ensure all three documents (implementation_status.md, implementation_roadmap.md, and README.md) are consistent in their status reporting.

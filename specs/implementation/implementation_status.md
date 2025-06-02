@@ -17,7 +17,8 @@ This document tracks the implementation status of Vaahai components and features
 | CLI Application | P1-T002 | 🟢 Completed | US-01, US-02 | Basic CLI structure with command registration and argument parsing |
 | Code Scanner | P1-T003 | 🟢 Completed | US-02 | Identifies and processes code files with filtering and metadata extraction |
 | CLI Command Simplification | P1-T005 | 🟢 Completed | US-01 | Simplified CLI review command structure for improved user experience |
-| Output Formatting | P1-T004 | 🟡 In Progress | US-07 | Formats review results for presentation |
+| Output Formatting | P1-T004 | ⏳ Deprioritized | US-07 | Being replaced by P1-T007 |
+| Autogen Framework Integration | P1-T007 | 🔄 In Progress | US-07 | Multi-agent system for code review |
 | Static Analysis Integration | P1-T006 | 🔴 Not Started | US-03 | Runs and processes static analysis tools |
 | LLM Provider Interface | P2-T001 | 🔴 Not Started | US-05 | Interfaces with different LLM services |
 | Agent Orchestration | P2-T004 | 🔴 Not Started | US-04, US-05 | Manages LLM agents for code reviews |
@@ -33,7 +34,7 @@ This document tracks the implementation status of Vaahai components and features
 | Interactive Fix Application | P3-T001 | 🔴 Not Started | US-04 | Apply suggested fixes interactively |
 | Multiple LLM Provider Support | P2-T001 | 🔴 Not Started | US-05 | Support for OpenAI, Ollama, etc. |
 | Configuration Management | P1-T001 | 🟢 Completed | US-06 | Load and validate configuration |
-| Multiple Output Formats | P1-T004 | 🟡 In Progress | US-07 | Terminal, Markdown, HTML output |
+| Multiple Output Formats | P1-T007 | 🔄 In Progress | US-07 | Terminal, Markdown, HTML output with Autogen framework |
 | Explanation Mode | P3-T003 | 🔴 Not Started | US-08 | Explain code in natural language |
 | Documentation Generation | P3-T003 | 🔴 Not Started | US-09 | Generate documentation from code |
 | Performance Optimization | P3-T005 | 🔵 Planned for Future | US-10 | Identify performance issues |
@@ -45,7 +46,7 @@ This document tracks the implementation status of Vaahai components and features
 - ✅ P1-T002: CLI Application Skeleton
 - ✅ P1-T003: Code Scanner
 - ✅ P1-T005: CLI Command Simplification
-- 🔄 P1-T004: Basic Output Formatting
+- 🔄 P1-T007: Autogen Framework Integration
 - ⬜ P1-T006: Static Analysis Integration
 
 ### Phase 2: LLM Integration
@@ -89,11 +90,11 @@ This document tracks the implementation status of Vaahai components and features
 
 ## In-Progress Tasks
 
-### P1-T004: Basic Output Formatting 🔄
-- 🔄 Terminal output formatting
-- ⬜ Markdown output formatting
-- ⬜ HTML output formatting
-- ⬜ Integration with CLI commands
+### P1-T007: Autogen Framework Integration 🔄
+- 🔄 Setup Phase: Add Autogen as a dependency and create basic agent infrastructure
+- 🔄 Agent Development Phase: Implement specialized agents with defined capabilities
+- ⬜ Orchestration Phase: Implement coordinator agent and define workflow
+- ⬜ Integration Phase: Connect Autogen system to the CLI and implement output formatting
 
 ## Next Tasks
 - ⬜ P1-T006: Static Analysis Integration

@@ -6,9 +6,9 @@ This prompt helps AI tools build a comprehensive understanding of the Vaahai pro
 
 ## Project Overview
 
-Vaahai is an AI-augmented code review CLI tool that combines static analysis with LLM capabilities to provide comprehensive code reviews, suggestions, and automated fixes. 
+Vaahai is an AI-augmented code review CLI tool that combines static analysis with LLM capabilities to provide comprehensive code reviews, suggestions, and automated fixes. The project has strategically shifted to integrate Microsoft's Autogen framework to create a sophisticated multi-agent system for enhanced code review.
 
-**Key Value Proposition**: Enhance code quality by combining traditional static analysis with AI-powered insights to provide actionable, contextual feedback.
+**Key Value Proposition**: Enhance code quality by combining traditional static analysis with a collaborative multi-agent AI system to provide actionable, contextual feedback with specialized expertise in different aspects of code analysis.
 
 ## System Architecture
 
@@ -24,12 +24,19 @@ Vaahai is an AI-augmented code review CLI tool that combines static analysis wit
                                 │
                                 ▼
 ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐
-│    Code     │  │   Static    │  │    Agent    │  │   Output    │
+│    Code     │  │   Static    │  │   Review    │  │   Output    │
 │   Scanner   │◄─┤  Analysis   │◄─┤ Orchestrator│◄─┤  Formatter  │
 │             │  │ Integration │  │             │  │             │
 └──────┬──────┘  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘
        │                │                │                │
        │                │                ▼                │
+       │                │         ┌─────────────────┐    │
+       │                │         │  Autogen-based  │    │
+       │                │         │  Multi-Agent    │    │
+       │                │         │  System         │    │
+       │                │         └────────┬────────┘    │
+       │                │                  │             │
+       │                │                  ▼             │
        │                │         ┌─────────────┐        │
        │                │         │     LLM     │        │
        │                │         │  Providers  │        │
@@ -66,22 +73,32 @@ Vaahai is an AI-augmented code review CLI tool that combines static analysis wit
    - Normalizes results from multiple tools
    - Supports Python (pylint, flake8, bandit), JavaScript (ESLint), etc.
 
-5. **Agent Orchestration**
-   - Manages LLM agents for code review
-   - Prepares prompts with code and context
-   - Processes and structures outputs
+5. **Autogen Multi-Agent System**
+   - Implements specialized agents for different aspects of code review:
+     - Language Detector Agent
+     - Framework/CMS Detector Agent
+     - Standards Analyzer Agent
+     - Security Auditor Agent
+     - Review Coordinator Agent
+   - Uses Autogen's GroupChat for agent collaboration
+   - Orchestrates the review process through specialized agents
 
-6. **LLM Providers**
+6. **Review Orchestrator**
+   - Manages the multi-agent system for code review
+   - Prepares code context and configuration for agents
+   - Processes and structures outputs from agent collaboration
+
+7. **LLM Providers**
    - Supports multiple providers (OpenAI, Ollama)
    - Handles authentication, rate limiting, error handling
    - Optimizes token usage
 
-7. **Output Formatting**
+8. **Output Formatting**
    - Formats results for terminal, Markdown, HTML
    - Applies consistent styling and structure
    - Handles output to console or file
 
-8. **Interactive Fix Application**
+9. **Interactive Fix Application**
    - Presents suggested changes with diffs
    - Handles user confirmation
    - Applies accepted changes to files
@@ -90,20 +107,27 @@ Vaahai is an AI-augmented code review CLI tool that combines static analysis wit
 
 1. **Review Process Flow**:
    ```
-   User Command → File Scanning → Static Analysis → LLM Review → 
+   User Command → File Scanning → Static Analysis → Multi-Agent Review → 
    Result Processing → Output Generation → [Optional] Fix Application
    ```
 
-2. **Key Data Models**:
+2. **Multi-Agent Collaboration Flow**:
+   ```
+   Review Coordinator → Specialized Agents → Group Chat → 
+   Consensus Building → Aggregated Findings
+   ```
+
+3. **Key Data Models**:
    - `FileInfo`: File metadata and content
    - `AnalysisResult`: Static analysis findings
+   - `AgentConfig`: Configuration for specialized agents
    - `ReviewIssue`: Identified code issues
    - `ReviewResult`: Complete review output
 
 ## Development Principles
 
 1. **Modularity**: Clear separation of concerns between components
-2. **Extensibility**: Plugin system for analyzers, LLM providers, formatters
+2. **Extensibility**: Plugin system for analyzers, agents, LLM providers, formatters
 3. **User-Centricity**: Focus on actionable, contextual feedback
 4. **Privacy**: Options for local LLM usage to maintain code privacy
 5. **Performance**: Efficient handling of large codebases
@@ -113,6 +137,7 @@ Vaahai is an AI-augmented code review CLI tool that combines static analysis wit
 - **Core**: Python 3.9+, Poetry
 - **CLI**: Typer, Rich
 - **Data Validation**: Pydantic
+- **Multi-Agent System**: Microsoft Autogen
 - **LLM Integration**: OpenAI API, Ollama
 - **Static Analysis**: pylint, flake8, bandit, ESLint, etc.
 - **Testing**: pytest, hypothesis
@@ -128,8 +153,8 @@ Vaahai is an AI-augmented code review CLI tool that combines static analysis wit
 
 After reviewing this context:
 
-1. Summarize your understanding of Vaahai's architecture
-2. Explain how the component we're working on fits into the system
+1. Summarize your understanding of Vaahai's architecture with Autogen integration
+2. Explain how the component we're working on fits into the multi-agent system
 3. Identify the key interfaces and data flows for our task
 4. Proceed with development following project standards
 

@@ -13,6 +13,48 @@ Vaahai follows a modular, component-based architecture with the following charac
 3. **Command Pattern**: CLI commands encapsulate specific operations
 4. **Dependency Injection**: Components receive dependencies rather than creating them
 5. **Factory Pattern**: Dynamic creation of appropriate implementations based on configuration
+6. **Multi-Agent Architecture**: Collaborative AI agents using Microsoft's Autogen framework
+
+## System Architecture Diagram
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                       CLI Application (Typer)                    │
+└───────────────────────────────┬─────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                     Configuration Manager                        │
+└───────────────────────────────┬─────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐
+│    Code     │  │   Static    │  │   Review    │  │   Output    │
+│   Scanner   │◄─┤  Analysis   │◄─┤ Orchestrator│◄─┤  Formatter  │
+│             │  │ Integration │  │             │  │             │
+└──────┬──────┘  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘
+       │                │                │                │
+       │                │                ▼                │
+       │                │         ┌─────────────────┐    │
+       │                │         │  Autogen-based  │    │
+       │                │         │  Multi-Agent    │    │
+       │                │         │  System         │    │
+       │                │         └────────┬────────┘    │
+       │                │                  │             │
+       │                │                  ▼             │
+       │                │         ┌─────────────┐        │
+       │                │         │     LLM     │        │
+       │                │         │  Providers  │        │
+       │                │         └─────────────┘        │
+       │                │                                │
+       └────────────────┴────────────┬─────────────────┐│
+                                     │                 ││
+                                     ▼                 ▼▼
+                              ┌─────────────┐  ┌─────────────┐
+                              │ Interactive │  │   Report    │
+                              │     Fix     │  │ Generation  │
+                              └─────────────┘  └─────────────┘
+```
 
 ## System Components
 
@@ -118,70 +160,85 @@ for file_info in files:
     print(f"Found {file_info.language} file: {file_info.path}")
 ```
 
-#### Static Analysis Integration
+#### Review Orchestrator
 
-The Static Analysis Integration component runs static analysis tools and processes their results.
-
-**Implementation Details**:
-- Detects available static analysis tools
-- Selects appropriate analyzers based on file type
-- Runs analyzers with appropriate configuration
-- Parses and normalizes analyzer outputs
-- Aggregates results from multiple analyzers
-
-**Key Classes**:
-- `AnalyzerRegistry`: Manages available analyzers
-- `Analyzer`: Abstract base class for analyzers
-- `PylintAnalyzer`, `Flake8Analyzer`, etc.: Specific analyzer implementations
-- `AnalysisResult`: Normalized representation of analysis findings
-
-**Example Usage**:
-```python
-from vaahai.core.analyzer import AnalyzerRegistry, AnalysisResult
-
-registry = AnalyzerRegistry()
-analyzer = registry.get_analyzer_for_language("python")
-results = analyzer.analyze("path/to/file.py")
-
-for result in results:
-    print(f"{result.severity}: {result.message} at line {result.line}")
-```
-
-#### Agent Orchestration
-
-The Agent Orchestration component manages LLM agents to generate code reviews.
+The Review Orchestrator manages the Autogen multi-agent system to generate comprehensive code reviews.
 
 **Implementation Details**:
-- Initializes and configures AutoGen agents
-- Prepares prompts with code and context
-- Manages agent interactions
-- Processes and structures agent outputs
+- Initializes and configures Autogen agents and group chat
+- Manages the multi-agent collaboration process
+- Prepares code context and configuration for agents
+- Processes and structures outputs from agent collaboration
 - Handles token limitations through chunking
+- Coordinates specialized agents for different aspects of code review
 
 **Key Classes**:
-- `AgentOrchestrator`: Coordinates agent interactions
+- `ReviewOrchestrator`: Coordinates the multi-agent review process
+- `AgentFactory`: Creates specialized agents based on configuration
+- `ReviewGroupChatManager`: Manages agent communication
 - `PromptBuilder`: Constructs prompts for agents
-- `ReviewAgent`, `AssistantAgent`: Specialized agents for review tasks
 - `ReviewResult`: Structured representation of review output
 
 **Example Usage**:
 ```python
-from vaahai.core.orchestrator import AgentOrchestrator
+from vaahai.core.orchestrator import ReviewOrchestrator
 from vaahai.llm.providers import LLMProviderFactory
 
 provider = LLMProviderFactory.create("openai")
-orchestrator = AgentOrchestrator(provider)
+orchestrator = ReviewOrchestrator(provider)
 
 review_result = orchestrator.review_code(
     code="def example(): pass",
     language="python",
     static_analysis_results=analysis_results,
-    review_depth="standard"
+    review_depth="standard",
+    agent_config=agent_config
 )
 
 print(review_result.summary)
 for issue in review_result.issues:
     print(f"{issue.severity}: {issue.message} at line {issue.line}")
+```
+
+#### Autogen Multi-Agent System
+
+The Autogen Multi-Agent System implements specialized agents that collaborate to perform comprehensive code review.
+
+**Implementation Details**:
+- Uses Microsoft's Autogen framework for agent creation and communication
+- Implements specialized agents for different aspects of code review
+- Enables collaborative analysis through agent communication
+- Provides a flexible architecture for adding new agent types
+- Supports customization of agent behavior through configuration
+
+**Key Agents**:
+- `LanguageDetectorAgent`: Identifies programming languages, features, and versions
+- `FrameworkDetectorAgent`: Identifies frameworks, libraries, and architectural patterns
+- `StandardsAnalyzerAgent`: Evaluates adherence to coding standards and best practices
+- `SecurityAuditorAgent`: Identifies security vulnerabilities and recommends improvements
+- `ReviewCoordinatorAgent`: Orchestrates the review process and aggregates findings
+
+**Example Usage**:
+```python
+from vaahai.agents.factory import AgentFactory
+from vaahai.agents.group_chat import ReviewGroupChatManager
+
+# Create specialized agents
+agent_factory = AgentFactory(llm_provider)
+language_detector = agent_factory.create_agent("language_detector")
+framework_detector = agent_factory.create_agent("framework_detector")
+standards_analyzer = agent_factory.create_agent("standards_analyzer")
+security_auditor = agent_factory.create_agent("security_auditor")
+coordinator = agent_factory.create_agent("review_coordinator")
+
+# Set up group chat
+group_chat = ReviewGroupChatManager(
+    agents=[language_detector, framework_detector, standards_analyzer, security_auditor],
+    coordinator=coordinator
+)
+
+# Run collaborative review
+review_result = group_chat.run_review(file_info, static_analysis_results)
 ```
 
 #### Output Formatting
@@ -283,31 +340,68 @@ Vaahai integrates with external static analysis tools through adapters.
    - Results are parsed and normalized
    - Results are aggregated across tools
 
-4. **LLM Review**:
-   - Prompt is constructed with code and static analysis results
-   - LLM provider is initialized with appropriate configuration
-   - Prompt is sent to LLM for processing
-   - Response is received and parsed
+4. **Multi-Agent Review**:
+   - Review Orchestrator initializes the Autogen multi-agent system
+   - Specialized agents are created and configured
+   - Code and static analysis results are provided to agents
+   - Agents collaborate through GroupChat to analyze the code
+   - Review Coordinator manages the conversation and aggregates findings
 
-5. **Result Processing**:
-   - LLM response is structured into review results
+5. **Agent Collaboration Flow**:
+   - Language Detector Agent identifies programming languages and features
+   - Framework Detector Agent identifies frameworks and architectural patterns
+   - Standards Analyzer Agent evaluates adherence to coding standards
+   - Security Auditor Agent identifies security vulnerabilities
+   - Review Coordinator Agent orchestrates the process and builds consensus
+   - Agents communicate and refine their analysis through structured dialogue
+
+6. **Result Processing**:
+   - Agent findings are structured into review results
    - Issues are categorized and prioritized
    - Suggested fixes are extracted
    - Results are merged with static analysis findings
 
-6. **Output Generation**:
+7. **Output Generation**:
    - Appropriate formatter is selected based on user preference
    - Results are formatted for presentation
    - Output is displayed or saved to file
 
-7. **Interactive Fix Application** (if enabled):
-   - Suggested fixes are presented to user
-   - User selects fixes to apply
-   - Selected fixes are applied to original files
+### Key Data Models
 
-### Data Models
+1. **Input Models**:
+   - `FileInfo`: File metadata and content
+   - `AnalysisResult`: Static analysis findings
+   - `AgentConfig`: Configuration for specialized agents
 
-#### File Information
+2. **Processing Models**:
+   - `AgentMessage`: Communication between agents
+   - `ReviewContext`: Context provided to agents
+   - `AgentFinding`: Individual agent analysis results
+
+3. **Output Models**:
+   - `ReviewIssue`: Identified code issues
+   - `ReviewSuggestion`: Suggested improvements
+   - `ReviewResult`: Complete review output
+
+## Implementation Details
+
+### Key Interfaces
+
+1. **Agent Interface**:
+   - `Agent`: Abstract base class for agents
+   - `AgentFactory`: Creates specialized agents based on configuration
+
+2. **LLM Provider Interface**:
+   - `LLMProvider`: Abstract base class for providers
+   - `LLMProviderFactory`: Creates appropriate provider instances
+
+3. **Formatter Interface**:
+   - `Formatter`: Abstract base class for formatters
+   - `FormatterRegistry`: Manages available formatters
+
+### Data Structures
+
+#### FileInfo
 
 ```python
 class FileInfo:
@@ -317,50 +411,75 @@ class FileInfo:
     size: int                # File size in bytes
     content: str             # File content
     encoding: str            # File encoding
-    line_count: int          # Number of lines
 ```
 
-#### Analysis Result
+#### AnalysisResult
 
 ```python
 class AnalysisResult:
-    tool: str                # Name of the analysis tool
-    file_path: str           # Path to the analyzed file
-    line: int                # Line number
-    column: int              # Column number
-    severity: str            # Severity level (critical, error, warning, info)
-    code: str                # Issue code or ID
+    tool: str                # Name of analysis tool
+    file_path: str           # Path to analyzed file
+    line: int                # Line number of finding
+    column: int              # Column number of finding
+    severity: str            # Severity level (high, medium, low, info)
+    rule_id: str             # Identifier of violated rule
     message: str             # Description of the issue
-    suggestion: Optional[str] # Suggested fix
+    fix: Optional[str]       # Suggested fix if available
 ```
 
-#### Review Issue
+#### AgentConfig
 
 ```python
-class ReviewIssue:
-    file_path: str           # Path to the file
-    line: int                # Line number
-    column: Optional[int]    # Column number
-    severity: str            # Severity (critical, important, minor)
-    category: str            # Issue category (bug, security, performance, style)
-    message: str             # Description of the issue
-    explanation: str         # Detailed explanation
-    suggestion: Optional[str] # Suggested fix
-    source: str              # Source (llm, static_analysis)
+class AgentConfig:
+    agent_type: str          # Type of agent (language_detector, security_auditor, etc.)
+    model: str               # LLM model to use
+    temperature: float       # Temperature for generation
+    max_tokens: int          # Maximum tokens for response
+    system_prompt: str       # System prompt for the agent
+    user_prompt_template: str # Template for user prompts
 ```
 
-#### Review Result
+#### ReviewResult
 
 ```python
 class ReviewResult:
-    file_path: str           # Path to the reviewed file
-    language: str            # Programming language
-    summary: str             # Overall summary
-    strengths: List[str]     # Identified strengths
+    summary: str             # Overall summary of review
     issues: List[ReviewIssue] # Identified issues
-    suggestions: List[str]   # General suggestions
+    suggestions: List[ReviewSuggestion] # Suggested improvements
     metrics: Dict[str, Any]  # Review metrics
+    static_analysis: List[AnalysisResult] # Static analysis results
+    agent_findings: Dict[str, List[AgentFinding]] # Raw agent findings
 ```
+
+## Configuration
+
+1. **File Locations**:
+   - Source code in `vaahai/` directory
+   - Tests in `tests/` directory
+   - Documentation in `docs/` directory
+
+2. **Dependencies**:
+   - Core Python libraries
+   - Typer for CLI
+   - Pydantic for data validation
+   - Microsoft Autogen for multi-agent system
+   - Various static analysis tools
+
+3. **Configuration**:
+   - User-level configuration in `~/.config/vaahai/config.toml`
+   - Project-level configuration in `.vaahai.toml`
+   - Environment variables with `VAAHAI_` prefix
+   - Agent configuration in `.vaahai/agents/` directory
+
+## Extension Points
+
+Vaahai provides several extension points for customization:
+
+1. **Static Analyzers**: Add new analyzers by implementing the `Analyzer` interface
+2. **LLM Providers**: Add new providers by implementing the `LLMProvider` interface
+3. **Formatters**: Add new output formats by implementing the `Formatter` interface
+4. **Agents**: Add new specialized agents by extending the agent system
+5. **Commands**: Add new CLI commands by extending the Typer application
 
 ## Security Considerations
 
@@ -403,30 +522,6 @@ class ReviewResult:
    - Background processing for non-blocking operations
    - Timeout handling for external services
    - Performance metrics and optimization
-
-## Extensibility
-
-The architecture is designed for extensibility in several dimensions:
-
-1. **Language Support**:
-   - Abstract language detection and handling
-   - Pluggable language-specific analyzers
-   - Language-specific prompt engineering
-
-2. **LLM Providers**:
-   - Provider interface abstraction
-   - Pluggable provider implementations
-   - Consistent handling across providers
-
-3. **Output Formats**:
-   - Formatter registry and factory pattern
-   - Pluggable formatter implementations
-   - Consistent output structure
-
-4. **Static Analyzers**:
-   - Analyzer registry and factory pattern
-   - Pluggable analyzer implementations
-   - Normalized result format
 
 ## Development Environment
 
