@@ -1,0 +1,30 @@
+Test a specific Autogen agent implementation for the Vaahai multi-agent system:
+
+1. Specify which agent to test:
+   - Language Detector Agent
+   - Framework/CMS Detector Agent
+   - Standards Analyzer Agent
+   - Security Auditor Agent
+   - Review Coordinator Agent
+
+2. Provide a code sample for testing:
+   - Paste a code snippet or specify a file path
+   - Indicate the programming language
+   - Mention any specific aspects to focus on
+
+3. Define test expectations:
+   - What should the agent detect or analyze?
+   - What format should the output be in?
+   - What level of detail is expected?
+
+4. Test the agent with:
+   - Direct agent execution with the provided code sample
+   - Verification of output against expectations
+   - Analysis of response quality and correctness
+   - Identification of any issues or limitations
+
+5. Provide test results with:
+   - Summary of agent performance
+   - Specific strengths and weaknesses
+   - Suggestions for improvement
+   - Comparison with expected behavior

@@ -2,7 +2,67 @@
 
 This document provides detailed information about the AI integration aspects of the Vaahai AI-augmented code review CLI tool, specifically formatted for AI tools to understand how LLMs are integrated, prompt engineering strategies, and AI-specific implementation details.
 
+## Multi-Agent Architecture with Autogen
+
+Vaahai uses Microsoft's Autogen framework to implement a sophisticated multi-agent system for code review. This approach allows specialized agents to collaborate on different aspects of code analysis.
+
+### Agent Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Review Coordinator Agent                     │
+└───────────────────────────────┬─────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                        Group Chat Manager                       │
+└───────┬───────────────┬────────────────┬────────────┬───────────┘
+        │               │                │            │
+        ▼               ▼                ▼            ▼
+┌───────────┐   ┌───────────────┐  ┌──────────┐  ┌──────────────┐
+│ Language  │   │ Framework/CMS │  │Standards │  │   Security   │
+│ Detector  │   │   Detector    │  │ Analyzer │  │   Auditor    │
+└───────────┘   └───────────────┘  └──────────┘  └──────────────┘
+```
+
+### Key Agents
+
+1. **Language Detector Agent**
+   - Identifies programming languages in files
+   - Determines language-specific features and versions
+   - Provides language context to other agents
+
+2. **Framework/CMS Detector Agent**
+   - Identifies frameworks, libraries, and CMS systems
+   - Detects architectural patterns (MVC, MVVM, etc.)
+   - Maps dependencies and their relationships
+
+3. **Standards Analyzer Agent**
+   - Evaluates adherence to coding standards
+   - Checks for language-specific best practices
+   - Identifies style inconsistencies
+
+4. **Security Auditor Agent**
+   - Identifies security vulnerabilities
+   - Checks for common security anti-patterns
+   - Recommends security improvements
+
+5. **Review Coordinator Agent**
+   - Orchestrates the review process
+   - Divides code into logical segments for review
+   - Aggregates findings from specialized agents
+
+### Agent Communication
+
+Agents communicate through Autogen's GroupChat mechanism, which allows:
+- Structured message passing between agents
+- Collaborative problem-solving
+- Specialized knowledge sharing
+- Consensus building on findings
+
 ## LLM Integration Architecture
+
+In addition to the multi-agent system, Vaahai maintains a flexible LLM integration architecture for direct interactions.
 
 ### Integration Approach
 
@@ -19,38 +79,6 @@ This document provides detailed information about the AI integration aspects of 
 └─────────────────┘     └─────────────────┘     └─────────────────┘
 ```
 
-### Key Components
-
-1. **Context Assembly**
-   - Gathers code, analysis results, and user context
-   - Optimizes context for token efficiency
-   - Structures information for LLM consumption
-
-2. **Prompt Engineering**
-   - Designs effective prompts for specific tasks
-   - Manages prompt templates
-   - Applies few-shot learning techniques
-
-3. **LLM Interaction**
-   - Handles API communication
-   - Manages rate limiting and retries
-   - Streams responses when appropriate
-
-4. **Provider Management**
-   - Abstracts provider-specific details
-   - Handles authentication and configuration
-   - Supports multiple LLM providers
-
-5. **Response Processing**
-   - Parses structured responses
-   - Extracts actionable insights
-   - Validates and filters results
-
-6. **Result Integration**
-   - Combines LLM insights with static analysis
-   - Prioritizes and deduplicates findings
-   - Formats for human consumption
-
 ## Supported LLM Providers
 
 ### 1. OpenAI
@@ -61,7 +89,7 @@ This document provides detailed information about the AI integration aspects of 
 - GPT-4-Turbo
 
 **Integration Details**:
-- Uses OpenAI Python SDK
+- Used by Autogen agents for specialized analysis
 - Supports streaming responses
 - Configurable temperature and top_p
 - Token counting and optimization
@@ -75,63 +103,91 @@ temperature = 0.3
 max_tokens = 4000
 ```
 
-### 2. Ollama
+## Autogen Configuration
 
-**Models Supported**:
-- Llama 2
-- Mistral
-- CodeLlama
-- Custom models
+Vaahai uses Autogen's configuration system to define agent behaviors and capabilities:
 
-**Integration Details**:
-- Uses Ollama REST API
-- Local model execution
-- Reduced latency for quick reviews
-- Complete privacy for sensitive code
-
-**Configuration**:
-```toml
-[llm.ollama]
-host = "http://localhost:11434"
-model = "codellama"
-temperature = 0.3
+```python
+# Example Autogen configuration
+config = {
+    "agents": {
+        "language_detector": {
+            "model": "gpt-4",
+            "temperature": 0.2,
+            "system_message": "You are a Language Detector Agent...",
+        },
+        "framework_detector": {
+            "model": "gpt-4",
+            "temperature": 0.3,
+            "system_message": "You are a Framework Detector Agent...",
+        },
+        # Additional agent configurations...
+    },
+    "group_chat": {
+        "max_rounds": 10,
+        "speaker_selection_method": "auto",
+    }
+}
 ```
 
-### 3. Anthropic (Planned)
+## Agent Prompt Templates
 
-**Models Supported**:
-- Claude 3 Opus
-- Claude 3 Sonnet
-- Claude 3 Haiku
+Each specialized agent uses tailored prompt templates to guide its analysis:
 
-**Integration Details**:
-- Will use Anthropic Python SDK
-- Optimized for code understanding
-- Support for long context windows
-- Advanced reasoning capabilities
+### Language Detector Agent
 
-**Configuration**:
-```toml
-[llm.anthropic]
-api_key = "${VAAHAI_ANTHROPIC_API_KEY}"
-model = "claude-3-opus-20240229"
-temperature = 0.3
-max_tokens = 4000
+```
+You are a Language Detector Agent specialized in identifying programming languages.
+Analyze the following code and determine:
+1. The primary programming language(s) used
+2. Language version indicators if present
+3. Any language-specific features or patterns
+
+Code to analyze:
+{code_snippet}
 ```
 
-### 4. Plugin System for Custom Providers
+### Framework Detector Agent
 
-**Supported Extensions**:
-- Custom LLM providers
-- Self-hosted models
-- Specialized code models
-- Multi-model ensembles
+```
+You are a Framework Detector Agent specialized in identifying frameworks and libraries.
+Analyze the following code and determine:
+1. Frameworks or libraries being used
+2. Architectural patterns (MVC, MVVM, etc.)
+3. Key dependencies and their relationships
 
-**Integration Details**:
-- Plugin interface for new providers
-- Configuration management
-- Performance benchmarking
-- Capability discovery
+Code to analyze:
+{code_snippet}
+```
+
+## Agent Orchestration
+
+The Review Coordinator Agent orchestrates the entire review process:
+
+1. **Initialization**
+   - Loads code files and configuration
+   - Determines review scope and focus
+   - Initializes specialized agents
+
+2. **Code Segmentation**
+   - Divides code into logical segments
+   - Prioritizes segments for review
+   - Manages context limitations
+
+3. **Agent Collaboration**
+   - Initiates GroupChat for collaborative analysis
+   - Routes specific questions to specialized agents
+   - Facilitates knowledge sharing between agents
+
+4. **Result Aggregation**
+   - Collects findings from all agents
+   - Deduplicates and prioritizes issues
+   - Formats results for presentation
+
+5. **Output Generation**
+   - Produces comprehensive review report
+   - Formats output based on user preferences
+   - Provides actionable recommendations
 
 ## Prompt Engineering Strategy
 
@@ -205,48 +261,6 @@ Format your response in JSON as follows:
 }
 ```
 
-### Prompt Variations
-
-1. **Depth-Based Variations**
-   - Quick Review: Focus on critical issues only
-   - Standard Review: Balanced analysis
-   - Deep Review: Comprehensive analysis
-
-2. **Focus-Based Variations**
-   - General: Overall code quality
-   - Security: Security vulnerabilities
-   - Performance: Performance optimization
-   - Style: Code style and conventions
-
-3. **Language-Specific Variations**
-   - Python-specific patterns and issues
-   - JavaScript/TypeScript-specific guidance
-   - Other language-specific considerations
-
-### Few-Shot Learning Examples
-
-Each prompt template includes carefully selected examples to guide the LLM:
-
-```
-## Example 1:
-[Code with a specific issue]
-
-## Example Analysis:
-{
-  "summary": "This function calculates factorial recursively",
-  "strengths": ["Clear function name", "Handles base case"],
-  "issues": [
-    {
-      "description": "Missing termination condition can cause stack overflow",
-      "severity": "critical",
-      "line": 3,
-      "suggested_fix": "Add if n < 0: raise ValueError(\"Input must be non-negative\")"
-    }
-  ],
-  "recommendations": ["Add input validation", "Consider iterative approach for efficiency"]
-}
-```
-
 ## Response Processing
 
 ### Structured Output Parsing
@@ -314,23 +328,6 @@ def process_llm_response(response: str) -> ReviewFeedback:
         return process_unstructured_response(response)
 ```
 
-### Fix Extraction and Validation
-
-1. **Fix Parsing**
-   - Extracts code changes from suggestions
-   - Identifies affected lines
-   - Normalizes code formatting
-
-2. **Fix Validation**
-   - Syntax checking
-   - Semantic validation when possible
-   - Safety assessment
-
-3. **Fix Application Preparation**
-   - Generates unified diffs
-   - Creates apply/reject options
-   - Prepares for interactive application
-
 ## Token Optimization Strategies
 
 ### Context Optimization
@@ -392,23 +389,6 @@ def chunk_code_for_llm(code: str, max_tokens: int) -> List[CodeChunk]:
         
     return chunks
 ```
-
-### Token Usage Monitoring
-
-1. **Token Counting**
-   - Estimates token usage before API calls
-   - Tracks actual token usage
-   - Optimizes for token efficiency
-
-2. **Budget Management**
-   - Sets token budgets for different operations
-   - Allocates tokens based on task importance
-   - Implements adaptive strategies based on results
-
-3. **Caching Strategy**
-   - Caches responses for similar inputs
-   - Implements efficient cache invalidation
-   - Provides cache statistics and management
 
 ## AI-Specific Optimizations
 

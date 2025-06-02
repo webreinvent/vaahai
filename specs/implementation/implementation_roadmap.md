@@ -12,9 +12,10 @@ This document outlines the implementation roadmap for the Vaahai AI-augmented co
 - ✅ P1-T001: Configuration Manager
 - ✅ P1-T002: CLI Application Skeleton
 - ✅ P1-T003: Code Scanner
-- 🔄 P1-T004: Basic Output Formatting
+- 🔄 P1-T004: Basic Output Formatting (See note: being replaced by P1-T007)
 - ✅ P1-T005: CLI Command Simplification
 - ⏳ P1-T006: Static Analysis Integration
+- 🔄 P1-T007: Autogen Framework Integration
 
 **Timeline**: Q2 2025
 
@@ -112,7 +113,9 @@ This document outlines the implementation roadmap for the Vaahai AI-augmented co
 
 #### P1-T004: Basic Output Formatting 🔄
 
-**Description**: Implement output formatting for review results in multiple formats.
+**Description**: Implement output formatting for review results.
+
+**Note**: This task is being replaced by P1-T007 (Autogen Framework Integration) which will include advanced output formatting capabilities as part of the multi-agent system.
 
 **Components**:
 - Terminal output with rich formatting
@@ -121,7 +124,7 @@ This document outlines the implementation roadmap for the Vaahai AI-augmented co
 - Result summarization
 
 **Implementation**:
-- In progress
+- Deprioritized in favor of P1-T007
 
 #### P1-T005: CLI Command Simplification ✅
 
@@ -151,6 +154,26 @@ This document outlines the implementation roadmap for the Vaahai AI-augmented co
 
 **Implementation**:
 - Not started
+
+#### P1-T007: Autogen Framework Integration 🔄
+
+**Description**: Integrate Microsoft's Autogen framework to create a multi-agent system for sophisticated code review.
+
+**Components**:
+- Language Detector Agent
+- Framework/CMS Detector Agent
+- Standards Analyzer Agent
+- Review Coordinator Agent
+- Security Auditor Agent
+- Agent communication system
+- Output formatting for agent results
+
+**Implementation**:
+- In progress
+- Setup Phase: Add Autogen as a dependency and create basic agent infrastructure
+- Agent Development Phase: Implement specialized agents with defined capabilities
+- Orchestration Phase: Implement coordinator agent and define workflow
+- Integration Phase: Connect Autogen system to the CLI and implement output formatting
 
 ### Phase 2: LLM Integration
 

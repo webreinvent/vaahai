@@ -185,6 +185,46 @@ vaahai review file.py --depth standard
 vaahai review file.py --depth deep
 ```
 
+## Autogen Multi-Agent System
+
+Vaahai uses Microsoft's Autogen framework to implement a sophisticated multi-agent system for code review. This approach allows specialized agents to collaborate on different aspects of code analysis.
+
+### Agent Types
+
+1. **Language Detector Agent**: Identifies programming languages, features, and versions
+2. **Framework/CMS Detector Agent**: Identifies frameworks, libraries, and architectural patterns
+3. **Standards Analyzer Agent**: Evaluates adherence to coding standards and best practices
+4. **Security Auditor Agent**: Identifies security vulnerabilities and recommends improvements
+5. **Review Coordinator Agent**: Orchestrates the review process and aggregates findings
+
+### Custom Agent Configuration
+
+You can provide a custom agent configuration file:
+
+```bash
+vaahai review path/to/file.py --agent-config path/to/agent_config.toml
+```
+
+Example agent configuration file:
+
+```toml
+[agents]
+max_rounds = 10
+termination_message = "REVIEW_COMPLETE"
+
+[agents.language_detector]
+name = "LanguageDetector"
+model = "gpt-4"
+temperature = 0.2
+system_message = """You are a Language Detector Agent..."""
+
+# Additional agent configurations...
+
+[group_chat]
+max_rounds = 10
+speaker_selection_method = "auto"
+```
+
 ## Static Analysis Options
 
 ### Selecting Specific Analyzers

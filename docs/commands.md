@@ -58,6 +58,7 @@ vaahai review [options] PATH [PATH...]
 | `--save-history` | Save review results to history | `false` |
 | `--private` | Use only local resources | `false` |
 | `--max-file-size SIZE` | Maximum file size in bytes | 1048576 (1MB) |
+| `--agent-config` | Path to agent configuration file for customizing the multi-agent system | None |
 
 #### Examples
 
@@ -79,6 +80,9 @@ vaahai review main src/ --interactive
 
 # Review with custom file size limit (500KB)
 vaahai review main src/ --max-file-size=512000
+
+# Review with custom agent configuration
+vaahai review main src/ --agent-config path/to/agent/config.toml
 ```
 
 #### Code Scanner Integration

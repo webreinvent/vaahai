@@ -1,0 +1,32 @@
+Help me configure the Autogen multi-agent system for Vaahai code review:
+
+1. Configure global settings for the multi-agent system:
+   - Maximum number of conversation rounds
+   - Termination conditions
+   - Default LLM provider and model
+   - Temperature and other generation parameters
+   - Memory management settings
+
+2. Configure specialized agents:
+   - Language Detector Agent settings
+   - Framework/CMS Detector Agent settings
+   - Standards Analyzer Agent settings
+   - Security Auditor Agent settings
+   - Review Coordinator Agent settings
+
+3. Configure agent communication:
+   - GroupChat settings
+   - Speaker selection method
+   - Message routing rules
+   - Collaboration protocols
+
+4. Generate configuration files:
+   - TOML configuration file for the entire system
+   - Individual agent configuration files
+   - Example command-line options
+
+5. Provide guidance on:
+   - Optimizing agent performance
+   - Balancing thoroughness with efficiency
+   - Customizing for specific programming languages
+   - Extending the system with new agent types
