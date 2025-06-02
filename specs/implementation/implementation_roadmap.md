@@ -181,6 +181,10 @@ This document outlines the implementation roadmap for the Vaahai AI-augmented co
   - ✅ Implement agent configuration loading
     - ✅ Define TOML schema
     - ✅ Add CLI option for configuration file
+  - 🔄 Hello World Agent MVP
+    - ⬜ Implement basic HelloWorldAgent class
+    - ⬜ Add helloworld CLI command
+    - ⬜ Test end-to-end functionality
 - Agent Development Phase: 
   - 🔄 Language Detector Agent (Priority 1)
     - ✅ Define interface and responsibilities

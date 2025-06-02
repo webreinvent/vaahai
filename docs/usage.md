@@ -225,7 +225,39 @@ max_rounds = 10
 speaker_selection_method = "auto"
 ```
 
-## Advanced Features
+## Autogen Integration
+
+Vaahai uses Microsoft's Autogen framework to create a multi-agent system for sophisticated code review.
+
+### Hello World Agent
+
+The Hello World agent is a simple MVP implementation to validate the Autogen integration framework. It serves as a basic example of how agents are structured and integrated with the CLI.
+
+#### Basic Usage
+
+```bash
+# Run the Hello World agent with default message
+vaahai helloworld
+```
+
+#### Custom Message
+
+You can customize the message displayed by the Hello World agent:
+
+```bash
+vaahai helloworld --message "Hello, Vaahai!"
+```
+
+#### Purpose
+
+The Hello World agent demonstrates:
+
+1. Basic agent structure and initialization
+2. Agent factory pattern for creating agents
+3. CLI integration with Autogen agents
+4. Configuration passing to agents
+
+This simple implementation serves as a foundation for more complex agents like the Language Detector, Framework Detector, and Review Coordinator.
 
 ### Multi-Agent Code Review
 

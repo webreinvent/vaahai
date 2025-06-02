@@ -6,6 +6,125 @@ This document outlines the architecture and implementation details for integrati
 
 Vaahai is integrating Autogen to leverage a multi-agent approach to code review, where specialized agents collaborate to provide comprehensive analysis of code. This approach allows for more sophisticated and thorough reviews by distributing different aspects of code analysis to specialized agents.
 
+## MVP Implementation: Hello World Agent
+
+Before implementing the full multi-agent system, we've created a simple Hello World agent as a Minimum Viable Product (MVP) to validate the Autogen integration framework.
+
+### Hello World Agent Structure
+
+```
+vaahai/
+├── core/
+│   ├── agents/
+│   │   ├── __init__.py
+│   │   ├── base.py          # Base agent class
+│   │   ├── hello_world.py   # Hello World agent implementation
+│   │   └── factory.py       # Simple agent factory
+├── cli/
+│   ├── commands/
+│   │   ├── __init__.py
+│   │   └── helloworld.py    # CLI command implementation
+```
+
+### Base Agent Class
+
+```python
+# core/agents/base.py
+class VaahaiAgent:
+    """Base class for all Vaahai agents."""
+    
+    def __init__(self, config=None):
+        """Initialize the agent with configuration."""
+        self.config = config or {}
+        
+    def run(self, *args, **kwargs):
+        """Run the agent with the given arguments."""
+        raise NotImplementedError("Subclasses must implement run method")
+```
+
+### Hello World Agent Implementation
+
+```python
+# core/agents/hello_world.py
+from .base import VaahaiAgent
+
+class HelloWorldAgent(VaahaiAgent):
+    """Simple Hello World agent for testing the Autogen integration."""
+    
+    def __init__(self, config=None):
+        """Initialize the Hello World agent."""
+        super().__init__(config)
+        self.message = self.config.get("message", "Hello, World!")
+        
+    def run(self, *args, **kwargs):
+        """Run the Hello World agent."""
+        return {
+            "success": True,
+            "message": self.message,
+            "agent_type": "hello_world"
+        }
+```
+
+### Agent Factory
+
+```python
+# core/agents/factory.py
+from .base import VaahaiAgent
+from .hello_world import HelloWorldAgent
+
+class AgentFactory:
+    """Factory for creating Vaahai agents."""
+    
+    @staticmethod
+    def create_agent(agent_type, config=None):
+        """Create an agent of the specified type."""
+        agents = {
+            "hello_world": HelloWorldAgent
+        }
+        
+        agent_class = agents.get(agent_type)
+        if not agent_class:
+            raise ValueError(f"Unknown agent type: {agent_type}")
+        
+        return agent_class(config)
+```
+
+### CLI Integration
+
+```python
+# cli/commands/helloworld.py
+import typer
+from vaahai.core.agents.factory import AgentFactory
+
+app = typer.Typer()
+
+@app.command()
+def helloworld(
+    message: str = typer.Option(None, "--message", "-m", help="Custom hello world message")
+):
+    """Run a simple Hello World agent to test the Autogen integration."""
+    config = {}
+    if message:
+        config["message"] = message
+    
+    agent = AgentFactory.create_agent("hello_world", config)
+    result = agent.run()
+    
+    typer.echo(result["message"])
+    
+    return result
+```
+
+### Usage
+
+```bash
+# Run with default message
+vaahai helloworld
+
+# Run with custom message
+vaahai helloworld --message "Hello, Vaahai!"
+```
+
 ## Architecture
 
 ### Multi-Agent System

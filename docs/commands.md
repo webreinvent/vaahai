@@ -122,6 +122,32 @@ The review command uses the Vaahai Code Scanner to identify and filter files for
 
 For more details on the Code Scanner, see the [Code Scanner](scanner.md) documentation.
 
+### `helloworld`
+
+Run a simple Hello World agent to test the Autogen integration.
+
+#### Usage
+
+```bash
+vaahai helloworld [OPTIONS]
+```
+
+#### Options
+
+| Option | Description | Default |
+|--------|-------------|---------|
+| `--message`, `-m` | Custom hello world message | "Hello, World!" |
+
+#### Examples
+
+```bash
+# Run with default message
+vaahai helloworld
+
+# Run with custom message
+vaahai helloworld --message "Hello, Vaahai!"
+```
+
 ### `analyze`
 
 Runs static analysis tools without LLM review.
