@@ -1,4 +1,4 @@
-Perform a comprehensive audit and update of all Vaahai project documentation and implementation status:
+Perform a comprehensive audit and update of all vaahai project documentation and implementation status based on recent progress and recent discussion:
 
 1. Review the current implementation status and documentation in:
    - Implementation files:
@@ -9,6 +9,7 @@ Perform a comprehensive audit and update of all Vaahai project documentation and
    - Documentation files:
      - ai_docs/ (AI_INTEGRATION.md, API_REFERENCE.md)
      - docs/ (usage.md, commands.md, autogen_integration.md)
+   - Audit and update any inconsistencies or outdated information in docs, specs and ai_docs
 
 2. Update task statuses based on recent progress:
    - Mark completed tasks with ✅
@@ -44,4 +45,5 @@ Perform a comprehensive audit and update of all Vaahai project documentation and
 
 9. Ensure all three implementation documents (implementation_status.md, implementation_roadmap.md, and README.md) are consistent in their status reporting.
 10. Update your memory as well
+11. Confirm before proceeding to the next step.
 

@@ -403,9 +403,24 @@ class ConfigManager:
         config_dict = self._config.model_dump()
         config_dict["schema_version"] = CURRENT_SCHEMA_VERSION
         
+        # Clean up None values as they're not TOML serializable
+        def clean_config(config_dict):
+            result = {}
+            for key, value in config_dict.items():
+                if isinstance(value, dict):
+                    cleaned = clean_config(value)
+                    if cleaned:  # Only add non-empty dicts
+                        result[key] = cleaned
+                elif value is not None:
+                    result[key] = value
+            return result
+        
+        cleaned_config = clean_config(config_dict)
+        cleaned_config["schema_version"] = CURRENT_SCHEMA_VERSION  # Ensure schema_version is preserved
+        
         # Write to file
         with open(user_config_file, "wb") as f:
-            tomli_w.dump(config_dict, f)
+            tomli_w.dump(cleaned_config, f)
     
     def init_project_config(self, force: bool = False) -> bool:
         """
@@ -422,7 +437,7 @@ class ConfigManager:
         if project_config_file.exists() and not force:
             return False
             
-        # Create a basic configuration with the current schema version
+        # Create a default configuration
         config = {
             "schema_version": CURRENT_SCHEMA_VERSION,
             "llm": {
@@ -432,6 +447,12 @@ class ConfigManager:
             "review": {
                 "depth": "standard",
                 "focus": "all",
+            },
+            "autogen": {
+                "enabled": True,
+                "default_model": "gpt-3.5-turbo",
+                "temperature": 0,
+                "use_docker": False,
             },
         }
         

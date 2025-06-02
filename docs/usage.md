@@ -231,40 +231,103 @@ Vaahai integrates Microsoft's Autogen framework to create a sophisticated multi-
 
 ### Hello World Agent
 
-The Hello World Agent is a simple agent that demonstrates the basic functionality of the Autogen integration. It is currently being updated to properly integrate with Microsoft's Autogen framework.
+The Hello World Agent is a simple agent implementation that demonstrates the integration with Microsoft's Autogen framework. It serves as a foundation for more complex agents in the Vaahai project.
 
-> **Important**: All agents in Vaahai must be built using Microsoft's Autogen framework classes (Agent, GroupChat, GroupChatManager) to ensure proper multi-agent communication and orchestration.
+### Running the Hello World Agent
 
-#### Usage
-
-```bash
-python -m vaahai helloworld [OPTIONS]
-```
-
-#### Options
-
-* `--message, -m TEXT`: Custom hello world message
-
-#### Example
+You can run the Hello World Agent using the `helloworld` command:
 
 ```bash
-# Run with default message
-python -m vaahai helloworld
-
-# Run with custom message
-python -m vaahai helloworld --message "Hello, Vaahai Autogen Integration!"
+vaahai helloworld
 ```
 
-#### Implementation Details
+This will create and run a Hello World agent with the default message "Hello, World!".
 
-The Hello World Agent is being updated to use Autogen's `AssistantAgent` and `UserProxyAgent` classes to demonstrate the proper integration with the Autogen framework. This will serve as a foundation for more complex agents like the Language Detector, Framework Detector, and Review Coordinator.
+### Customizing the Message
 
-The updated implementation will:
-1. Use Autogen's Agent classes
-2. Implement proper message passing using Autogen's conversation mechanisms
-3. Demonstrate the basic patterns for agent communication
+You can customize the message using the `--message` option:
 
-This MVP implementation will validate the core architecture for the Autogen integration before implementing more complex agents.
+```bash
+vaahai helloworld --message "Hello, Autogen Integration!"
+```
+
+### Using with OpenAI API Key
+
+For full Autogen capabilities, you'll need to provide an OpenAI API key. You can do this in several ways:
+
+1. Set the `OPENAI_API_KEY` environment variable:
+   ```bash
+   export OPENAI_API_KEY=your_openai_api_key
+   vaahai helloworld
+   ```
+
+2. Provide the API key directly in the command:
+   ```bash
+   vaahai helloworld --api-key your_openai_api_key
+   ```
+
+3. Save the API key to the global configuration:
+   ```bash
+   vaahai helloworld --api-key your_openai_api_key --save-config
+   ```
+   
+   Or using the config command:
+   ```bash
+   vaahai config set llm.api_key your_openai_api_key --global
+   ```
+
+4. Initialize a project configuration file with the API key:
+   ```bash
+   vaahai config init
+   ```
+   Then edit the `.vaahai.toml` file to add your API key.
+
+Without an API key, the Hello World agent will run in limited mode and display a warning message with instructions on how to enable full functionality.
+
+### Global Configuration for Autogen
+
+You can configure Autogen settings globally using the `config` command:
+
+```bash
+# Set the default model
+vaahai config set autogen.default_model gpt-4 --global
+
+# Set the temperature
+vaahai config set autogen.temperature 0.7 --global
+
+# Enable/disable Autogen
+vaahai config set autogen.enabled true --global
+```
+
+These settings will be used by all agents unless overridden by command-line arguments.
+
+### Implementation Details
+
+The Hello World Agent uses Autogen's `AssistantAgent` and `UserProxyAgent` classes to create a simple conversation flow:
+
+1. The `AssistantAgent` is configured with a system message that includes the custom message
+2. The `UserProxyAgent` is set up to interact with the assistant agent
+3. A conversation is initiated between the agents
+4. The response from the assistant agent is processed and returned
+
+This implementation demonstrates the basic usage of Autogen's conversation mechanisms and provides a foundation for more complex multi-agent interactions in future commands.
+
+### Code Structure
+
+The Hello World Agent implementation consists of the following components:
+
+- `VaahaiAgent`: Base agent class with Autogen integration
+- `HelloWorldAgent`: Hello World agent implementation using Autogen
+- `AgentFactory`: Factory for creating agents
+- `helloworld` CLI command: Command for running the Hello World agent
+
+### Next Steps
+
+With the Hello World Agent implementation complete, the next steps include:
+
+1. Implementing the Language Detector Agent
+2. Completing the Docker-based Code Executor
+3. Enhancing the CLI integration with more configuration options
 
 ### Multi-Agent Code Review
 
@@ -370,6 +433,67 @@ When using code execution:
 - Resource limits are applied to prevent abuse
 - Execution timeouts prevent infinite loops
 - Containers are automatically cleaned up after execution
+
+## Configuration
+
+Vaahai can be configured using a configuration file or command-line arguments.
+
+### Interactive Configuration Setup
+
+The easiest way to set up Vaahai is to use the interactive configuration command:
+
+```bash
+vaahai config init
+```
+
+This will guide you through setting up your configuration with prompts for:
+
+1. OpenAI API Key
+2. Default LLM model
+3. Autogen default model
+4. Temperature settings
+5. Docker execution preferences
+
+The command creates a `.vaahai.toml` file in the current directory with your settings.
+
+### Global vs. Project Configuration
+
+Vaahai supports both global (user-level) and project-level configuration:
+
+- **Global configuration**: Applies to all projects for the current user
+- **Project configuration**: Applies only to the current project directory
+
+Project configuration takes precedence over global configuration.
+
+### Setting Configuration Values
+
+You can set configuration values using the `config set` command:
+
+```bash
+# Set a global configuration value
+vaahai config set llm.api_key your_openai_api_key --global
+
+# Set a project configuration value
+vaahai config set llm.model gpt-4
+```
+
+### Command-Line Overrides
+
+You can override configuration values using command-line arguments:
+
+```bash
+vaahai helloworld --api-key your_openai_api_key --model gpt-4
+```
+
+### Configuration Precedence
+
+Configuration settings are applied in the following order (highest to lowest priority):
+
+1. Command-line arguments
+2. Environment variables (e.g., `OPENAI_API_KEY`)
+3. Project configuration file (`.vaahai.toml` in the current directory)
+4. User configuration file (`.vaahai.toml` in the user's home directory)
+5. Default values
 
 ## Static Analysis Options
 

@@ -6,76 +6,62 @@ This document outlines the architecture and implementation details for integrati
 
 Vaahai is integrating Autogen to leverage a multi-agent approach to code review, where specialized agents collaborate to provide comprehensive analysis of code. This approach allows for more sophisticated and thorough reviews by distributing different aspects of code analysis to specialized agents.
 
-## MVP Implementation: Hello World Agent
+## Hello World Agent MVP
 
-Before implementing the full multi-agent system, we're creating a simple Hello World agent as a Minimum Viable Product (MVP) to validate the Autogen integration framework.
+The Hello World Agent MVP has been implemented as a simple demonstration of Autogen integration. This agent uses Autogen's `AssistantAgent` and `UserProxyAgent` classes to create a basic conversation flow.
 
-> **Important**: All agents in the Vaahai project must be built using Microsoft's Autogen framework classes (Agent, GroupChat, GroupChatManager) to ensure proper multi-agent communication and orchestration. The current implementation needs to be revised to properly integrate with Autogen.
+### Implementation
 
-### Hello World Agent Structure
+The Hello World Agent is implemented in the following files:
 
-The Hello World Agent will follow this structure, properly integrating with Autogen:
+- `vaahai/core/agents/base.py`: Base agent class with Autogen integration
+- `vaahai/core/agents/hello_world.py`: Hello World agent implementation
+- `vaahai/core/agents/factory.py`: Agent factory for creating agents
+- `vaahai/cli/commands/helloworld.py`: CLI command for running the Hello World agent
 
-```
-vaahai/
-├── core/
-│   ├── agents/
-│   │   ├── __init__.py
-│   │   ├── base.py          # Base agent class using Autogen's Agent
-│   │   ├── hello_world.py   # Hello World agent implementation
-│   │   └── factory.py       # Agent factory for Autogen agents
-├── cli/
-│   ├── commands/
-│   │   ├── __init__.py
-│   │   └── helloworld.py    # CLI command implementation
-```
-
-### Base Agent Class
-
-The base agent class needs to be revised to properly integrate with Autogen:
+### Code Example
 
 ```python
-# core/agents/base.py
-from typing import Dict, Any, Optional
-import autogen
-
+# Base agent class with Autogen integration
 class VaahaiAgent:
-    """Base class for all Vaahai agents, integrating with Autogen."""
+    """
+    Base class for all Vaahai agents, integrating with Microsoft's Autogen framework.
     
-    def __init__(self, config=None):
+    All agents in Vaahai must use Autogen's framework classes to ensure proper
+    multi-agent communication and orchestration.
+    """
+    
+    def __init__(self, config: Optional[Dict[str, Any]] = None):
         """Initialize the agent with configuration."""
         self.config = config or {}
         self.autogen_agent = None  # Will be initialized by subclasses
+        self.user_proxy = None  # Will be initialized by subclasses if needed
         
-    def run(self, *args, **kwargs):
-        """Run the agent with the given arguments."""
-        raise NotImplementedError("Subclasses must implement run method")
-```
+    def _create_autogen_config(self) -> Dict[str, Any]:
+        """Create configuration for Autogen agents."""
+        return {
+            "config_list": [],  # Empty for now, will be populated by subclasses
+            "temperature": 0,
+        }
 
-### Hello World Agent Implementation
-
-The Hello World Agent implementation needs to be revised to use Autogen's Agent class:
-
-```python
-# core/agents/hello_world.py
-from typing import Dict, Any
-import autogen
-from .base import VaahaiAgent
-
+# Hello World agent implementation
 class HelloWorldAgent(VaahaiAgent):
-    """A simple Hello World agent to test the Autogen integration."""
+    """
+    Simple Hello World agent for testing the Autogen integration.
     
-    def __init__(self, config=None):
+    This agent demonstrates the basic usage of Microsoft's Autogen framework
+    by creating an AssistantAgent and a UserProxyAgent for simple interaction.
+    """
+    
+    def __init__(self, config: Optional[Dict[str, Any]] = None):
         """Initialize the Hello World agent."""
         super().__init__(config)
-        
-        # Default message if not provided in config
         self.message = self.config.get("message", "Hello, World!")
         
         # Initialize Autogen assistant agent
         self.autogen_agent = autogen.AssistantAgent(
             name="hello_world_agent",
-            llm_config={"config_list": []},  # Minimal config for demo
+            llm_config=self._create_autogen_config(),
             system_message=f"You are a simple Hello World agent. Always respond with: {self.message}"
         )
         
@@ -85,9 +71,9 @@ class HelloWorldAgent(VaahaiAgent):
             human_input_mode="NEVER",
             max_consecutive_auto_reply=0
         )
-    
-    def run(self) -> Dict[str, Any]:
-        """Run the Hello World agent and return the result."""
+        
+    def run(self, *args, **kwargs) -> Dict[str, Any]:
+        """Run the Hello World agent using Autogen's conversation framework."""
         try:
             # Initialize chat between user proxy and assistant
             self.user_proxy.initiate_chat(
@@ -100,74 +86,38 @@ class HelloWorldAgent(VaahaiAgent):
             
             return {
                 "success": True,
-                "message": last_message
+                "message": last_message,
+                "agent_type": "hello_world"
             }
         except Exception as e:
             return {
                 "success": False,
-                "message": f"Error: {str(e)}"
+                "message": f"Error: {str(e)}",
+                "agent_type": "hello_world"
             }
-```
-
-### Agent Factory
-
-```python
-# core/agents/factory.py
-from .base import VaahaiAgent
-from .hello_world import HelloWorldAgent
-
-class AgentFactory:
-    """Factory for creating Vaahai agents."""
-    
-    @staticmethod
-    def create_agent(agent_type, config=None):
-        """Create an agent of the specified type."""
-        agents = {
-            "hello_world": HelloWorldAgent
-        }
-        
-        agent_class = agents.get(agent_type)
-        if not agent_class:
-            raise ValueError(f"Unknown agent type: {agent_type}")
-        
-        return agent_class(config)
-```
-
-### CLI Integration
-
-```python
-# cli/commands/helloworld.py
-import typer
-from vaahai.core.agents.factory import AgentFactory
-
-app = typer.Typer()
-
-@app.command()
-def helloworld(
-    message: str = typer.Option(None, "--message", "-m", help="Custom hello world message")
-):
-    """Run a simple Hello World agent to test the Autogen integration."""
-    config = {}
-    if message:
-        config["message"] = message
-    
-    agent = AgentFactory.create_agent("hello_world", config)
-    result = agent.run()
-    
-    typer.echo(result["message"])
-    
-    return result
 ```
 
 ### Usage
 
-```bash
-# Run with default message
-vaahai helloworld
+The Hello World agent can be run using the CLI command:
 
-# Run with custom message
-vaahai helloworld --message "Hello, Vaahai!"
+```bash
+vaahai helloworld
 ```
+
+You can customize the message:
+
+```bash
+vaahai helloworld --message "Custom hello message"
+```
+
+### Next Steps
+
+With the Hello World Agent MVP completed, we have validated the Autogen integration and established the foundation for more complex agents. The next steps include:
+
+1. Implementing the Language Detector Agent
+2. Completing the Docker-based Code Executor
+3. Enhancing the CLI integration with more configuration options
 
 ## Architecture
 
@@ -426,32 +376,59 @@ The Docker-based code executor is integrated with the specialized agents in the 
 
 ## Configuration
 
-### Agent Configuration Schema
+### Global Configuration
 
-```toml
-[agents]
-# Global agent settings
-max_rounds = 10
-termination_message = "REVIEW_COMPLETE"
+Vaahai provides a global configuration system for Autogen integration. You can configure Autogen settings globally using the `config` command:
 
-[agents.language_detector]
-name = "LanguageDetector"
-model = "gpt-4"
-temperature = 0.2
-system_message = """You are a Language Detector Agent..."""
+```bash
+# Set the OpenAI API key
+vaahai config set llm.api_key your_openai_api_key --global
 
-[agents.framework_detector]
-name = "FrameworkDetector"
-model = "gpt-4"
-temperature = 0.3
-system_message = """You are a Framework Detector Agent..."""
+# Set the default model
+vaahai config set autogen.default_model gpt-4 --global
 
-# Additional agent configurations...
+# Set the temperature
+vaahai config set autogen.temperature 0.7 --global
 
-[group_chat]
-max_rounds = 10
-speaker_selection_method = "auto"
+# Enable/disable Autogen
+vaahai config set autogen.enabled true --global
 ```
+
+You can also initialize a project configuration file:
+
+```bash
+vaahai config init
+```
+
+This will create a `.vaahai.toml` file in the current directory that you can edit to configure Autogen settings.
+
+### Command-Line Overrides
+
+You can override global configuration settings using command-line arguments:
+
+```bash
+# Override API key
+vaahai helloworld --api-key your_openai_api_key
+
+# Override model
+vaahai helloworld --model gpt-4
+
+# Override temperature
+vaahai helloworld --temperature 0.5
+
+# Save overrides to global configuration
+vaahai helloworld --api-key your_openai_api_key --model gpt-4 --save-config
+```
+
+### Configuration Precedence
+
+Configuration settings are applied in the following order of precedence (highest to lowest):
+
+1. Command-line arguments
+2. Environment variables (e.g., `OPENAI_API_KEY`)
+3. Project configuration file (`.vaahai.toml` in the current directory)
+4. User configuration file (`.vaahai.toml` in the user's home directory)
+5. Default values
 
 ## CLI Integration
 

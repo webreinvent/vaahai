@@ -124,31 +124,55 @@ For more details on the Code Scanner, see the [Code Scanner](scanner.md) documen
 
 ### `helloworld`
 
-A simple command to test the Autogen integration.
+The `helloworld` command runs a simple Hello World agent to validate the Autogen integration framework.
 
-> **Note**: This command is currently being updated to properly integrate with Microsoft's Autogen framework.
-
-**Usage**:
 ```bash
-python -m vaahai helloworld [OPTIONS]
+vaahai helloworld [OPTIONS]
 ```
 
-**Options**:
-* `--message, -m TEXT`: Custom hello world message
+### Options
 
-**Examples**:
+| Option | Description |
+|--------|-------------|
+| `--message`, `-m` TEXT | Custom hello world message (default: "Hello, World!") |
+| `--api-key` TEXT | OpenAI API key for Autogen integration (overrides global config) |
+| `--model` TEXT | Model to use for Autogen (overrides global config) |
+| `--temperature` FLOAT | Temperature for model generation (overrides global config) |
+| `--save-config`, `-s` | Save provided parameters to global configuration |
+| `--help` | Show help message and exit |
+
+### Examples
+
+Run with default message:
 ```bash
-# Run with default message
-python -m vaahai helloworld
-
-# Run with custom message
-python -m vaahai helloworld --message "Hello, Vaahai Autogen Integration!"
+vaahai helloworld
 ```
 
-**Description**:
-The `helloworld` command creates and runs a simple Hello World agent to validate the Autogen integration framework. This command is primarily used for testing and demonstrating the basic functionality of the Autogen integration.
+Run with custom message:
+```bash
+vaahai helloworld --message "Hello, Autogen!"
+```
 
-The command is being updated to use Autogen's `AssistantAgent` and `UserProxyAgent` classes to demonstrate the proper integration with the Autogen framework. This will serve as a foundation for more complex agents that will be implemented as part of the multi-agent system for code review.
+Run with API key:
+```bash
+vaahai helloworld --api-key your_openai_api_key
+```
+
+Save API key to global configuration:
+```bash
+vaahai helloworld --api-key your_openai_api_key --save-config
+```
+
+### Implementation
+
+The Hello World command creates and runs a basic `HelloWorldAgent` using Microsoft's Autogen framework. It demonstrates:
+
+1. Creating an Autogen `AssistantAgent` with a custom system message
+2. Setting up a `UserProxyAgent` for interaction
+3. Initiating a conversation between the agents
+4. Processing the response from the assistant agent
+
+This command serves as a simple demonstration of the Autogen integration and provides a foundation for more complex multi-agent interactions in future commands.
 
 ### `analyze`
 
@@ -200,32 +224,108 @@ Manages Vaahai configuration.
 
 ##### `config init`
 
-Initializes Vaahai configuration with interactive prompts for API keys and settings.
+Initializes Vaahai configuration with interactive prompts for common settings.
 
 ```bash
-# Initialize configuration
-vaahai config init
-
-# Force overwrite existing configuration
-vaahai config init --force
+vaahai config init [OPTIONS]
 ```
 
-During initialization, you will be prompted for:
-- LLM provider selection (OpenAI, Ollama, Anthropic)
-- API keys for the selected provider
-- Model preferences
-- Docker-based code execution settings
+#### Options
+
+| Option | Description |
+|--------|-------------|
+| `--force`, `-f` | Overwrite existing configuration file |
+| `--non-interactive`, `-n` | Use default values without prompting |
+| `--skip-api-key` | Skip API key input in interactive mode |
+| `--api-key` TEXT | Set OpenAI API key (will be stored in config file) |
+| `--llm-model` TEXT | Set default LLM model |
+| `--llm-temperature` FLOAT | Set LLM temperature (0.0-1.0) |
+| `--autogen-enabled/--no-autogen-enabled` | Enable or disable Autogen |
+| `--autogen-model` TEXT | Set default Autogen model |
+| `--autogen-temperature` FLOAT | Set Autogen temperature (0.0-1.0) |
+| `--use-docker/--no-use-docker` | Enable or disable Docker for Autogen |
+
+#### Interactive Prompts
+
+When run in interactive mode (default), the command will prompt for:
+
+1. OpenAI API Key (can be skipped with `--skip-api-key` flag)
+2. Default LLM model
+3. LLM temperature
+4. Whether to enable Autogen
+5. Autogen default model
+6. Autogen temperature
+7. Whether to use Docker for Autogen execution
+
+The command will automatically use the `OPENAI_API_KEY` environment variable if available.
+
+#### Examples
+
+```bash
+# Interactive configuration with prompts
+vaahai config init
+
+# Skip API key prompt in interactive mode
+vaahai config init --skip-api-key
+
+# Non-interactive mode with default values
+vaahai config init --non-interactive
+
+# Fully automated configuration with custom values
+vaahai config init --api-key "your-key" --llm-model "gpt-4-turbo" --llm-temperature 0.5 --autogen-model "gpt-4" --use-docker
+```
+
+This will start an interactive configuration process:
+
+```
+Initializing configuration file
+
+Interactive Configuration Setup
+Please provide values for the following configuration settings:
+(Press Enter to accept default values shown in brackets)
+
+LLM Configuration
+Note: For security, consider setting the OPENAI_API_KEY environment variable instead.
+You can also set it later with: vaahai config set llm.api_key YOUR_API_KEY --global
+
+OpenAI API Key (will be visible): ****************************************
+Default LLM Model [gpt-4]: gpt-4-turbo
+LLM Temperature (0.0-1.0) [0.7]: 0.6
+
+Autogen Configuration
+Enable Autogen [Yes]: 
+Autogen Default Model [gpt-3.5-turbo]: gpt-4
+Autogen Temperature (0.0-1.0) [0]: 0.1
+Use Docker for Autogen [No]: Yes
+
+Configuration file created successfully
+Created .vaahai.toml in the current directory
+
+Configuration Summary:
+┏━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━┓
+┃ Setting             ┃ Value       ┃
+┡━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━┩
+│ LLM Provider        │ openai      │
+│ LLM Model           │ gpt-4-turbo │
+│ API Key             │ Set         │
+│ LLM Temperature     │ 0.6         │
+│ Autogen Enabled     │ Yes         │
+│ Autogen Model       │ gpt-4       │
+│ Autogen Temperature │ 0.1         │
+│ Use Docker          │ Yes         │
+└─────────────────────┴─────────────┘
+
+Next Steps:
+- Try the Hello World agent: vaahai helloworld
+- Edit configuration: vaahai config set <key> <value> --global
+```
 
 ##### `config list`
 
 Lists configuration values.
 
 ```bash
-# List all configuration
 vaahai config list
-
-# List a specific section
-vaahai config list llm
 ```
 
 ##### `config get`
@@ -233,7 +333,6 @@ vaahai config list llm
 Gets a specific configuration value.
 
 ```bash
-# Get a specific value
 vaahai config get llm.provider
 ```
 
@@ -242,14 +341,7 @@ vaahai config get llm.provider
 Sets configuration values.
 
 ```bash
-# Set a single value
 vaahai config set llm.provider openai
-
-# Set multiple values
-vaahai config set openai.api_key YOUR_API_KEY openai.temperature 0.5
-
-# Set project-specific configuration
-vaahai config set --scope project llm.provider ollama
 ```
 
 ##### `config reset`
@@ -257,14 +349,7 @@ vaahai config set --scope project llm.provider ollama
 Resets configuration to default values.
 
 ```bash
-# Reset all configuration
 vaahai config reset
-
-# Reset a specific section
-vaahai config reset llm
-
-# Reset a specific value
-vaahai config reset llm.provider
 ```
 
 ##### `config template`
@@ -272,11 +357,7 @@ vaahai config reset llm.provider
 Generates a configuration template.
 
 ```bash
-# Generate default template
 vaahai config template > .vaahai/config.toml
-
-# Generate a specific template
-vaahai config template --scenario security-focus > .vaahai/config.toml
 ```
 
 ##### `config locations`

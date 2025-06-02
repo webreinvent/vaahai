@@ -23,6 +23,16 @@ class LLMConfig(BaseModel):
     api_key: Optional[str] = None
     temperature: float = 0.7
     max_tokens: int = 4000
+    autogen_enabled: bool = True  # Enable/disable Autogen integration
+
+
+class AutogenConfig(BaseModel):
+    """Autogen framework configuration."""
+    enabled: bool = True
+    default_model: str = "gpt-3.5-turbo"
+    temperature: float = 0
+    use_docker: bool = False
+    docker_image: str = "python:3.9-slim"
 
 
 class ReviewConfig(BaseModel):
@@ -63,6 +73,7 @@ class VaahaiConfig(BaseModel):
     schema_version: int = CURRENT_SCHEMA_VERSION
     
     llm: LLMConfig = Field(default_factory=LLMConfig)
+    autogen: AutogenConfig = Field(default_factory=AutogenConfig)
     review: ReviewConfig = Field(default_factory=ReviewConfig)
     analyze: AnalyzeConfig = Field(default_factory=AnalyzeConfig)
     document: DocumentConfig = Field(default_factory=DocumentConfig)
