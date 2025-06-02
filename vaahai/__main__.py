@@ -45,15 +45,9 @@ def main(
     pass
 
 # Register commands
-app.add_typer(review.app, name="review", help="Review code with AI assistance")
-app.add_typer(analyze.app, name="analyze", help="Run static analysis on code")
-app.add_typer(config.app, name="config", help="Manage configuration")
-app.add_typer(explain.app, name="explain", help="Generate code explanations")
-app.add_typer(document.app, name="document", help="Generate code documentation")
-
-# Add a direct review command for convenience
-@app.command(name="review-file", help="Shortcut to review a file or directory")
-def review_file(
+# Replace the review Typer app with a direct command
+@app.command(name="review", help="Review code with AI assistance")
+def review_command(
     path: Path = typer.Argument(
         ...,
         help="Path to file or directory to review",
@@ -105,7 +99,7 @@ def review_file(
     ),
 ):
     """Review code with AI assistance."""
-    # Call the review main function directly
+    # Call the review function from the review module
     review.review(
         path=path,
         depth=depth,
@@ -120,6 +114,12 @@ def review_file(
         private=private,
         max_file_size=max_file_size,
     )
+
+# Register other command apps
+app.add_typer(analyze.app, name="analyze", help="Run static analysis on code")
+app.add_typer(config.app, name="config", help="Manage configuration")
+app.add_typer(explain.app, name="explain", help="Generate code explanations")
+app.add_typer(document.app, name="document", help="Generate code documentation")
 
 if __name__ == "__main__":
     try:

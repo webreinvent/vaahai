@@ -27,41 +27,29 @@ if __name__ == "__main__":
 #### Command Registration
 
 ```python
-# vaahai/cli/main.py
-app.add_typer(review_app, name="review", help="Review code files")
+# vaahai/__main__.py
+# Register commands directly on the main app
+app.callback()(version_callback)
+app.command()(review)  # Direct review command that takes a path argument
 app.add_typer(analyze_app, name="analyze", help="Run static analysis on code files")
 app.add_typer(config_app, name="config", help="Manage configuration")
-app.add_typer(fix_app, name="fix", help="Apply fixes to code files")
 app.add_typer(explain_app, name="explain", help="Explain code using LLM")
-app.add_typer(compare_app, name="compare", help="Compare two versions of code")
-app.add_typer(plugin_app, name="plugin", help="Manage plugins")
-app.add_typer(cache_app, name="cache", help="Manage cache")
+app.add_typer(document_app, name="document", help="Generate documentation for code")
 ```
 
 #### Command Implementation
 
 ```python
-# vaahai/cli/commands/review.py
-@review_app.command("file")
-def review_file(
-    paths: List[str] = typer.Argument(..., help="Path to file(s) to review"),
+# vaahai/__main__.py
+def review(
+    paths: List[str] = typer.Argument(..., help="Path to file(s) or directory to review"),
     depth: ReviewDepth = typer.Option(ReviewDepth.STANDARD, help="Review depth"),
-    llm_provider: Optional[str] = typer.Option(None, help="LLM provider to use"),
-    model: Optional[str] = typer.Option(None, help="Model to use for review"),
-    analyzers: Optional[List[str]] = typer.Option(None, help="Analyzers to use"),
-    ignore: Optional[List[str]] = typer.Option(None, help="Issue codes to ignore"),
-    include_related: bool = typer.Option(False, help="Include related files for context"),
-    context: Optional[str] = typer.Option(None, help="Additional context for review"),
-    apply_fixes: bool = typer.Option(False, help="Interactively apply suggested fixes"),
-    auto_apply_safe: bool = typer.Option(False, help="Automatically apply safe fixes"),
-    generate_patches: bool = typer.Option(False, help="Generate patch files"),
-    focus: ReviewFocus = typer.Option(ReviewFocus.GENERAL, help="Focus area for review"),
-    diff: bool = typer.Option(False, help="Review only changes since last commit"),
-    ci: bool = typer.Option(False, help="Run in CI mode (non-interactive)"),
-    exit_code: bool = typer.Option(False, help="Return non-zero exit code if issues found"),
-    template: Optional[Path] = typer.Option(None, help="Custom prompt template file"),
-    output: Optional[Path] = typer.Option(None, help="Save output to file"),
-    format: OutputFormat = typer.Option(OutputFormat.TERMINAL, help="Output format"),
+    focus: ReviewFocus = typer.Option(ReviewFocus.ALL, help="Focus area for review"),
+    output_format: OutputFormat = typer.Option(OutputFormat.TERMINAL, help="Output format"),
+    include: Optional[List[str]] = typer.Option(None, help="Patterns to include"),
+    exclude: Optional[List[str]] = typer.Option(None, help="Patterns to exclude"),
+    max_size: Optional[int] = typer.Option(None, help="Maximum file size in KB"),
+    verbosity: VerbosityLevel = typer.Option(VerbosityLevel.NORMAL, help="Verbosity level"),
 ) -> None:
     """Review code files using static analysis and LLM-powered contextual review."""
     # Implementation details...
@@ -872,4 +860,3 @@ def review_workflow(paths: List[str], options: ReviewOptions) -> None:
         for result in results
     ):
         sys.exit(5)
-```

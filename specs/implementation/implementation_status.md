@@ -14,10 +14,11 @@ This document tracks the implementation status of Vaahai components and features
 | Component | Task ID | Status | Related User Stories | Notes |
 |-----------|---------|--------|----------------------|-------|
 | Configuration Manager | P1-T001 | 🟢 Completed | US-06 | Handles settings from multiple sources with validation and migration |
-| CLI Application | P1-T002 | 🟡 In Progress | US-01, US-02 | Basic CLI structure with command registration and argument parsing |
+| CLI Application | P1-T002 | 🟢 Completed | US-01, US-02 | Basic CLI structure with command registration and argument parsing |
 | Code Scanner | P1-T003 | 🟢 Completed | US-02 | Identifies and processes code files with filtering and metadata extraction |
+| CLI Command Simplification | P1-T005 | 🟢 Completed | US-01 | Simplified CLI review command structure for improved user experience |
 | Output Formatting | P1-T004 | 🟡 In Progress | US-07 | Formats review results for presentation |
-| Static Analysis Integration | P1-T005 | 🔴 Not Started | US-03 | Runs and processes static analysis tools |
+| Static Analysis Integration | P1-T006 | 🔴 Not Started | US-03 | Runs and processes static analysis tools |
 | LLM Provider Interface | P2-T001 | 🔴 Not Started | US-05 | Interfaces with different LLM services |
 | Agent Orchestration | P2-T004 | 🔴 Not Started | US-04, US-05 | Manages LLM agents for code reviews |
 | Interactive Fix Application | P3-T001 | 🔴 Not Started | US-04 | Applies suggested fixes to code |
@@ -26,9 +27,9 @@ This document tracks the implementation status of Vaahai components and features
 
 | Feature | Task ID | Status | Related User Stories | Notes |
 |---------|---------|--------|----------------------|-------|
-| Basic Code Review | P1-T002 | 🟡 In Progress | US-01 | Review a single file |
+| Basic Code Review | P1-T002 | 🟢 Completed | US-01 | Review a single file |
 | Directory Review | P1-T003 | 🟢 Completed | US-02 | Review multiple files in a directory with filtering |
-| Static Analysis Integration | P1-T005 | 🔴 Not Started | US-03 | Integrate with static analysis tools |
+| Static Analysis Integration | P1-T006 | 🔴 Not Started | US-03 | Integrate with static analysis tools |
 | Interactive Fix Application | P3-T001 | 🔴 Not Started | US-04 | Apply suggested fixes interactively |
 | Multiple LLM Provider Support | P2-T001 | 🔴 Not Started | US-05 | Support for OpenAI, Ollama, etc. |
 | Configuration Management | P1-T001 | 🟢 Completed | US-06 | Load and validate configuration |
@@ -43,8 +44,9 @@ This document tracks the implementation status of Vaahai components and features
 - ✅ P1-T001: Configuration Manager
 - ✅ P1-T002: CLI Application Skeleton
 - ✅ P1-T003: Code Scanner
+- ✅ P1-T005: CLI Command Simplification
 - 🔄 P1-T004: Basic Output Formatting
-- ⬜ P1-T005: Static Analysis Integration
+- ⬜ P1-T006: Static Analysis Integration
 
 ### Phase 2: LLM Integration
 - ⬜ P2-T001: LLM Provider Interface
@@ -61,6 +63,13 @@ This document tracks the implementation status of Vaahai components and features
 - ⬜ P3-T005: Performance Optimization
 
 ## Recently Completed Tasks
+
+### P1-T005: CLI Command Simplification ✅
+- ✅ Simplified review command structure to use direct `vaahai review [PATH]` syntax
+- ✅ Removed the need for subcommands like `main` or alternative commands like `review-file`
+- ✅ Updated all documentation to reflect the simplified command structure
+- ✅ Ensured backward compatibility with existing functionality
+- ✅ Improved user experience with more intuitive command structure
 
 ### P1-T003: Code Scanner ✅
 - ✅ File scanning with filtering by extension, pattern, size, and content
@@ -87,7 +96,7 @@ This document tracks the implementation status of Vaahai components and features
 - ⬜ Integration with CLI commands
 
 ## Next Tasks
-- ⬜ P1-T005: Static Analysis Integration
+- ⬜ P1-T006: Static Analysis Integration
 - ⬜ P2-T001: LLM Provider Interface
 - ⬜ P2-T002: OpenAI Integration
 

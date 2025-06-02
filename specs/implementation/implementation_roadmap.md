@@ -13,7 +13,8 @@ This document outlines the implementation roadmap for the Vaahai AI-augmented co
 - ✅ P1-T002: CLI Application Skeleton
 - ✅ P1-T003: Code Scanner
 - 🔄 P1-T004: Basic Output Formatting
-- ⏳ P1-T005: Static Analysis Integration
+- ✅ P1-T005: CLI Command Simplification
+- ⏳ P1-T006: Static Analysis Integration
 
 **Timeline**: Q2 2025
 
@@ -122,7 +123,23 @@ This document outlines the implementation roadmap for the Vaahai AI-augmented co
 **Implementation**:
 - In progress
 
-#### P1-T005: Static Analysis Integration ⏳
+#### P1-T005: CLI Command Simplification ✅
+
+**Description**: Simplify the CLI command structure for improved user experience.
+
+**Components**:
+- Direct review command implementation
+- Removal of subcommand requirements
+- Documentation updates
+- Backward compatibility
+
+**Implementation**:
+- Implemented direct review command on main app
+- Removed redundant review-file command
+- Updated all documentation to reflect simplified structure
+- Ensured backward compatibility with existing functionality
+
+#### P1-T006: Static Analysis Integration ⏳
 
 **Description**: Integrate with static analysis tools for code quality checks.
 
@@ -173,7 +190,7 @@ This document outlines the implementation roadmap for the Vaahai AI-augmented co
                                                         │
                                                         ▼
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│  P1-T004        │◀────│  P2-T004        │◀────│  P1-T005        │
+│  P1-T004        │◀────│  P2-T004        │◀────│  P1-T006        │
 │  Output Format  │     │  Orchestration  │     │  Static Analysis│
 └─────────────────┘     └─────────────────┘     └─────────────────┘
         │                       │

@@ -23,24 +23,16 @@ vaahai --version
 vaahai config init
 
 # Review a single file
-vaahai review main path/to/file.py
-# Or use the simplified command syntax
-vaahai review-file path/to/file.py
+vaahai review path/to/file.py
 
 # Review a directory recursively
-vaahai review main src/
-# Or use the simplified command syntax
-vaahai review-file src/
+vaahai review src/
 
 # Review with specific include/exclude patterns
-vaahai review main src/ --include="*.py" --exclude="*_test.py"
-# Or use the simplified command syntax
-vaahai review-file src/ --include="*.py" --exclude="*_test.py"
+vaahai review src/ --include="*.py" --exclude="*_test.py"
 
 # Review with specific focus and depth
-vaahai review main important_module.py --depth thorough --focus security
-# Or use the simplified command syntax
-vaahai review-file important_module.py --depth thorough --focus security
+vaahai review important_module.py --depth thorough --focus security
 ```
 
 ## Features
@@ -72,7 +64,7 @@ For the complete development roadmap, see the [Implementation Roadmap](/specs/im
 Review code files with customizable filters and analysis.
 
 ```bash
-vaahai review main [PATH] [OPTIONS]
+vaahai review [PATH] [OPTIONS]
 ```
 
 **Arguments:**
