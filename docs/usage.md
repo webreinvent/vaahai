@@ -12,12 +12,6 @@ To review a single file, use the `review` command followed by the path to the fi
 vaahai review path/to/your/file.py
 ```
 
-Alternatively, you can use the simplified command syntax:
-
-```bash
-vaahai review-file path/to/your/file.py
-```
-
 This will:
 1. Run static analysis on the file
 2. Send the code and analysis results to the configured LLM
@@ -31,20 +25,10 @@ You can review multiple files by specifying multiple paths:
 vaahai review file1.py file2.py file3.py
 ```
 
-Or with the simplified syntax:
-
-```bash
-vaahai review-file file1.py file2.py file3.py
-```
-
 Or use wildcards to review all files of a certain type:
 
 ```bash
 vaahai review "*.py"
-```
-
-```bash
-vaahai review-file "*.py"
 ```
 
 ### Reviewing a Directory
@@ -55,20 +39,10 @@ To review all supported files in a directory:
 vaahai review path/to/directory
 ```
 
-Or with the simplified syntax:
-
-```bash
-vaahai review-file path/to/directory
-```
-
 By default, this will recursively scan the directory and review all supported files. You can limit the depth of recursion:
 
 ```bash
 vaahai review path/to/directory --depth 2
-```
-
-```bash
-vaahai review-file path/to/directory --depth 2
 ```
 
 ### Running Only Static Analysis
