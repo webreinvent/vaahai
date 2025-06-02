@@ -1,26 +1,23 @@
-Help me plan the next implementation task for the Vaahai Autogen integration:
+Help me identify and plan the next implementation task for the Vaahai Autogen integration:
 
-1. Review the current implementation status and roadmap.
+1. Review the current implementation status from:
+   - ./specs/implementation/implementation_status.md
+   - ./specs/implementation/implementation_roadmap.md
+   - ./specs/implementation/task_tracking.md
 
-2. Based on the implementation plan phases:
-   - Phase 1: Setup (Autogen dependency, basic agent infrastructure)
-   - Phase 2: Agent Development (specialized agents, prompt templates)
-   - Phase 3: Orchestration (coordinator agent, workflow definition)
-   - Phase 4: Integration (CLI connection, output formatting)
+2. Identify the highest priority task that is currently marked as "in progress" or "not started" based on:
+   - Task priority (P1 > P2 > P3)
+   - Task dependencies (tasks with completed dependencies should be prioritized)
+   - Current implementation phase progress
+   - Strategic importance to the project
 
-3. Ask me clarifying questions about:
-   - Which specific component should be prioritized next
-   - Any technical constraints or preferences
-   - Required level of test coverage
-   - Documentation needs alongside implementation
+3. For the identified next task:
+   - Provide a detailed implementation plan
+   - List any dependencies or prerequisites
+   - Suggest a file structure or location in the codebase
+   - Outline key functions, classes, or methods to implement
+   - Identify potential challenges and solutions
 
-4. Propose a detailed implementation plan for the next task including:
-   - Directory structure and file organization
-   - Key classes, methods, and interfaces
-   - Dependencies and integration points
-   - Test approach
-   - Expected challenges and mitigation strategies
+4. Include relevant code snippets or templates to kickstart the implementation.
 
-5. Update the implementation roadmap and status documents if needed.
-
-6. Provide a checklist of subtasks to track progress.
+Please be specific and actionable in your recommendations, focusing on concrete next steps rather than general advice.

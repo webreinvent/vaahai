@@ -53,6 +53,7 @@ vaahai review important_module.py --depth thorough --focus security
 | ✅ CLI Command Simplification | Complete | Simplified command structure |
 | ⏳ Output Formatting | Deprioritized | Being replaced by Autogen Framework |
 | 🔄 Autogen Framework Integration | In Progress | Multi-agent system for code review with Docker-based code execution |
+| 🔄 Hello World Agent MVP | In Progress | Simple agent to validate Autogen integration framework |
 | ⏳ Static Analysis | Planned | Integration with static analysis tools |
 | ⏳ LLM Provider Interface | Planned | Support for multiple LLM providers |
 | ⏳ Review Orchestration | Planned | Manage the review process |

@@ -282,6 +282,26 @@ The Configuration Manager is marked as completed, so we can use its interfaces.
 }
 ```
 
+### Hello World Agent MVP
+
+```json
+{
+  "task_id": "TASK-013",
+  "title": "Hello World Agent MVP",
+  "description": "Implement a simple Hello World agent as an MVP to validate the Autogen integration framework",
+  "status": "in_progress",
+  "priority": "high",
+  "assigned_to": "unassigned",
+  "related_user_stories": ["US-04", "US-07"],
+  "related_components": ["AgentOrchestration", "CLI"],
+  "dependencies": ["TASK-010"],
+  "created_date": "2025-06-03",
+  "last_updated": "2025-06-03",
+  "completion_date": null,
+  "notes": "Creating a minimal viable product with a simple Hello World agent to validate the Autogen integration framework before implementing more complex agents. This will include a basic VaahaiAgent base class, HelloWorldAgent implementation, and CLI integration with a 'helloworld' command."
+}
+```
+
 ## Task Visualization
 
 For a visual representation of task dependencies and status, refer to the automatically generated diagrams in the `/docs/assets/images/task_dependencies.png` file, which is updated whenever this document changes.
