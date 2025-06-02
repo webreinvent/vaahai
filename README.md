@@ -24,15 +24,23 @@ vaahai config init
 
 # Review a single file
 vaahai review main path/to/file.py
+# Or use the simplified command syntax
+vaahai review-file path/to/file.py
 
 # Review a directory recursively
 vaahai review main src/
+# Or use the simplified command syntax
+vaahai review-file src/
 
 # Review with specific include/exclude patterns
 vaahai review main src/ --include="*.py" --exclude="*_test.py"
+# Or use the simplified command syntax
+vaahai review-file src/ --include="*.py" --exclude="*_test.py"
 
 # Review with specific focus and depth
 vaahai review main important_module.py --depth thorough --focus security
+# Or use the simplified command syntax
+vaahai review-file important_module.py --depth thorough --focus security
 ```
 
 ## Features
