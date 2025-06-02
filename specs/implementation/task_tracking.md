@@ -298,7 +298,7 @@ The Configuration Manager is marked as completed, so we can use its interfaces.
   "created_date": "2025-06-03",
   "last_updated": "2025-06-03",
   "completion_date": null,
-  "notes": "Creating a minimal viable product with a simple Hello World agent to validate the Autogen integration framework before implementing more complex agents. This will include a basic VaahaiAgent base class, HelloWorldAgent implementation, and CLI integration with a 'helloworld' command."
+  "notes": "Creating a minimal viable product with a simple Hello World agent to validate the Autogen integration framework before implementing more complex agents. Initial implementation created custom agent classes but needs to be revised to properly use Microsoft's Autogen framework classes (Agent, GroupChat, GroupChatManager) as required for all agents in the project. CLI command structure is in place but needs to be updated to work with Autogen agents."
 }
 ```
 

@@ -227,37 +227,44 @@ speaker_selection_method = "auto"
 
 ## Autogen Integration
 
-Vaahai uses Microsoft's Autogen framework to create a multi-agent system for sophisticated code review.
+Vaahai integrates Microsoft's Autogen framework to create a sophisticated multi-agent system for code review. This section describes how to use the Autogen integration features.
 
 ### Hello World Agent
 
-The Hello World agent is a simple MVP implementation to validate the Autogen integration framework. It serves as a basic example of how agents are structured and integrated with the CLI.
+The Hello World Agent is a simple agent that demonstrates the basic functionality of the Autogen integration. It is currently being updated to properly integrate with Microsoft's Autogen framework.
 
-#### Basic Usage
+> **Important**: All agents in Vaahai must be built using Microsoft's Autogen framework classes (Agent, GroupChat, GroupChatManager) to ensure proper multi-agent communication and orchestration.
 
-```bash
-# Run the Hello World agent with default message
-vaahai helloworld
-```
-
-#### Custom Message
-
-You can customize the message displayed by the Hello World agent:
+#### Usage
 
 ```bash
-vaahai helloworld --message "Hello, Vaahai!"
+python -m vaahai helloworld [OPTIONS]
 ```
 
-#### Purpose
+#### Options
 
-The Hello World agent demonstrates:
+* `--message, -m TEXT`: Custom hello world message
 
-1. Basic agent structure and initialization
-2. Agent factory pattern for creating agents
-3. CLI integration with Autogen agents
-4. Configuration passing to agents
+#### Example
 
-This simple implementation serves as a foundation for more complex agents like the Language Detector, Framework Detector, and Review Coordinator.
+```bash
+# Run with default message
+python -m vaahai helloworld
+
+# Run with custom message
+python -m vaahai helloworld --message "Hello, Vaahai Autogen Integration!"
+```
+
+#### Implementation Details
+
+The Hello World Agent is being updated to use Autogen's `AssistantAgent` and `UserProxyAgent` classes to demonstrate the proper integration with the Autogen framework. This will serve as a foundation for more complex agents like the Language Detector, Framework Detector, and Review Coordinator.
+
+The updated implementation will:
+1. Use Autogen's Agent classes
+2. Implement proper message passing using Autogen's conversation mechanisms
+3. Demonstrate the basic patterns for agent communication
+
+This MVP implementation will validate the core architecture for the Autogen integration before implementing more complex agents.
 
 ### Multi-Agent Code Review
 

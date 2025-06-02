@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import List
 
 from vaahai import __version__
-from vaahai.cli.commands import review, analyze, config, explain, document
+from vaahai.cli.commands import review, analyze, config, explain, document, helloworld
 
 # Create console for rich output
 console = Console()
@@ -120,6 +120,7 @@ app.add_typer(analyze.app, name="analyze", help="Run static analysis on code")
 app.add_typer(config.app, name="config", help="Manage configuration")
 app.add_typer(explain.app, name="explain", help="Generate code explanations")
 app.add_typer(document.app, name="document", help="Generate code documentation")
+app.add_typer(helloworld.app, name="helloworld", help="Run a simple Hello World agent")
 
 if __name__ == "__main__":
     try:

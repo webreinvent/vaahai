@@ -124,29 +124,31 @@ For more details on the Code Scanner, see the [Code Scanner](scanner.md) documen
 
 ### `helloworld`
 
-Run a simple Hello World agent to test the Autogen integration.
+A simple command to test the Autogen integration.
 
-#### Usage
+> **Note**: This command is currently being updated to properly integrate with Microsoft's Autogen framework.
 
+**Usage**:
 ```bash
-vaahai helloworld [OPTIONS]
+python -m vaahai helloworld [OPTIONS]
 ```
 
-#### Options
+**Options**:
+* `--message, -m TEXT`: Custom hello world message
 
-| Option | Description | Default |
-|--------|-------------|---------|
-| `--message`, `-m` | Custom hello world message | "Hello, World!" |
-
-#### Examples
-
+**Examples**:
 ```bash
 # Run with default message
-vaahai helloworld
+python -m vaahai helloworld
 
 # Run with custom message
-vaahai helloworld --message "Hello, Vaahai!"
+python -m vaahai helloworld --message "Hello, Vaahai Autogen Integration!"
 ```
+
+**Description**:
+The `helloworld` command creates and runs a simple Hello World agent to validate the Autogen integration framework. This command is primarily used for testing and demonstrating the basic functionality of the Autogen integration.
+
+The command is being updated to use Autogen's `AssistantAgent` and `UserProxyAgent` classes to demonstrate the proper integration with the Autogen framework. This will serve as a foundation for more complex agents that will be implemented as part of the multi-agent system for code review.
 
 ### `analyze`
 

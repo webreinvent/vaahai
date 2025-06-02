@@ -114,10 +114,16 @@ This document tracks the implementation status of Vaahai components and features
   - ✅ Define TOML schema for agent configuration
   - ✅ Implement configuration validation
   - ✅ Add CLI option for agent configuration file
-- ✅ Hello World Agent MVP
-  - ✅ Implement basic HelloWorldAgent class
-  - ✅ Add helloworld CLI command
-  - ✅ Test end-to-end functionality
+- 🔄 Hello World Agent MVP
+  - 🔄 Implement basic HelloWorldAgent class using Autogen framework
+    - ⬜ Integrate with Autogen's Agent class
+    - ⬜ Set up proper message passing using Autogen's conversation mechanisms
+  - 🔄 Add helloworld CLI command
+    - ✅ Create CLI command structure
+    - ⬜ Update to work with Autogen agents
+  - 🔄 Test end-to-end functionality
+    - ✅ Basic CLI tests
+    - ⬜ Autogen-specific tests
 
 #### Agent Development Phase
 - 🔄 Language Detector Agent

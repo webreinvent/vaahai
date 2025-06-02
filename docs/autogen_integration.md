@@ -8,18 +8,22 @@ Vaahai is integrating Autogen to leverage a multi-agent approach to code review,
 
 ## MVP Implementation: Hello World Agent
 
-Before implementing the full multi-agent system, we've created a simple Hello World agent as a Minimum Viable Product (MVP) to validate the Autogen integration framework.
+Before implementing the full multi-agent system, we're creating a simple Hello World agent as a Minimum Viable Product (MVP) to validate the Autogen integration framework.
+
+> **Important**: All agents in the Vaahai project must be built using Microsoft's Autogen framework classes (Agent, GroupChat, GroupChatManager) to ensure proper multi-agent communication and orchestration. The current implementation needs to be revised to properly integrate with Autogen.
 
 ### Hello World Agent Structure
+
+The Hello World Agent will follow this structure, properly integrating with Autogen:
 
 ```
 vaahai/
 ├── core/
 │   ├── agents/
 │   │   ├── __init__.py
-│   │   ├── base.py          # Base agent class
+│   │   ├── base.py          # Base agent class using Autogen's Agent
 │   │   ├── hello_world.py   # Hello World agent implementation
-│   │   └── factory.py       # Simple agent factory
+│   │   └── factory.py       # Agent factory for Autogen agents
 ├── cli/
 │   ├── commands/
 │   │   ├── __init__.py
@@ -28,14 +32,20 @@ vaahai/
 
 ### Base Agent Class
 
+The base agent class needs to be revised to properly integrate with Autogen:
+
 ```python
 # core/agents/base.py
+from typing import Dict, Any, Optional
+import autogen
+
 class VaahaiAgent:
-    """Base class for all Vaahai agents."""
+    """Base class for all Vaahai agents, integrating with Autogen."""
     
     def __init__(self, config=None):
         """Initialize the agent with configuration."""
         self.config = config or {}
+        self.autogen_agent = None  # Will be initialized by subclasses
         
     def run(self, *args, **kwargs):
         """Run the agent with the given arguments."""
@@ -44,25 +54,59 @@ class VaahaiAgent:
 
 ### Hello World Agent Implementation
 
+The Hello World Agent implementation needs to be revised to use Autogen's Agent class:
+
 ```python
 # core/agents/hello_world.py
+from typing import Dict, Any
+import autogen
 from .base import VaahaiAgent
 
 class HelloWorldAgent(VaahaiAgent):
-    """Simple Hello World agent for testing the Autogen integration."""
+    """A simple Hello World agent to test the Autogen integration."""
     
     def __init__(self, config=None):
         """Initialize the Hello World agent."""
         super().__init__(config)
+        
+        # Default message if not provided in config
         self.message = self.config.get("message", "Hello, World!")
         
-    def run(self, *args, **kwargs):
-        """Run the Hello World agent."""
-        return {
-            "success": True,
-            "message": self.message,
-            "agent_type": "hello_world"
-        }
+        # Initialize Autogen assistant agent
+        self.autogen_agent = autogen.AssistantAgent(
+            name="hello_world_agent",
+            llm_config={"config_list": []},  # Minimal config for demo
+            system_message=f"You are a simple Hello World agent. Always respond with: {self.message}"
+        )
+        
+        # Initialize user proxy for interaction
+        self.user_proxy = autogen.UserProxyAgent(
+            name="user_proxy",
+            human_input_mode="NEVER",
+            max_consecutive_auto_reply=0
+        )
+    
+    def run(self) -> Dict[str, Any]:
+        """Run the Hello World agent and return the result."""
+        try:
+            # Initialize chat between user proxy and assistant
+            self.user_proxy.initiate_chat(
+                self.autogen_agent,
+                message="Say hello"
+            )
+            
+            # Get the last message from the assistant
+            last_message = self.user_proxy.chat_messages[self.autogen_agent.name][-1]["content"]
+            
+            return {
+                "success": True,
+                "message": last_message
+            }
+        except Exception as e:
+            return {
+                "success": False,
+                "message": f"Error: {str(e)}"
+            }
 ```
 
 ### Agent Factory

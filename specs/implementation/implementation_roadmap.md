@@ -181,10 +181,16 @@ This document outlines the implementation roadmap for the Vaahai AI-augmented co
   - ✅ Implement agent configuration loading
     - ✅ Define TOML schema
     - ✅ Add CLI option for configuration file
-  - ✅ Hello World Agent MVP
-    - ✅ Implement basic HelloWorldAgent class
-    - ✅ Add helloworld CLI command
-    - ✅ Test end-to-end functionality
+  - 🔄 Hello World Agent MVP
+    - 🔄 Implement basic HelloWorldAgent class using Autogen framework
+      - ⬜ Integrate with Autogen's Agent class
+      - ⬜ Set up proper message passing using Autogen's conversation mechanisms
+    - 🔄 Add helloworld CLI command
+      - ✅ Create CLI command structure
+      - ⬜ Update to work with Autogen agents
+    - 🔄 Test end-to-end functionality
+      - ✅ Basic CLI tests
+      - ⬜ Autogen-specific tests
 - Agent Development Phase: 
   - 🔄 Language Detector Agent (Priority 1)
     - ✅ Define interface and responsibilities
