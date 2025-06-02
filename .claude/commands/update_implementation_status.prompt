@@ -3,6 +3,7 @@ Update the implementation status documents to reflect the current state of the V
 1. Review the current implementation status in:
    - specs/implementation/implementation_status.md
    - specs/implementation/implementation_roadmap.md
+   - specs/implementation/task_tracking.md
    - README.md (implementation status table)
 
 2. Update the status of tasks based on recent progress:

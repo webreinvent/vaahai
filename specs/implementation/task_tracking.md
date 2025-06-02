@@ -226,6 +226,62 @@ The Configuration Manager is marked as completed, so we can use its interfaces.
 }
 ```
 
+### Autogen Integration
+
+```json
+{
+  "task_id": "TASK-010",
+  "title": "Autogen Framework Integration",
+  "description": "Integrate Microsoft's Autogen framework to create a multi-agent system for sophisticated code review",
+  "status": "in_progress",
+  "priority": "high",
+  "assigned_to": "unassigned",
+  "related_user_stories": ["US-04", "US-05", "US-07"],
+  "related_components": ["AgentOrchestration", "OutputFormatter"],
+  "dependencies": [],
+  "created_date": "2025-06-03",
+  "last_updated": "2025-06-03",
+  "completion_date": null,
+  "notes": "Implementation is organized into four phases: Setup (partially complete), Agent Development (in progress), Orchestration (not started), and Integration (not started). Current focus is on completing Docker code executor integration and Language Detector Agent implementation."
+}
+```
+
+```json
+{
+  "task_id": "TASK-011",
+  "title": "Docker-Based Code Executor for Autogen",
+  "description": "Implement Docker-based code execution capabilities for the Autogen multi-agent system",
+  "status": "in_progress",
+  "priority": "high",
+  "assigned_to": "unassigned",
+  "related_user_stories": ["US-04"],
+  "related_components": ["AgentOrchestration", "CodeExecution"],
+  "dependencies": ["TASK-010"],
+  "created_date": "2025-06-03",
+  "last_updated": "2025-06-03",
+  "completion_date": null,
+  "notes": "Implementing VaahaiDockerCommandLineCodeExecutor class with container management, resource limits, and language-specific execution environments. This is a critical component for enabling dynamic code analysis during reviews."
+}
+```
+
+```json
+{
+  "task_id": "TASK-012",
+  "title": "Language Detector Agent Implementation",
+  "description": "Implement specialized agent for detecting programming languages, features, and versions",
+  "status": "in_progress",
+  "priority": "high",
+  "assigned_to": "unassigned",
+  "related_user_stories": ["US-04", "US-05"],
+  "related_components": ["AgentOrchestration"],
+  "dependencies": ["TASK-010"],
+  "created_date": "2025-06-03",
+  "last_updated": "2025-06-03",
+  "completion_date": null,
+  "notes": "First specialized agent being implemented as proof of concept. Interface and prompt templates are complete, currently implementing language detection logic and multi-file context support."
+}
+```
+
 ## Task Visualization
 
 For a visual representation of task dependencies and status, refer to the automatically generated diagrams in the `/docs/assets/images/task_dependencies.png` file, which is updated whenever this document changes.
@@ -243,4 +299,4 @@ When updating this document:
    python scripts/generate_task_visualization.py
    ```
 
-*Last Updated: June 2, 2025*
+*Last Updated: June 3, 2025*

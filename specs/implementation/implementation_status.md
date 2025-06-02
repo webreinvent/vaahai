@@ -18,10 +18,10 @@ This document tracks the implementation status of Vaahai components and features
 | Code Scanner | P1-T003 | 🟢 Completed | US-02 | Identifies and processes code files with filtering and metadata extraction |
 | CLI Command Simplification | P1-T005 | 🟢 Completed | US-01 | Simplified CLI review command structure for improved user experience |
 | Output Formatting | P1-T004 | ⏳ Deprioritized | US-07 | Being replaced by P1-T007 |
-| Autogen Framework Integration | P1-T007 | 🔄 In Progress | US-07 | Multi-agent system for code review |
+| Autogen Framework Integration | P1-T007 | 🔄 In Progress | US-04, US-05, US-07 | Multi-agent system for code review with Docker-based code execution |
 | Static Analysis Integration | P1-T006 | 🔴 Not Started | US-03 | Runs and processes static analysis tools |
 | LLM Provider Interface | P2-T001 | 🔴 Not Started | US-05 | Interfaces with different LLM services |
-| Agent Orchestration | P2-T004 | 🔴 Not Started | US-04, US-05 | Manages LLM agents for code reviews |
+| Agent Orchestration | P2-T004 | 🔵 Planned for Future | US-04, US-05 | Enhanced orchestration beyond Autogen's built-in capabilities |
 | Interactive Fix Application | P3-T001 | 🔴 Not Started | US-04 | Applies suggested fixes to code |
 
 ## Feature Status
@@ -34,7 +34,9 @@ This document tracks the implementation status of Vaahai components and features
 | Interactive Fix Application | P3-T001 | 🔴 Not Started | US-04 | Apply suggested fixes interactively |
 | Multiple LLM Provider Support | P2-T001 | 🔴 Not Started | US-05 | Support for OpenAI, Ollama, etc. |
 | Configuration Management | P1-T001 | 🟢 Completed | US-06 | Load and validate configuration |
-| Multiple Output Formats | P1-T007 | 🔄 In Progress | US-07 | Terminal, Markdown, HTML output with Autogen framework |
+| Multiple Output Formats | P1-T007 | 🔄 In Progress | US-07 | Terminal, Markdown, HTML output via Autogen framework |
+| Multi-Agent Code Review | P1-T007 | 🔄 In Progress | US-04, US-05 | Specialized agents for different aspects of code review |
+| Docker-Based Code Execution | P1-T007 | 🔄 In Progress | US-04 | Execute code in isolated containers during review |
 | Explanation Mode | P3-T003 | 🔴 Not Started | US-08 | Explain code in natural language |
 | Documentation Generation | P3-T003 | 🔴 Not Started | US-09 | Generate documentation from code |
 | Performance Optimization | P3-T005 | 🔵 Planned for Future | US-10 | Identify performance issues |
@@ -51,9 +53,9 @@ This document tracks the implementation status of Vaahai components and features
 
 ### Phase 2: LLM Integration
 - ⬜ P2-T001: LLM Provider Interface
-- ⬜ P2-T002: OpenAI Integration
+- 🔵 P2-T002: OpenAI Integration (Covered by Autogen Framework)
 - ⬜ P2-T003: Ollama Integration
-- ⬜ P2-T004: Agent Orchestration
+- 🔵 P2-T004: Agent Orchestration (Basic version covered by Autogen Framework)
 - ⬜ P2-T005: Context Management
 
 ### Phase 3: Advanced Features
@@ -91,15 +93,95 @@ This document tracks the implementation status of Vaahai components and features
 ## In-Progress Tasks
 
 ### P1-T007: Autogen Framework Integration 🔄
-- 🔄 Setup Phase: Add Autogen as a dependency and create basic agent infrastructure
-- 🔄 Agent Development Phase: Implement specialized agents with defined capabilities
-- ⬜ Orchestration Phase: Implement coordinator agent and define workflow
-- ⬜ Integration Phase: Connect Autogen system to the CLI and implement output formatting
+
+#### Setup Phase
+- ✅ Add Autogen as a dependency
+  - ✅ Add pyautogen to requirements.txt
+  - ✅ Configure version constraints
+- ✅ Create basic agent infrastructure
+  - ✅ Define base agent classes and interfaces
+    - ✅ Create VaahaiAgent abstract base class
+    - ✅ Define common agent methods and properties
+  - ✅ Implement agent factory
+    - ✅ Design factory pattern for agent creation
+    - ✅ Implement agent configuration loading
+  - 🔄 Docker code executor integration
+    - ✅ Design VaahaiDockerCommandLineCodeExecutor class
+    - 🔄 Implement Docker container management
+    - ⬜ Add resource limits and security constraints
+    - ⬜ Implement language-specific execution environments
+- ✅ Implement agent configuration loading
+  - ✅ Define TOML schema for agent configuration
+  - ✅ Implement configuration validation
+  - ✅ Add CLI option for agent configuration file
+
+#### Agent Development Phase
+- 🔄 Language Detector Agent
+  - ✅ Define agent interface and responsibilities
+  - ✅ Create prompt templates
+  - 🔄 Implement language detection logic
+  - ⬜ Add support for multi-file context
+  - ⬜ Test with various programming languages
+- ⬜ Framework/CMS Detector Agent
+  - ✅ Define agent interface and responsibilities
+  - ⬜ Create prompt templates
+  - ⬜ Implement framework detection logic
+- ⬜ Standards Analyzer Agent
+  - ✅ Define agent interface and responsibilities
+  - ⬜ Create prompt templates
+  - ⬜ Implement standards analysis logic
+- ⬜ Security Auditor Agent
+  - ✅ Define agent interface and responsibilities
+  - ⬜ Create prompt templates
+  - ⬜ Implement security analysis logic
+- ⬜ Review Coordinator Agent
+  - ✅ Define agent interface and responsibilities
+  - ⬜ Create prompt templates
+  - ⬜ Implement coordination logic
+
+#### Orchestration Phase
+- ⬜ Implement coordinator agent
+  - ⬜ Define group chat workflow
+  - ⬜ Implement message routing
+  - ⬜ Add termination conditions
+- ⬜ Define workflow between agents
+  - ⬜ Configure agent interaction patterns
+  - ⬜ Implement sequential and parallel processing
+- ⬜ Create fallback mechanisms
+  - ⬜ Implement error handling
+  - ⬜ Add timeout management
+
+#### Integration Phase
+- ⬜ Connect Autogen system to the CLI
+  - ⬜ Integrate with review command
+  - ⬜ Add command-line options for agent configuration
+- ⬜ Implement output formatting
+  - ⬜ Format agent results for terminal output
+  - ⬜ Generate markdown and HTML reports
+  - ⬜ Create structured JSON output
+- ⬜ Add configuration options
+  - ⬜ Implement agent customization via CLI
+  - ⬜ Add Docker execution options
 
 ## Next Tasks
+
+### Immediate Priorities (P1-T007 Autogen Integration)
+1. Complete Docker code executor integration
+   - Implement Docker container management
+   - Add resource limits and security constraints
+   - Implement language-specific execution environments
+2. Finish Language Detector Agent implementation
+   - Complete language detection logic
+   - Add support for multi-file context
+   - Test with various programming languages
+3. Begin Framework Detector Agent implementation
+   - Create prompt templates
+   - Implement framework detection logic
+
+### Upcoming Tasks
 - ⬜ P1-T006: Static Analysis Integration
 - ⬜ P2-T001: LLM Provider Interface
-- ⬜ P2-T002: OpenAI Integration
+- ⬜ P2-T003: Ollama Integration
 
 ## Last Updated
-June 2, 2025
+June 3, 2025

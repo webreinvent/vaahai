@@ -59,6 +59,13 @@ vaahai review [options] PATH [PATH...]
 | `--private` | Use only local resources | `false` |
 | `--max-file-size SIZE` | Maximum file size in bytes | 1048576 (1MB) |
 | `--agent-config` | Path to agent configuration file for customizing the multi-agent system | None |
+| `--execute-code` | Enable code execution during review for dynamic analysis | `false` |
+| `--no-execute-code` | Disable code execution during review | `true` |
+| `--docker-image IMAGE` | Specify custom Docker image for code execution | Language-specific default |
+| `--execution-timeout SECONDS` | Maximum execution time in seconds | 60 |
+| `--memory-limit LIMIT` | Memory limit for Docker container (e.g., "512m") | "512m" |
+| `--cpu-limit LIMIT` | CPU limit for Docker container (e.g., 1.0) | 1.0 |
+| `--network-enabled` | Enable network access in Docker container | `false` |
 
 #### Examples
 
@@ -83,6 +90,24 @@ vaahai review main src/ --max-file-size=512000
 
 # Review with custom agent configuration
 vaahai review main src/ --agent-config path/to/agent/config.toml
+
+# Review with code execution enabled
+vaahai review main src/ --execute-code
+
+# Review with custom Docker image
+vaahai review main src/ --docker-image python:3.9-slim
+
+# Review with custom execution timeout (30 seconds)
+vaahai review main src/ --execution-timeout 30
+
+# Review with custom memory limit (1GB)
+vaahai review main src/ --memory-limit 1g
+
+# Review with custom CPU limit (2.0)
+vaahai review main src/ --cpu-limit 2.0
+
+# Review with network access enabled
+vaahai review main src/ --network-enabled
 ```
 
 #### Code Scanner Integration
@@ -144,6 +169,24 @@ vaahai analyze src/ --ci --format markdown --output analysis.md --exit-code
 Manages Vaahai configuration.
 
 #### Subcommands
+
+##### `config init`
+
+Initializes Vaahai configuration with interactive prompts for API keys and settings.
+
+```bash
+# Initialize configuration
+vaahai config init
+
+# Force overwrite existing configuration
+vaahai config init --force
+```
+
+During initialization, you will be prompted for:
+- LLM provider selection (OpenAI, Ollama, Anthropic)
+- API keys for the selected provider
+- Model preferences
+- Docker-based code execution settings
 
 ##### `config list`
 
