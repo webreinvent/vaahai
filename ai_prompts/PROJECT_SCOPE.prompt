@@ -110,14 +110,10 @@ This directory will contain all the unit and end-to-end tests
 - Configuration and installation instructions
 - Implementation tips or code snippets
 - Write in clear, professional language
+- YOU SHOULD NOT CREATE LARGE FILES, INSTEAD ORGANIZE INTO FOLDERS AND FILES
 
 ## Implementation and Task Status
 You must create markdown files in specs to keep tracks of all the phase, tasks and their status. These files can be referred by AI tools to understand completed tasks, pick the next task.
-
-
-## Goal:
-- Be explicit, structured, and comprehensive.
-- Respond with the complete documentation only.
 
 ## What you need to do step by step:
 1. If you have any questions or need help, please ask and clearly understand what you need to do then only you need to continue to the next step. 
