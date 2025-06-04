@@ -115,6 +115,11 @@ This directory will contain all the unit and end-to-end tests
 ## Implementation and Task Status
 You must create markdown files in specs to keep tracks of all the phase, tasks and their status. These files can be referred by AI tools to understand completed tasks, pick the next task.
 
+Assign easily identifiable labels to each task, such as [P1-task-1], [P2-task-2], etc. This will make it easier to track progress and identify tasks that need attention.
+
+Try doing MVP first, test and then add more features. This will help you get a sense of the project scope and can help you prioritize tasks.
+
+
 ## What you need to do step by step:
 1. If you have any questions or need help, please ask and clearly understand what you need to do then only you need to continue to the next step. 
 2. Create all folders for documentation 
