@@ -72,7 +72,7 @@ This directory will contain AI Prompts. Reusable prompts you can use with your a
 
 - ai_context.prompt : To ask ai to read all the documents like /specs, /docs, /ai to under the project scope
 
-- update_docs_and_task_status.prompt: Update the product docs, implementation status and tasks available in /specs, /docs, /ai based on recent discussion, implementation and code
+- update_docs_and_task_status.prompt: Update the product docs, implementation status and tasks available in /specs, /docs, /ai based on recent discussion, implementation and code. Update the AI memory.
 
 - pick_next_task.prompt: Check the status of implementation and pick next task
 
@@ -99,7 +99,6 @@ This directory will contain all the unit and end-to-end tests
 
 
 ## Documentation Must Include:
-
 - Concise overview of purpose and features
 - Technology stack table/list with justifications
 - Specific CLI commands, usage scenarios, and options
@@ -120,8 +119,11 @@ You must create markdown files in specs to keep tracks of all the phase, tasks a
 - Be explicit, structured, and comprehensive.
 - Respond with the complete documentation only.
 
-NOTE: YOU ONLY NEED TO GENERATE THE DOCUMENTATION OF AI CONTEXT
+## What you need to do step by step:
+1. If you have any questions or need help, please ask and clearly understand what you need to do then only you need to continue to the next step. 
+2. Create all folders for documentation 
+3. Create all markdown files for documentation
+4. Create useful ai prompts for documentation
+5. Revisit the documentation to make sure it is complete
 
 DO NOT MODIFY PROJECT_SCOPE.md file
-
-YOU MUST PROVIDE THE OUTPUT IN MARKDOWN FORMAT WHICH I CAN COPY AND PASTE
