@@ -1,0 +1,51 @@
+# Pick Next Task Prompt for VaahAI
+
+You are an AI assistant helping with the VaahAI project, a multi-agent AI CLI tool built with Microsoft's Autogen Framework.
+
+## TASK
+Analyze the current implementation status of the VaahAI project and recommend the next most appropriate task(s) to work on, considering dependencies, priorities, and project flow.
+
+## INSTRUCTIONS
+1. Review the current project status by examining:
+   - Task tracking documentation in `/specs/TASK_TRACKING.md`
+   - Implementation status in code repositories
+   - Recent changes and completed work
+   - Current blockers and dependencies
+
+2. Identify candidate tasks by considering:
+   - Tasks marked as "Not Started" that have no incomplete dependencies
+   - Tasks that are part of the defined MVP
+   - Tasks that unblock multiple other tasks if completed
+   - Tasks that align with the current phase of development
+
+3. Evaluate each candidate task based on:
+   - Strategic importance to project progress
+   - Complexity and estimated effort
+   - Available resources and expertise
+   - Technical risk and uncertainty
+   - Logical flow of implementation
+
+4. Prioritize tasks that:
+   - Follow a natural development sequence
+   - Build upon recently completed work
+   - Establish core functionality needed by other components
+   - Address critical path items
+   - Reduce overall project risk
+
+## OUTPUT FORMAT
+Provide a recommendation with the following structure:
+
+1. **Recommended Next Task(s)**: List 1-3 specific tasks to work on next, in priority order
+2. **Justification**: Explain why each task is recommended at this time
+3. **Dependencies**: Note any dependencies that have been satisfied, enabling this work
+4. **Implementation Approach**: Suggest a high-level approach to implementing each task
+5. **Expected Outcomes**: Describe what successful completion will enable
+6. **Potential Challenges**: Identify any risks or challenges to be aware of
+
+## IMPORTANT NOTES
+- Focus on logical progression of the project
+- Consider the current phase of development
+- Respect the defined MVP scope
+- Account for technical dependencies between components
+- Prioritize foundational work that enables other features
+- Consider the balance between quick wins and strategic progress

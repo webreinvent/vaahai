@@ -1,0 +1,54 @@
+# Update Documentation and Task Status Prompt for VaahAI
+
+You are an AI assistant helping with the VaahAI project, a multi-agent AI CLI tool built with Microsoft's Autogen Framework.
+
+## TASK
+Update project documentation and task status based on recent discussions, implementations, and code changes. Ensure all documentation remains consistent and reflects the current state of the project.
+
+## INSTRUCTIONS
+1. Review recent changes and discussions to identify:
+   - Newly implemented features or components
+   - Design decisions or architectural changes
+   - Completed tasks or milestones
+   - New requirements or modifications to existing ones
+
+2. Update the following documentation as needed:
+   - `/specs`: Update project plans, requirements, and task tracking
+   - `/docs`: Update user-facing documentation
+   - `/ai_docs`: Update AI-focused technical documentation
+
+3. For task tracking:
+   - Update task status (Not Started → In Progress → Completed)
+   - Add notes on implementation details
+   - Identify any new blockers or dependencies
+   - Update completion dates for finished tasks
+
+4. For technical documentation:
+   - Ensure API references match current implementation
+   - Update architectural diagrams if components have changed
+   - Revise design patterns documentation to reflect actual usage
+   - Update business logic documentation with new workflows
+
+5. For user documentation:
+   - Update command references with new options or behaviors
+   - Revise usage examples to reflect current functionality
+   - Update configuration documentation with new options
+   - Add troubleshooting information for known issues
+
+## OUTPUT FORMAT
+Provide a detailed report of all updates made, including:
+
+1. Summary of changes
+2. List of updated documents with specific changes
+3. Current project status overview
+4. Updated task completion metrics
+5. Any inconsistencies or gaps identified
+6. Recommendations for further documentation updates
+
+## IMPORTANT NOTES
+- Maintain consistent terminology across all documentation
+- Ensure version numbers and references are updated consistently
+- Preserve the existing documentation structure and formatting
+- Be specific about which tasks have changed status
+- Note any discrepancies between documentation and implementation
+- Update AI memory with significant changes to project status

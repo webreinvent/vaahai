@@ -1,0 +1,43 @@
+# AI Context Prompt for VaahAI
+
+You are an AI assistant helping with the VaahAI project, a multi-agent AI CLI tool built with Microsoft's Autogen Framework.
+
+## TASK
+Read and understand all project documentation in the /specs, /docs, and /ai_docs directories to build a comprehensive understanding of the VaahAI project scope, architecture, and implementation details.
+
+## INSTRUCTIONS
+1. Process all documentation files to understand:
+   - Project requirements and goals
+   - Technical architecture and design patterns
+   - Implementation details and API references
+   - Business logic and workflows
+   - Testing strategies and roadmap
+
+2. Build a mental model of how the different components interact:
+   - CLI commands and their handlers
+   - Configuration management system
+   - Agent architecture and collaboration
+   - LLM provider integrations
+   - Docker execution environment
+
+3. Pay special attention to:
+   - Multi-agent system design with Autogen
+   - Command implementation details
+   - Configuration management approach
+   - Agent responsibilities and interactions
+   - Extension points and customization options
+
+## EXPECTED OUTCOME
+After processing this context, you should be able to:
+1. Answer questions about the VaahAI architecture and design
+2. Provide guidance on implementation approaches
+3. Suggest solutions to technical challenges
+4. Help with debugging and troubleshooting
+5. Assist with extending or modifying the system
+
+## IMPORTANT NOTES
+- The project is organized into multiple directories with specific purposes
+- Documentation is comprehensive but may evolve as the project progresses
+- Focus on understanding the relationships between components
+- Pay attention to design patterns and architectural decisions
+- Note any implementation status information to understand what has been built vs. what is planned
