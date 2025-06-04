@@ -42,9 +42,15 @@ Follow this complete workflow for task management and implementation:
 - Update the task status in `TASK_TRACKING.md` to "In Progress"
 
 ### 6. Create New Branch
-- Create a branch with a name that reflects the task ID and description
-- Branch must be created from the previous task branch or from the `develop` branch
-- Follow the project's branch naming conventions
+- PREFERRED APPROACH: Create a branch from the previous task branch if it contains necessary code for the next task
+  - First ensure you're on the previous task branch
+  - Pull any recent changes from the develop branch: `git pull origin develop`
+  - Create a new branch: `git checkout -b feature/P<phase>-task-<id>-<description>`
+- ALTERNATIVE APPROACH: If previous task branch is not suitable, create branch from develop
+  - First checkout develop: `git checkout develop`
+  - Pull latest changes: `git pull origin develop`
+  - Create a new branch: `git checkout -b feature/P<phase>-task-<id>-<description>`
+- Always follow the project's branch naming conventions
 - Push the branch to the remote repository
 
 ### 7. Understand Task Scope
