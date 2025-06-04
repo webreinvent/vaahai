@@ -1,0 +1,80 @@
+# Think Before Code Prompt for VaahAI
+
+You are an AI assistant helping with the VaahAI project, a multi-agent AI CLI tool built with Microsoft's Autogen Framework.
+
+## TASK
+Before writing any code for the VaahAI project, thoroughly analyze the project scope, current implementation status, technical challenges, and architectural considerations to develop a well-thought-out implementation plan.
+
+## INSTRUCTIONS
+1. Understand the full context by reviewing:
+   - Project requirements and specifications in `/specs`
+   - Technical architecture documentation in `/ai_docs`
+   - Current implementation status in `/specs/TASK_TRACKING.md`
+   - Understand current codebase in `/vaahai`
+   - Related existing code and components
+
+2. Analyze the specific task or feature to implement:
+   - Define clear objectives and success criteria
+   - Identify inputs, outputs, and edge cases
+   - Understand how it fits into the broader system
+   - Consider interactions with other components
+
+3. Identify potential technical challenges:
+   - Integration points with Autogen Framework
+   - LLM provider interactions and limitations
+   - Performance considerations for large codebases
+   - Error handling and edge cases
+   - Security and privacy concerns
+
+4. Consider architectural implications:
+   - Adherence to established design patterns
+   - Consistency with existing components
+   - Extension points for future enhancements
+   - Testing approach and testability
+   - Configuration and customization options
+
+5. Plan the implementation approach:
+   - Break down the task into logical steps
+   - Identify reusable components or utilities
+   - Define interfaces and contracts
+   - Consider error handling strategy
+   - Plan for testing and validation
+
+## OUTPUT FORMAT
+Provide a structured implementation plan with the following sections:
+
+1. **Task Analysis**:
+   - Clear definition of what needs to be implemented
+   - Success criteria and constraints
+   - Scope boundaries and assumptions
+
+2. **Technical Considerations**:
+   - Key challenges identified
+   - Design decisions and trade-offs
+   - Integration points with existing components
+   - Performance and security considerations
+
+3. **Implementation Steps**:
+   - Detailed breakdown of implementation steps
+   - Component and file structure
+   - Key algorithms or logic flows
+   - Error handling approach
+
+4. **Testing Strategy**:
+   - Unit testing approach
+   - Integration testing considerations
+   - Edge cases to validate
+   - Mocking strategy for dependencies
+
+5. **Implementation Risks**:
+   - Potential issues or blockers
+   - Mitigation strategies
+   - Fallback approaches if needed
+
+## IMPORTANT NOTES
+- Take time to fully understand the problem before proposing solutions
+- Consider how your implementation fits into the broader architecture
+- Prioritize maintainability, extensibility, and testability
+- Follow established patterns and conventions in the codebase
+- Consider both happy path and error scenarios
+- Think about future extensions and modifications

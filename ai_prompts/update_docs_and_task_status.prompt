@@ -1,0 +1,95 @@
+# Update Documentation and Task Status Prompt for VaahAI
+
+You are an AI assistant helping with the VaahAI project, a multi-agent AI CLI tool built with Microsoft's Autogen Framework.
+
+## TASK
+Update project documentation and task status based on recent implementations, code changes, and completed tasks. Ensure all documentation remains consistent and reflects the current state of the project with a focus on granular task tracking.
+
+## WORKFLOW
+
+### 1. Review Completed Task Implementation
+- Examine the code changes related to the recently completed task
+- Identify all components, files, and modules that were modified or created
+- Note any architectural decisions or design patterns implemented
+- Verify that the implementation meets the task requirements
+- Document any deviations from the original plan or scope
+
+### 2. Update Task Status in TASK_TRACKING.md
+- Locate the specific task ID in `/specs/TASK_TRACKING.md`
+- Update the status from "In Progress" (🟡) to "Completed" (🟢)
+- Add completion date to the task entry
+- Document any implementation notes or decisions in the Notes column
+- Check if any dependent tasks can now be started and update their status
+
+### 3. Update Technical Documentation
+- Update or create technical documentation in `/specs` folder:
+  - Update architecture diagrams if components were added or modified
+  - Update API specifications if interfaces were changed
+  - Update data models if schemas were modified
+  - Update sequence diagrams if workflows were implemented
+- Update developer documentation in `/docs` folder:
+  - Update setup instructions if new dependencies were added
+  - Update usage examples to reflect new functionality
+  - Update configuration documentation with new options
+- Update AI-specific documentation in `/ai_docs` folder:
+  - Update agent descriptions if agent behavior was modified
+  - Update prompt templates if they were refined
+  - Update model configuration documentation if changed
+
+### 4. Create or Update User-Facing Documentation
+- Update README files with new features or changes
+- Update command references with new options or behaviors
+- Update configuration guides with new settings
+- Add or update troubleshooting information
+- Create or update usage examples that demonstrate the new functionality
+
+### 5. Verify Documentation Consistency
+- Ensure consistent terminology across all documentation
+- Verify that version numbers and references are updated consistently
+- Check that all documentation reflects the current implementation
+- Identify and resolve any contradictions between documents
+- Ensure documentation follows the project's style and formatting guidelines
+
+### 6. Update Project Metrics
+- Calculate and update task completion percentages by phase
+- Update MVP completion status
+- Identify any new blockers or dependencies
+- Update project timeline estimates if necessary
+
+## OUTPUT FORMAT
+Provide a comprehensive report of all updates made, including:
+
+1. **Task Completion Summary**:
+   - Task ID and description that was completed
+   - Implementation details and approach taken
+   - Any challenges encountered and how they were resolved
+   - Deviations from original plan (if any)
+
+2. **Documentation Updates**:
+   - List of all documents updated with specific changes made
+   - New documentation created (if any)
+   - Screenshots or code snippets added (if applicable)
+
+3. **Task Status Changes**:
+   - Updated task statuses in TASK_TRACKING.md
+   - New tasks that can now be started (dependencies satisfied)
+   - Current project phase completion percentage
+
+4. **Project Status Overview**:
+   - Current MVP completion status
+   - Progress toward next milestone
+   - Updated timeline projections (if changed)
+
+5. **Consistency Check Results**:
+   - Any inconsistencies found and resolved
+   - Documentation gaps identified
+   - Recommendations for further documentation improvements
+
+## IMPORTANT NOTES
+- Focus on incremental, granular updates that reflect the small task structure
+- Maintain detailed tracking of task dependencies and status
+- Ensure all documentation changes are specific and actionable
+- Prioritize documentation that supports the next tasks in the sequence
+- Document architectural decisions and their rationales
+- Update AI memory with significant changes to project status
+- Follow the project's commitment to small, frequent releases by keeping documentation continuously updated

@@ -1,347 +1,242 @@
-# Vaahai API Reference for AI Tools
-
-This document provides detailed API reference information for the Vaahai AI-augmented code review CLI tool, specifically formatted for AI tools to understand the interfaces, functions, classes, and modules.
+# Vaahai API Reference
 
 ## Core Modules
 
-### 1. Configuration Manager
-
-{{ ... }}
-
-### 2. Code Scanner
-
-{{ ... }}
-
-### 3. Autogen Multi-Agent System
-
-**Module**: `vaahai.core.agents`
-
-**Description**: Implements a multi-agent system using Microsoft's Autogen framework for sophisticated code review.
-
-**Key Components**:
-
-#### Agent Factory
+### Configuration Module
 
 ```python
-class AgentFactory:
-    """Factory for creating specialized Autogen agents."""
-    
-    @staticmethod
-    def create_language_detector(config: Dict[str, Any]) -> Agent:
-        """Create a Language Detector agent."""
-        pass
+from vaahai.config import ConfigManager
+
+# Get configuration instance
+config = ConfigManager()
+
+# Get configuration value
+api_key = config.get("openai.api_key")
+
+# Set configuration value
+config.set("openai.api_key", "your-api-key")
+
+# Save configuration
+config.save()
+
+# Validate configuration
+is_valid, errors = config.validate()
+```
+
+### Agent Factory
+
+```python
+from vaahai.agents import AgentFactory
+
+# Create an agent
+language_detector = AgentFactory.create("language_detector", config=config)
+
+# Run agent
+result = language_detector.run(file_path="/path/to/file.py")
+```
+
+### Command Handlers
+
+```python
+from vaahai.commands import ReviewCommand
+
+# Create command handler
+review_cmd = ReviewCommand(config=config)
+
+# Execute command
+result = review_cmd.execute(
+    path="/path/to/code",
+    output_format="markdown",
+    depth="standard"
+)
+```
+
+## Agent APIs
+
+### Base Agent
+
+All agents inherit from the `VaahaiAgent` base class which provides common functionality:
+
+```python
+from vaahai.agents.base import VaahaiAgent
+
+class CustomAgent(VaahaiAgent):
+    def __init__(self, config, **kwargs):
+        super().__init__(config, **kwargs)
         
-    @staticmethod
-    def create_framework_detector(config: Dict[str, Any]) -> Agent:
-        """Create a Framework/CMS Detector agent."""
-        pass
-        
-    @staticmethod
-    def create_standards_analyzer(config: Dict[str, Any]) -> Agent:
-        """Create a Standards Analyzer agent."""
-        pass
-        
-    @staticmethod
-    def create_security_auditor(config: Dict[str, Any]) -> Agent:
-        """Create a Security Auditor agent."""
-        pass
-        
-    @staticmethod
-    def create_review_coordinator(config: Dict[str, Any]) -> Agent:
-        """Create a Review Coordinator agent."""
+    def run(self, *args, **kwargs):
+        # Agent-specific implementation
         pass
 ```
 
-#### Group Chat Manager
+### Language Detector Agent
 
 ```python
-class ReviewGroupChatManager:
-    """Manages the group chat for code review."""
-    
-    def __init__(self, config: Dict[str, Any]):
-        """Initialize the group chat manager with configuration."""
-        pass
-        
-    def setup_agents(self) -> None:
-        """Set up all required agents for the review."""
-        pass
-        
-    def initiate_review(self, code_context: Dict[str, Any]) -> Dict[str, Any]:
-        """Start the review process with the given code context."""
-        pass
-        
-    def process_results(self, chat_results: Any) -> Dict[str, Any]:
-        """Process the results from the group chat."""
-        pass
+from vaahai.agents import LanguageDetectorAgent
+
+# Create agent
+detector = LanguageDetectorAgent(config=config)
+
+# Detect language for a file
+result = detector.detect_file("/path/to/file.py")
+# Returns: {"language": "python", "version": "3.8+", "confidence": 0.95}
+
+# Detect languages in a directory
+results = detector.detect_directory("/path/to/project")
+# Returns: {"files": [...], "summary": {"python": 60%, "javascript": 30%, "other": 10%}}
 ```
 
-#### Agent Configuration
+### Framework Detector Agent
 
 ```python
-class AgentConfig:
-    """Configuration for Autogen agents."""
-    
-    def __init__(self, config_path: Optional[str] = None):
-        """Initialize agent configuration from file or defaults."""
-        pass
-        
-    def get_agent_config(self, agent_type: str) -> Dict[str, Any]:
-        """Get configuration for a specific agent type."""
-        pass
-        
-    def get_group_chat_config(self) -> Dict[str, Any]:
-        """Get configuration for the group chat."""
-        pass
+from vaahai.agents import FrameworkDetectorAgent
+
+# Create agent
+detector = FrameworkDetectorAgent(config=config)
+
+# Detect frameworks
+result = detector.detect("/path/to/project")
+# Returns: {"frameworks": ["django", "react"], "confidence": 0.9}
 ```
 
-#### Docker Code Executor
+### Reviewer Agent
 
 ```python
-class VaahaiDockerCommandLineCodeExecutor:
-    """Docker-based code execution environment for Autogen agents."""
-    
-    def __init__(self, config: Dict[str, Any]):
-        """Initialize the Docker code executor with configuration."""
-        pass
-        
-    def execute_code(self, code: str, language: str) -> Dict[str, Any]:
-        """Execute code in a Docker container for the specified language."""
-        pass
-        
-    def setup_container(self, language: str) -> str:
-        """Set up a Docker container for the specified language."""
-        pass
-        
-    def cleanup_container(self, container_id: str) -> None:
-        """Clean up a Docker container after execution."""
-        pass
-        
-    def apply_resource_limits(self, container_id: str) -> None:
-        """Apply resource limits to a Docker container."""
-        pass
-        
-    def get_language_image(self, language: str) -> str:
-        """Get the Docker image for the specified language."""
-        pass
+from vaahai.agents import ReviewerAgent
+
+# Create agent
+reviewer = ReviewerAgent(config=config)
+
+# Review code
+result = reviewer.review(
+    path="/path/to/code",
+    focus="quality",  # or "security", "performance", "all"
+    depth="standard"  # or "deep", "quick"
+)
 ```
 
-#### Review Orchestrator
+### Auditor Agent
 
 ```python
-class ReviewOrchestrator:
-    """Orchestrates the entire review process using multiple agents."""
-    
-    def __init__(self, config: Dict[str, Any]):
-        """Initialize the orchestrator with configuration."""
-        pass
-        
-    def review_file(self, file_path: str, options: Dict[str, Any]) -> Dict[str, Any]:
-        """Review a single file using the multi-agent system."""
-        pass
-        
-    def review_directory(self, dir_path: str, options: Dict[str, Any]) -> Dict[str, Any]:
-        """Review all files in a directory using the multi-agent system."""
-        pass
-        
-    def format_results(self, results: Dict[str, Any], format_type: str) -> str:
-        """Format the review results in the specified format."""
-        pass
+from vaahai.agents import AuditorAgent
+
+# Create agent
+auditor = AuditorAgent(config=config)
+
+# Audit code
+result = auditor.audit(
+    path="/path/to/code",
+    focus=["security", "compliance"],
+    standards=["pci-dss", "owasp-top-10"]
+)
 ```
 
-### 4. CLI Commands
-
-**Module**: `vaahai.cli.commands`
-
-**Description**: Implements the CLI commands for the Vaahai tool.
-
-**Key Components**:
-
-#### Review Command
+### Reporter Agent
 
 ```python
+from vaahai.agents import ReporterAgent
+
+# Create agent
+reporter = ReporterAgent(config=config)
+
+# Generate report
+report = reporter.generate(
+    data=review_results,
+    format="markdown"  # or "html", "terminal"
+)
+```
+
+### Applier Agent
+
+```python
+from vaahai.agents import ApplierAgent
+
+# Create agent
+applier = ApplierAgent(config=config)
+
+# Apply changes
+result = applier.apply(
+    changes=suggested_changes,
+    path="/path/to/file.py",
+    interactive=True  # Ask for confirmation before each change
+)
+```
+
+## Autogen Integration
+
+### Creating Autogen Agents
+
+```python
+from vaahai.agents.autogen import create_assistant_agent, create_user_proxy_agent
+
+# Create an assistant agent
+assistant = create_assistant_agent(
+    name="code_reviewer",
+    system_message="You are a code review expert...",
+    llm_config=config.get("llm")
+)
+
+# Create a user proxy agent
+user_proxy = create_user_proxy_agent(
+    name="user_proxy",
+    human_input_mode="NEVER"
+)
+```
+
+### Setting Up Group Chat
+
+```python
+from vaahai.agents.autogen import create_group_chat
+
+# Create a group chat with multiple agents
+group_chat = create_group_chat(
+    agents=[language_detector, framework_detector, reviewer, reporter],
+    messages=[],
+    max_round=10
+)
+
+# Create a group chat manager
+manager = create_group_chat_manager(group_chat=group_chat)
+
+# Initiate the chat
+manager.initiate_chat(
+    message="Review the code in /path/to/project"
+)
+```
+
+## Utility Functions
+
+```python
+from vaahai.utils import file_utils, output_utils
+
+# Check if a file is binary
+is_binary = file_utils.is_binary_file("/path/to/file")
+
+# Get file extension
+ext = file_utils.get_extension("/path/to/file.py")  # Returns: "py"
+
+# Format output as table
+table = output_utils.as_table(data, headers=["File", "Language", "Issues"])
+
+# Format output as markdown
+md = output_utils.as_markdown(data)
+```
+
+## CLI Integration
+
+```python
+import typer
+from vaahai.commands import ReviewCommand
+
+app = typer.Typer()
+
 @app.command()
 def review(
-    path: str = typer.Argument(
-        ...,
-        help="Path to file or directory to review",
-    ),
-    output_format: OutputFormat = typer.Option(
-        OutputFormat.TERMINAL,
-        "--format", "-f",
-        help="Output format for the review results",
-    ),
-    output_file: Optional[str] = typer.Option(
-        None,
-        "--output", "-o",
-        help="File to write the review results to",
-    ),
-    focus: ReviewFocus = typer.Option(
-        ReviewFocus.GENERAL,
-        "--focus",
-        help="Focus area for the review",
-    ),
-    depth: ReviewDepth = typer.Option(
-        ReviewDepth.STANDARD,
-        "--depth",
-        help="Depth of the review",
-    ),
-    ignore_patterns: List[str] = typer.Option(
-        [],
-        "--ignore", "-i",
-        help="Patterns to ignore during review",
-    ),
-    agent_config: Optional[str] = typer.Option(
-        None,
-        "--agent-config",
-        help="Path to agent configuration file",
-    ),
+    path: str = typer.Argument(..., help="Path to file or directory to review"),
+    output: str = typer.Option("terminal", help="Output format")
 ):
-    """
-    Review code using AI-augmented analysis.
-    
-    This command uses a multi-agent system powered by Autogen to perform
-    sophisticated code review on files or directories.
-    """
-    pass
+    """Review code for quality and best practices."""
+    cmd = ReviewCommand()
+    result = cmd.execute(path=path, output_format=output)
+    typer.echo(result)
 ```
-
-{{ ... }}
-
-## Integration Interfaces
-
-### 1. LLM Provider Interface
-
-{{ ... }}
-
-### 2. Autogen Integration
-
-**Module**: `vaahai.core.agents.autogen_integration`
-
-**Description**: Provides integration with the Autogen framework.
-
-**Key Components**:
-
-#### Autogen Setup
-
-```python
-def setup_autogen(config: Dict[str, Any]) -> None:
-    """Set up Autogen with the given configuration."""
-    pass
-```
-
-#### Agent Creation
-
-```python
-def create_agent(
-    name: str,
-    system_message: str,
-    llm_config: Dict[str, Any],
-    human_input_mode: str = "NEVER",
-) -> Agent:
-    """Create an Autogen agent with the given parameters."""
-    pass
-```
-
-#### Group Chat Setup
-
-```python
-def setup_group_chat(
-    agents: List[Agent],
-    config: Dict[str, Any],
-) -> GroupChat:
-    """Set up a group chat with the given agents and configuration."""
-    pass
-```
-
-#### Chat Manager
-
-```python
-def create_chat_manager(
-    group_chat: GroupChat,
-    config: Dict[str, Any],
-) -> GroupChatManager:
-    """Create a group chat manager for the given group chat."""
-    pass
-```
-
-### 3. Output Formatters
-
-{{ ... }}
-
-## Configuration Schema
-
-### 1. Main Configuration
-
-{{ ... }}
-
-### 2. Agent Configuration
-
-```toml
-# Agent configuration schema
-
-[agents]
-# Global agent settings
-max_rounds = 10
-termination_message = "REVIEW_COMPLETE"
-
-[agents.language_detector]
-name = "LanguageDetector"
-model = "gpt-4"
-temperature = 0.2
-system_message = """You are a Language Detector Agent specialized in identifying programming languages.
-Analyze the code and determine:
-1. The primary programming language(s) used
-2. Language version indicators if present
-3. Any language-specific features or patterns
-"""
-
-[agents.framework_detector]
-name = "FrameworkDetector"
-model = "gpt-4"
-temperature = 0.3
-system_message = """You are a Framework Detector Agent specialized in identifying frameworks and libraries.
-Analyze the code and determine:
-1. Frameworks or libraries being used
-2. Architectural patterns (MVC, MVVM, etc.)
-3. Key dependencies and their relationships
-"""
-
-[agents.standards_analyzer]
-name = "StandardsAnalyzer"
-model = "gpt-4"
-temperature = 0.3
-system_message = """You are a Standards Analyzer Agent specialized in evaluating adherence to coding standards.
-Analyze the code and determine:
-1. Adherence to language-specific coding standards
-2. Style consistency issues
-3. Best practice violations
-"""
-
-[agents.security_auditor]
-name = "SecurityAuditor"
-model = "gpt-4"
-temperature = 0.2
-system_message = """You are a Security Auditor Agent specialized in identifying security vulnerabilities.
-Analyze the code and determine:
-1. Security vulnerabilities
-2. Common security anti-patterns
-3. Security best practice violations
-"""
-
-[agents.review_coordinator]
-name = "ReviewCoordinator"
-model = "gpt-4"
-temperature = 0.3
-system_message = """You are a Review Coordinator Agent responsible for orchestrating the code review process.
-Your tasks include:
-1. Dividing code into logical segments
-2. Routing specific questions to specialized agents
-3. Aggregating findings and generating a comprehensive report
-"""
-
-[group_chat]
-max_rounds = 10
-speaker_selection_method = "auto"
-```
-
-{{ ... }}
