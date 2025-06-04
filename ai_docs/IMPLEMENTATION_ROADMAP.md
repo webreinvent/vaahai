@@ -1,671 +1,412 @@
-# Vaahai Implementation Roadmap for AI Tools
+# Vaahai Implementation Roadmap
 
-This document outlines the implementation roadmap for the Vaahai AI-augmented code review CLI tool, specifically formatted for AI tools to understand the development sequence, priorities, and milestones.
+This document outlines the phased implementation plan for the Vaahai project, breaking down the development into manageable tasks with clear dependencies and milestones.
 
-## Development Phases
+## Phase 1: Core Infrastructure
 
-### Phase 1: Foundation (MVP)
+### P1-T001: CLI Application Skeleton
+**Status**: Not Started
 
-**Objective**: Establish core functionality for basic code review workflow
-
-**Components**:
-1. **CLI Framework**
-   - Basic command structure
-   - Command parsing and routing
-   - Help documentation
-
-2. **Core Architecture**
-   - Project structure
-   - Dependency management
-   - Configuration system
-
-3. **Static Analysis Integration**
-   - Python analyzer integration (pylint, flake8)
-   - Issue normalization
-   - Basic reporting
-
-4. **LLM Integration**
-   - OpenAI API integration
-   - Basic prompt templates
-   - Response parsing
-
-5. **Output Formatting**
-   - Terminal output
-   - Basic markdown output
-   - Result summarization
-
-**Deliverables**:
-- Functional CLI tool for Python code review
-- Integration with basic static analyzers
-- Simple LLM-powered review capabilities
-- Terminal and markdown output formats
-
-**Timeline**: 4 weeks
-
-### Phase 2: Enhancement
-
-**Objective**: Expand capabilities and improve user experience
+**Description**: Set up the basic CLI application structure using Typer and implement command placeholders.
 
 **Components**:
-1. **Advanced Static Analysis**
-   - Additional Python analyzers (mypy, bandit)
-   - Support for JavaScript/TypeScript
-   - Custom rule configuration
+- Main CLI entry point
+- Command registration
+- Help text and documentation
+- Version information
 
-2. **Enhanced LLM Integration**
-   - Ollama integration for local LLMs
-   - Advanced prompt engineering
-   - Context optimization
+**Implementation Notes**:
+- Use Typer for CLI framework
+- Set up Poetry for dependency management
+- Implement basic error handling
 
-3. **Fix Suggestion and Application**
-   - Fix extraction from LLM responses
-   - Interactive fix application
-   - Patch generation
+**Dependencies**: None
 
-4. **Advanced Output**
-   - HTML report generation
-   - Visualization of issues
-   - Interactive terminal UI
+### P1-T002: Configuration Manager
+**Status**: Not Started
 
-5. **Performance Optimization**
-   - Caching system
-   - Parallel processing
-   - Incremental analysis
-
-**Deliverables**:
-- Multi-language support
-- Local LLM options
-- Interactive fix application
-- Rich output formats
-- Improved performance
-
-**Timeline**: 6 weeks
-
-### Phase 3: Expansion
-
-**Objective**: Add advanced features and extensibility
+**Description**: Implement a configuration management system that handles user preferences, API keys, and system settings.
 
 **Components**:
-1. **Plugin System**
-   - Plugin architecture
-   - Custom analyzer support
-   - Custom formatter support
+- TOML-based configuration file
+- Environment variable support
+- Configuration validation
+- Secure API key storage
 
-2. **Advanced Review Features**
-   - Code explanation
-   - Code comparison
-   - Security auditing
-   - Performance optimization
+**Implementation Notes**:
+- Use TOML for configuration file format
+- Support multiple configuration sources with precedence
+- Implement validation for configuration values
 
-3. **CI/CD Integration**
-   - GitHub Actions integration
-   - GitLab CI integration
-   - Jenkins integration
-   - Automated reporting
+**Dependencies**: P1-T001
 
-4. **Team Collaboration**
-   - Shared configuration
-   - Review history
-   - Comment integration
-   - Team statistics
+### P1-T003: Code Scanner
+**Status**: Not Started
 
-5. **Enterprise Features**
-   - Role-based access control
-   - Compliance reporting
-   - Custom policies
-   - Audit logging
-
-**Deliverables**:
-- Extensible plugin system
-- Specialized review types
-- CI/CD integration
-- Team collaboration features
-- Enterprise-ready capabilities
-
-**Timeline**: 8 weeks
-
-### Phase 4: Refinement
-
-**Objective**: Polish, optimize, and prepare for production use
+**Description**: Implement a system to scan and analyze code files and directories.
 
 **Components**:
-1. **Usability Improvements**
-   - Onboarding experience
-   - Configuration wizards
-   - Intelligent defaults
-   - Error handling
+- File type detection
+- Directory traversal
+- Filtering (by extension, size, pattern)
+- Basic metadata extraction
 
-2. **Performance Tuning**
-   - Profiling and optimization
-   - Resource usage reduction
-   - Startup time improvement
-   - Large codebase handling
+**Implementation Notes**:
+- Respect .gitignore patterns
+- Handle binary files appropriately
+- Implement size limits for large files
 
-3. **Documentation and Examples**
-   - Comprehensive user guides
-   - API documentation
-   - Example configurations
-   - Tutorial videos
+**Dependencies**: P1-T001, P1-T002
 
-4. **Testing and Stability**
-   - Expanded test coverage
-   - Stress testing
-   - Edge case handling
-   - Reliability improvements
+### P1-T004: Basic Output Formatting
+**Status**: Not Started
 
-5. **Community Building**
-   - Plugin marketplace
-   - Community templates
-   - Contribution guidelines
-   - User feedback channels
+**Description**: Implement formatters for different output types (terminal, markdown, HTML).
 
-**Deliverables**:
-- Polished user experience
-- Optimized performance
-- Comprehensive documentation
-- Robust stability
-- Community engagement
+**Components**:
+- Terminal output with Rich
+- Markdown formatter
+- HTML formatter
+- Output selection logic
 
-**Timeline**: 4 weeks
+**Implementation Notes**:
+- Use Rich for terminal formatting
+- Generate clean, readable markdown
+- Create styled HTML output
 
-## Implementation Sequence
+**Dependencies**: P1-T001
 
-### Core Components Implementation Order
+### P1-T005: Simplified CLI Command Structure
+**Status**: Not Started
 
+**Description**: Refine the CLI command structure for better user experience.
+
+**Components**:
+- Command hierarchy
+- Parameter standardization
+- Command aliases
+
+**Implementation Notes**:
+- Ensure consistent parameter naming
+- Implement command aliases for common operations
+- Add detailed help text
+
+**Dependencies**: P1-T001
+
+## Phase 2: Autogen Integration
+
+### P2-T001: Autogen Framework Setup
+**Status**: Not Started
+
+**Description**: Integrate Microsoft's Autogen Framework as the foundation for the multi-agent system.
+
+**Components**:
+- Autogen dependency integration
+- Base agent classes
+- Agent factory pattern
+- Configuration integration
+
+**Implementation Notes**:
+- Use pyautogen package
+- Set up proper versioning constraints
+- Create base classes for agent integration
+
+**Dependencies**: P1-T002
+
+### P2-T002: Language Detector Agent
+**Status**: Not Started
+
+**Description**: Implement an agent that can detect programming languages in code files.
+
+**Components**:
+- Language detection by file extension
+- Content-based language detection
+- Language version estimation
+- Confidence scoring
+
+**Implementation Notes**:
+- Use both heuristic and LLM-based detection
+- Support multi-file projects
+- Implement language feature detection
+
+**Dependencies**: P2-T001, P1-T003
+
+### P2-T003: Framework/CMS Detector Agent
+**Status**: Not Started
+
+**Description**: Implement an agent that can identify frameworks, libraries, and CMSs used in a project.
+
+**Components**:
+- Framework detection by file structure
+- Dependency analysis
+- Pattern recognition
+- Version detection
+
+**Implementation Notes**:
+- Support popular frameworks across languages
+- Detect multiple frameworks in a project
+- Identify architectural patterns
+
+**Dependencies**: P2-T001, P2-T002
+
+### P2-T004: Docker-based Code Execution
+**Status**: Not Started
+
+**Description**: Implement a secure environment for executing code during analysis.
+
+**Components**:
+- Docker integration
+- Language-specific containers
+- Resource limiting
+- Execution result capture
+
+**Implementation Notes**:
+- Use Docker SDK for Python
+- Implement security measures
+- Support multiple programming languages
+
+**Dependencies**: P1-T002
+
+## Phase 3: Review and Audit Capabilities
+
+### P3-T001: Reviewer Agent
+**Status**: Not Started
+
+**Description**: Implement an agent that performs code reviews focusing on quality and best practices.
+
+**Components**:
+- Code quality analysis
+- Best practice checking
+- Style consistency
+- Bug detection
+
+**Implementation Notes**:
+- Integrate with static analysis tools
+- Use LLM for context-aware reviews
+- Support multiple programming languages
+
+**Dependencies**: P2-T001, P2-T002, P2-T003
+
+### P3-T002: Auditor Agent
+**Status**: Not Started
+
+**Description**: Implement an agent that performs comprehensive code audits for security and compliance.
+
+**Components**:
+- Security vulnerability detection
+- Compliance checking
+- Performance analysis
+- Architecture evaluation
+
+**Implementation Notes**:
+- Focus on security best practices
+- Support industry standards (OWASP, PCI-DSS)
+- Provide detailed explanations of issues
+
+**Dependencies**: P2-T001, P2-T002, P2-T003
+
+### P3-T003: Reporter Agent
+**Status**: Not Started
+
+**Description**: Implement an agent that formats and presents findings in various output formats.
+
+**Components**:
+- Report generation
+- Output formatting
+- Summary creation
+- Visualization
+
+**Implementation Notes**:
+- Support terminal, markdown, and HTML output
+- Create visually appealing reports
+- Include actionable recommendations
+
+**Dependencies**: P2-T001, P1-T004
+
+### P3-T004: Applier Agent
+**Status**: Not Started
+
+**Description**: Implement an agent that applies suggested code changes when approved by the user.
+
+**Components**:
+- Code modification
+- Change preview
+- Interactive confirmation
+- Backup creation
+
+**Implementation Notes**:
+- Implement safety checks
+- Support interactive confirmation
+- Create backups before changes
+
+**Dependencies**: P2-T001, P3-T001
+
+## Phase 4: Advanced Features
+
+### P4-T001: Commiter Agent
+**Status**: Not Started
+
+**Description**: Implement an agent that handles Git operations for committing changes.
+
+**Components**:
+- Git integration
+- Commit message generation
+- Branch management
+- Pull request creation
+
+**Implementation Notes**:
+- Use GitPython for Git operations
+- Generate meaningful commit messages
+- Support common Git workflows
+
+**Dependencies**: P3-T004
+
+### P4-T002: Multi-Agent Orchestration
+**Status**: Not Started
+
+**Description**: Implement a system for coordinating multiple agents in complex workflows.
+
+**Components**:
+- Agent communication
+- Workflow definition
+- Task scheduling
+- Error handling
+
+**Implementation Notes**:
+- Use Autogen's GroupChat and GroupChatManager
+- Implement fallback mechanisms
+- Support parallel agent execution
+
+**Dependencies**: P2-T001, P3-T001, P3-T002, P3-T003, P3-T004
+
+### P4-T003: Advanced Configuration Options
+**Status**: Not Started
+
+**Description**: Extend the configuration system with advanced options for customization.
+
+**Components**:
+- Agent-specific configuration
+- Plugin system
+- Custom workflows
+- Performance tuning
+
+**Implementation Notes**:
+- Maintain backward compatibility
+- Implement validation for new options
+- Provide sensible defaults
+
+**Dependencies**: P1-T002, P4-T002
+
+### P4-T004: Local LLM Integration
+**Status**: Not Started
+
+**Description**: Add support for local LLMs via Ollama.
+
+**Components**:
+- Ollama integration
+- Model management
+- Performance optimization
+- Fallback to cloud LLMs
+
+**Implementation Notes**:
+- Support popular local models
+- Implement caching for performance
+- Handle resource constraints
+
+**Dependencies**: P2-T001
+
+## Implementation Dependencies
+
+```mermaid
+graph TD
+    P1T001[P1-T001: CLI Application Skeleton]
+    P1T002[P1-T002: Configuration Manager]
+    P1T003[P1-T003: Code Scanner]
+    P1T004[P1-T004: Basic Output Formatting]
+    P1T005[P1-T005: Simplified CLI Command Structure]
+    
+    P2T001[P2-T001: Autogen Framework Setup]
+    P2T002[P2-T002: Language Detector Agent]
+    P2T003[P2-T003: Framework/CMS Detector Agent]
+    P2T004[P2-T004: Docker-based Code Execution]
+    
+    P3T001[P3-T001: Reviewer Agent]
+    P3T002[P3-T002: Auditor Agent]
+    P3T003[P3-T003: Reporter Agent]
+    P3T004[P3-T004: Applier Agent]
+    
+    P4T001[P4-T001: Commiter Agent]
+    P4T002[P4-T002: Multi-Agent Orchestration]
+    P4T003[P4-T003: Advanced Configuration Options]
+    P4T004[P4-T004: Local LLM Integration]
+    
+    P1T001 --> P1T002
+    P1T001 --> P1T003
+    P1T001 --> P1T004
+    P1T001 --> P1T005
+    
+    P1T002 --> P2T001
+    P1T002 --> P2T004
+    
+    P1T003 --> P2T002
+    
+    P2T001 --> P2T002
+    P2T001 --> P2T003
+    P2T001 --> P3T001
+    P2T001 --> P3T002
+    P2T001 --> P3T003
+    P2T001 --> P3T004
+    P2T001 --> P4T002
+    P2T001 --> P4T004
+    
+    P2T002 --> P2T003
+    P2T002 --> P3T001
+    P2T002 --> P3T002
+    
+    P2T003 --> P3T001
+    P2T003 --> P3T002
+    
+    P1T004 --> P3T003
+    
+    P3T001 --> P3T004
+    
+    P3T004 --> P4T001
+    
+    P3T001 --> P4T002
+    P3T002 --> P4T002
+    P3T003 --> P4T002
+    P3T004 --> P4T002
+    
+    P1T002 --> P4T003
+    P4T002 --> P4T003
 ```
-┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│  CLI Framework  │────▶│  Configuration  │────▶│  File Handling  │
-└─────────────────┘     └─────────────────┘     └─────────────────┘
-                                                        │
-                                                        ▼
-┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│  Output         │◀────│  Orchestration  │◀────│  Static Analysis│
-│  Formatting     │     │  Layer          │     │  Integration    │
-└─────────────────┘     └─────────────────┘     └─────────────────┘
-        │                       │
-        │                       ▼
-        │              ┌─────────────────┐
-        │              │  LLM            │
-        │              │  Integration    │
-        │              └─────────────────┘
-        │                       │
-        ▼                       ▼
-┌─────────────────┐     ┌─────────────────┐
-│  Fix            │◀────│  Result         │
-│  Application    │     │  Processing     │
-└─────────────────┘     └─────────────────┘
-```
 
-### Feature Implementation Priority
-
-1. **Must Have** (MVP)
-   - Basic CLI structure
-   - Python file analysis
-   - OpenAI integration
-   - Terminal output
-   - Configuration file support
-
-2. **Should Have** (Enhancement)
-   - Multiple language support
-   - Local LLM options
-   - Fix suggestions
-   - Markdown output
-   - Performance optimization
-
-3. **Could Have** (Expansion)
-   - Plugin system
-   - CI/CD integration
-   - Team collaboration
-   - Advanced review types
-   - HTML reports
-
-4. **Won't Have** (Future)
-   - GUI interface
-   - IDE integration
-   - Real-time collaboration
-   - Training custom models
-   - Automated code generation
-
-## Detailed Implementation Plan
-
-### Week 1-2: Core Framework
-
-**Tasks**:
-1. Set up project structure
-2. Implement CLI framework with Typer
-3. Create configuration management system
-4. Implement file scanning and selection
-5. Establish logging and error handling
-
-**Components**:
-- `cli/main.py`: CLI entry point
-- `cli/commands/`: Command implementations
-- `core/config.py`: Configuration management
-- `core/scanner.py`: File scanning
-- `utils/logging.py`: Logging utilities
-
-**Dependencies**:
-- Typer for CLI
-- TOML for configuration
-- Pathlib for file handling
-- Rich for terminal output
-
-### Week 3-4: Analysis and LLM Integration
-
-**Tasks**:
-1. Implement static analyzer integration
-2. Create analyzer factory and registry
-3. Implement OpenAI integration
-4. Create prompt templates
-5. Implement response parsing
-
-**Components**:
-- `analyzers/base.py`: Base analyzer interface
-- `analyzers/python/`: Python analyzers
-- `llm/base.py`: Base LLM provider interface
-- `llm/openai.py`: OpenAI integration
-- `llm/prompts/`: Prompt templates
-
-**Dependencies**:
-- Pylint for Python analysis
-- Flake8 for Python analysis
-- OpenAI SDK for API access
-- Jinja2 for prompt templates
-
-### Week 5-6: Output and Review
-
-**Tasks**:
-1. Implement result formatting
-2. Create terminal output formatter
-3. Create markdown output formatter
-4. Implement review orchestration
-5. Create result aggregation
-
-**Components**:
-- `formatters/base.py`: Base formatter interface
-- `formatters/terminal.py`: Terminal formatter
-- `formatters/markdown.py`: Markdown formatter
-- `core/orchestrator.py`: Review orchestration
-- `core/aggregator.py`: Result aggregation
-
-**Dependencies**:
-- Rich for terminal formatting
-- Markdown for markdown generation
-- Pygments for syntax highlighting
-
-### Week 7-8: Fix Application and Enhancement
-
-**Tasks**:
-1. Implement fix extraction from LLM responses
-2. Create fix application logic
-3. Implement interactive fix application
-4. Create patch generation
-5. Implement caching system
-
-**Components**:
-- `fixes/extractor.py`: Fix extraction
-- `fixes/applier.py`: Fix application
-- `fixes/interactive.py`: Interactive application
-- `fixes/patch.py`: Patch generation
-- `core/cache.py`: Caching system
-
-**Dependencies**:
-- Diff-match-patch for diff generation
-- Prompt-toolkit for interactive UI
-- Diskcache for caching
-
-### Week 9-10: Multi-Language Support
-
-**Tasks**:
-1. Implement JavaScript/TypeScript analyzers
-2. Create language detection
-3. Implement language-specific prompts
-4. Create language-specific formatters
-5. Implement language-specific fixes
-
-**Components**:
-- `analyzers/javascript/`: JavaScript analyzers
-- `analyzers/typescript/`: TypeScript analyzers
-- `utils/language.py`: Language detection
-- `llm/prompts/javascript/`: JavaScript prompts
-- `llm/prompts/typescript/`: TypeScript prompts
-
-**Dependencies**:
-- ESLint for JavaScript analysis
-- TSLint for TypeScript analysis
-- Language detection libraries
-
-### Week 11-12: Local LLM and Advanced Output
-
-**Tasks**:
-1. Implement Ollama integration
-2. Create LLM provider selection
-3. Implement HTML output formatter
-4. Create visualization components
-5. Implement advanced terminal UI
-
-**Components**:
-- `llm/ollama.py`: Ollama integration
-- `llm/factory.py`: LLM provider factory
-- `formatters/html.py`: HTML formatter
-- `formatters/visualization.py`: Visualization
-- `formatters/terminal_ui.py`: Advanced terminal UI
-
-**Dependencies**:
-- Ollama SDK for local LLM
-- Jinja2 for HTML templates
-- Plotly for visualization
-- Textual for terminal UI
-
-### Week 13-14: Plugin System
-
-**Tasks**:
-1. Design plugin architecture
-2. Implement plugin discovery
-3. Create plugin registry
-4. Implement plugin loading
-5. Create example plugins
-
-**Components**:
-- `plugins/base.py`: Base plugin interface
-- `plugins/discovery.py`: Plugin discovery
-- `plugins/registry.py`: Plugin registry
-- `plugins/loader.py`: Plugin loading
-- `plugins/examples/`: Example plugins
-
-**Dependencies**:
-- Importlib for dynamic loading
-- Stevedore for plugin management
-
-### Week 15-16: CI/CD Integration
-
-**Tasks**:
-1. Implement GitHub Actions integration
-2. Create GitLab CI integration
-3. Implement Jenkins integration
-4. Create CI mode for commands
-5. Implement report generation for CI
-
-**Components**:
-- `integrations/github.py`: GitHub integration
-- `integrations/gitlab.py`: GitLab integration
-- `integrations/jenkins.py`: Jenkins integration
-- `core/ci_mode.py`: CI mode handling
-- `formatters/ci_report.py`: CI report generation
-
-**Dependencies**:
-- GitHub API client
-- GitLab API client
-- Jenkins API client
-
-### Week 17-18: Team Collaboration
-
-**Tasks**:
-1. Implement shared configuration
-2. Create review history storage
-3. Implement comment integration
-4. Create team statistics
-5. Implement user management
-
-**Components**:
-- `collaboration/config.py`: Shared configuration
-- `collaboration/history.py`: Review history
-- `collaboration/comments.py`: Comment integration
-- `collaboration/statistics.py`: Team statistics
-- `collaboration/users.py`: User management
-
-**Dependencies**:
-- SQLite for local storage
-- Redis for shared cache
-- API clients for issue trackers
-
-### Week 19-20: Enterprise Features
-
-**Tasks**:
-1. Implement role-based access control
-2. Create compliance reporting
-3. Implement custom policies
-4. Create audit logging
-5. Implement security features
-
-**Components**:
-- `enterprise/rbac.py`: Access control
-- `enterprise/compliance.py`: Compliance reporting
-- `enterprise/policies.py`: Custom policies
-- `enterprise/audit.py`: Audit logging
-- `enterprise/security.py`: Security features
-
-**Dependencies**:
-- Authentication libraries
-- Policy enforcement frameworks
-- Audit logging systems
-
-### Week 21-22: Refinement and Testing
-
-**Tasks**:
-1. Improve error handling
-2. Optimize performance
-3. Enhance user experience
-4. Expand test coverage
-5. Fix bugs and issues
-
-**Components**:
-- Various components across the codebase
-- Test suite expansion
-- Performance profiling
-- User experience testing
-
-**Dependencies**:
-- Profiling tools
-- Testing frameworks
-- User feedback
-
-## Milestone Definitions
-
-### Milestone 1: MVP Release
-
-**Criteria**:
-- Basic CLI commands implemented
-- Python file analysis working
-- OpenAI integration functional
-- Terminal output formatted
-- Configuration file support
-
-**Validation**:
-- End-to-end test of basic workflow
-- Manual testing of commands
-- Performance benchmarking
-- User acceptance testing
-
-### Milestone 2: Enhanced Release
-
-**Criteria**:
-- Multiple language support
-- Local LLM options available
-- Fix suggestions working
-- Markdown output formatted
-- Performance optimized
-
-**Validation**:
-- Multi-language test suite
-- Local LLM integration tests
-- Fix application testing
-- Output format validation
-- Performance benchmarking
-
-### Milestone 3: Expanded Release
-
-**Criteria**:
-- Plugin system implemented
-- CI/CD integration working
-- Team collaboration features
-- Advanced review types
-- HTML reports generated
-
-**Validation**:
-- Plugin system testing
-- CI/CD integration testing
-- Collaboration feature testing
-- Review type validation
-- HTML report validation
-
-### Milestone 4: Production Release
-
-**Criteria**:
-- Polished user experience
-- Optimized performance
-- Comprehensive documentation
-- Robust stability
-- Community engagement
-
-**Validation**:
-- User experience testing
-- Performance benchmarking
-- Documentation review
-- Stability testing
-- Community feedback
-
-## Risk Management
-
-### Technical Risks
-
-1. **LLM Integration Challenges**
-   - **Risk**: LLM APIs may change or have limitations
-   - **Mitigation**: Abstract LLM integration, support multiple providers, implement fallbacks
-
-2. **Performance Issues**
-   - **Risk**: Analysis may be slow for large codebases
-   - **Mitigation**: Implement caching, incremental analysis, and parallel processing
-
-3. **Compatibility Problems**
-   - **Risk**: Tools may not work across all environments
-   - **Mitigation**: Comprehensive testing across platforms, containerization, clear requirements
-
-### Resource Risks
-
-1. **Development Capacity**
-   - **Risk**: Limited development resources may delay implementation
-   - **Mitigation**: Prioritize features, use iterative development, leverage community contributions
-
-2. **API Costs**
-   - **Risk**: LLM API usage may become expensive
-   - **Mitigation**: Implement token optimization, local LLM options, caching strategies
-
-3. **Maintenance Burden**
-   - **Risk**: Growing codebase may increase maintenance costs
-   - **Mitigation**: Modular design, comprehensive testing, documentation, community involvement
-
-### Market Risks
-
-1. **User Adoption**
-   - **Risk**: Users may not adopt the tool
-   - **Mitigation**: Focus on user experience, clear value proposition, easy onboarding
-
-2. **Competitive Landscape**
-   - **Risk**: Similar tools may emerge
-   - **Mitigation**: Unique features, open-source advantage, community building
-
-3. **Technology Evolution**
-   - **Risk**: Rapid AI advancement may make approaches obsolete
-   - **Mitigation**: Modular design for easy updates, focus on extensibility
-
-## Success Metrics
-
-### Usage Metrics
-
-1. **Installation Count**
-   - Target: 1,000+ installations in first 3 months
-   - Tracking: PyPI download statistics
-
-2. **Active Users**
-   - Target: 200+ weekly active users
-   - Tracking: Telemetry data (opt-in)
-
-3. **Command Usage**
-   - Target: 5,000+ commands executed weekly
-   - Tracking: Telemetry data (opt-in)
-
-### Quality Metrics
-
-1. **Issue Detection**
-   - Target: 90%+ accuracy in issue detection
-   - Tracking: Validation against manual review
-
-2. **Fix Success Rate**
-   - Target: 80%+ of suggested fixes apply correctly
-   - Tracking: Fix application success metrics
-
-3. **User Satisfaction**
-   - Target: 4.5+ rating (out of 5)
-   - Tracking: User surveys and feedback
-
-### Development Metrics
-
-1. **Code Quality**
-   - Target: 90%+ test coverage
-   - Tracking: Test coverage reports
-
-2. **Release Cadence**
-   - Target: Monthly feature releases
-   - Tracking: Release history
-
-3. **Bug Resolution**
-   - Target: Critical bugs fixed within 48 hours
-   - Tracking: Issue tracker metrics
-
-## Continuous Improvement
-
-### Feedback Loops
-
-1. **User Feedback**
-   - Regular user surveys
-   - Feature request tracking
-   - Usage pattern analysis
-
-2. **Automated Metrics**
-   - Performance monitoring
-   - Error tracking
-   - Usage statistics
-
-3. **Community Engagement**
-   - GitHub discussions
-   - Community calls
-   - Contributor feedback
-
-### Iteration Process
-
-1. **Prioritization**
-   - Data-driven feature prioritization
-   - User impact assessment
-   - Resource allocation
-
-2. **Implementation**
-   - Iterative development cycles
-   - Continuous integration
-   - Feature flagging
-
-3. **Validation**
-   - User acceptance testing
-   - A/B testing
-   - Performance validation
-
-### Long-term Evolution
-
-1. **Roadmap Refinement**
-   - Quarterly roadmap reviews
-   - Strategic alignment
-   - Technology trend adaptation
-
-2. **Architecture Evolution**
-   - Technical debt management
-   - Architecture decision records
-   - Refactoring strategy
-
-3. **Ecosystem Development**
-   - Plugin ecosystem growth
-   - Integration partnerships
-   - Community contribution framework
-
-## Conclusion
-
-This implementation roadmap provides a structured approach to developing the Vaahai AI-augmented code review CLI tool. By following this plan, the development team can deliver a high-quality, feature-rich tool that meets user needs while maintaining flexibility for future enhancements.
+## Risk Assessment
+
+| Risk | Impact | Likelihood | Mitigation |
+|------|--------|------------|------------|
+| Autogen API changes | High | Medium | Pin to stable version, monitor updates |
+| LLM API costs | Medium | High | Implement caching, rate limiting, local LLMs |
+| Performance issues with large codebases | High | Medium | Implement sampling, parallelization, progress reporting |
+| Security concerns with code execution | High | Low | Use Docker isolation, resource limits, user confirmation |
+| Compatibility issues across languages | Medium | Medium | Implement language-specific handlers, graceful degradation |
+
+## MVP Definition
+
+The Minimum Viable Product (MVP) for Vaahai includes:
+
+1. Basic CLI structure with `config`, `review`, and `helloworld` commands
+2. Configuration management with API key storage
+3. Simple code scanning capabilities
+4. Language detection using file extensions
+5. Basic code review using a single agent
+6. Terminal output formatting
+
+This MVP will be completed by implementing:
+- P1-T001: CLI Application Skeleton
+- P1-T002: Configuration Manager
+- P1-T003: Code Scanner
+- P1-T004: Basic Output Formatting
+- P2-T001: Autogen Framework Setup (partial)
+- P2-T002: Language Detector Agent (basic version)
+- P3-T001: Reviewer Agent (simplified version)
