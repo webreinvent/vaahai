@@ -85,6 +85,59 @@ To create product documentation which is a user guide who wants to use VaahAI so
 ### /specs 
 It will contain Project plan, Product Requirements Document, features, implementations, tasks, etc. THIS IS THE FIRST DOCUMENT WE SHOULD PREPARE.
 
+* Introduction
+* Product Vision
+* Target Audience
+* Business Objectives
+* Success Metrics
+* Assumptions and Constraints
+* Dependencies
+* References
+
+### /specs/feature
+List of features of the product
+
+### /specs/implementation
+List of implementation plan, roadmap, tasks tracking of the product
+
+### /specs/non_functional
+Product Requirements Document - Non-Functional Requirements
+
+* Performance Requirements
+* Security Requirements
+* Reliability Requirements
+* Scalability Requirements
+* Usability Requirements
+* Compatibility Requirements
+* Maintainability Requirements
+* Compliance Requirements
+
+
+### /specs/technical
+Product Requirements Document - Technical Specifications
+
+* Architecture Overview
+* Component Specifications
+* Data Flow
+* API Specifications
+* Technology Stack
+* Integration Points
+* Development Environment
+* Testing Strategy
+* API Specification
+* Technical Architecture
+
+### /specs/user_stories
+Product Requirements Document - User Stories
+
+* User Personas
+* User Stories
+* Use Cases
+* User Journeys
+* Acceptance Criteria
+* Detailed User Stories
+
+
 ### /vaahai
 This directory will contain the actual source code of the product. 
 
@@ -127,4 +180,4 @@ Try doing MVP first, test and then add more features. This will help you get a s
 4. Create useful ai prompts for documentation
 5. Revisit the documentation to make sure it is complete
 
-DO NOT MODIFY PROJECT_SCOPE.prompt file
+DO NOT MODIFY project_scope.prompt file
