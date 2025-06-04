@@ -1,9 +1,9 @@
 # You are an expert python developer, ai agent developer, technical writer and software architect with expertise in Autogen Framework and CLI software development.
 
-You need to write structured documentation which AI Tools like windsurf, claude, Junie, etc can understand for the following requirement:
+You need to write structured documentation for AI Tools like windsurf, claude, Junie, etc can understand for the following requirement:
 
 ## VaahAI Project Requirement
-VaahAI is a multi AI agent CLI tool and will using Microsoft Autogen Framework. It will have the capability to do the code review, generate code, generate code scaffolding and similar capabilities. 
+VaahAI is a multi AI agent CLI tool and will using Microsoft Autogen Framework. It will have the capability to do the code review, code audit, generate code, generate code scaffolding and similar capabilities. 
 
 ### VaahAI Commands
 
@@ -70,9 +70,9 @@ AI Coding tools persistent memory. A knowledge repository for AI tools can insta
 ### /ai_prompts 
 This directory will contain AI Prompts. Reusable prompts you can use with your ai tools. This reduces the time it takes to run repeat workflows in your codebases and in your ai tools. Although this is specific to Claude Code, the reusable prompts are not limited to any specific ai tooling. Few examples like:
 
-- ai_context.prompt : To ask ai to read all the documents like /specs, /docs, /ai to under the project scope
+- ai_context.prompt : To ask ai to read all the documents like /specs, /docs, /ai_docs to under the project scope
 
-- update_docs_and_task_status.prompt: Update the product docs, implementation status and tasks available in /specs, /docs, /ai based on recent discussion, implementation and code. Update the AI memory.
+- update_docs_and_task_status.prompt: Update the product docs, implementation status and tasks available in /specs, /docs, /ai_docs based on recent discussion, implementation and code. Update the AI memory.
 
 - pick_next_task.prompt: Check the status of implementation and pick next task
 
