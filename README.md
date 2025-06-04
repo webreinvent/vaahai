@@ -22,17 +22,41 @@ vaahai --version
 # Set up your configuration
 vaahai config init
 
+# Set up configuration non-interactively
+vaahai config init --non-interactive
+
+# Set up configuration with specific options
+vaahai config init --api-key "your-key" --llm-model "gpt-4" --use-docker
+
 # Review a single file
 vaahai review path/to/file.py
 
-# Review a directory recursively
-vaahai review src/
+# Review a directory
+vaahai review path/to/directory
+
+# Detect programming languages in a file or directory
+vaahai detect-language path/to/file_or_directory
+
+# Detect languages with specific output format
+vaahai detect-language path/to/file_or_directory --format json
+
+# Note: The detect-language command can also be installed and run standalone using pipx:
+# pipx install vaahai-language-detector
+# vaahai detect-language path/to/file_or_directory
+
+# Note: If you encounter Typer CLI errors, you can use the standalone installation:
+# ./bin/install-detect-language.sh --local
+# export PATH="/path/to/vaahai/local/bin:$PATH"
+# vaahai detect-language path/to/file_or_directory
 
 # Review with specific include/exclude patterns
 vaahai review src/ --include="*.py" --exclude="*_test.py"
 
 # Review with specific focus and depth
 vaahai review important_module.py --depth thorough --focus security
+
+# Detect programming languages in code
+vaahai detect-language src/
 ```
 
 ## Features
@@ -42,22 +66,21 @@ vaahai review important_module.py --depth thorough --focus security
 - **LLM Integration**: Leverage LLMs for contextual code review and suggestions
 - **Interactive Fixes**: Apply suggested fixes interactively
 - **Multiple Output Formats**: Generate reports in terminal, markdown, or HTML formats
+- **Language Detection**: Identify programming languages, versions, frameworks, and features in code files
 
 ## Implementation Status
 
-| Feature | Status | Description |
-|---------|--------|-------------|
-| ✅ Configuration Manager | Complete | Configuration loading and validation |
-| ✅ CLI Application | Complete | Command-line interface |
-| ✅ Code Scanner | Complete | File scanning and processing |
-| ✅ CLI Command Simplification | Complete | Simplified command structure |
-| ✅ Hello World Agent MVP | Complete | Simple agent to validate Autogen integration framework (needs revision to use Autogen classes) |
-| 🔄 Autogen Framework Integration | In Progress | Multi-agent system for code review with Docker-based code execution |
-| ⏳ Output Formatting | Deprioritized | Being replaced by Autogen Framework |
-| ⏳ Static Analysis | Planned | Integration with static analysis tools |
-| ⏳ LLM Provider Interface | Planned | Support for multiple LLM providers |
-| ⏳ Review Orchestration | Planned | Manage the review process |
-| ⏳ Fix Suggestion | Planned | Suggest code improvements |
+| Version | Feature | Status | Date |
+|---------|---------|--------|------|
+| 0.2.11 | Dependency Management Improvements | Fixed dependency issues with FLAML/XGBoost and made ML dependencies optional | June 2025 |
+| 0.2.10 | FLAML Dependency Fix | Fixed FLAML warning message by adding proper dependencies | June 2025 |
+| 0.2.9 | Configuration System Improvements | Fixed global config persistence and added verification | June 2025 |
+| 0.2.8 | Language Detector CLI Integration | Properly integrated with Typer CLI | June 2025 |
+| 0.2.8 | CLI Command Simplification | Complete | 0.2.8 |
+| 0.2.7 | Autogen Framework Integration | Complete | 0.2.7 |
+| 0.2.7 | Hello World Agent | Complete | 0.2.7 |
+| 0.2.6 | Static Analysis | Complete | 0.2.6 |
+| 0.2.5 | Core Infrastructure | Complete | 0.2.5 |
 
 For detailed implementation status, see the [Implementation Status](/specs/implementation/implementation_status.md) documentation.
 For the complete development roadmap, see the [Implementation Roadmap](/specs/implementation/implementation_roadmap.md).

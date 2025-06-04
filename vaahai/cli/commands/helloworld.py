@@ -8,6 +8,7 @@ import typer
 from typing import Optional
 from rich.console import Console
 from vaahai.core.agents.factory import AgentFactory
+from vaahai.core.agents.base import AUTOGEN_AVAILABLE
 from vaahai.core.config import config_manager
 
 # Create console for rich output
@@ -42,6 +43,14 @@ def main(
     the Autogen integration framework.
     """
     try:
+        # Check if Autogen is available
+        if not AUTOGEN_AVAILABLE:
+            console.print("[bold red]Warning:[/] Autogen dependencies are not fully available.")
+            console.print("Some features may be limited. To use full functionality, install the required dependencies:")
+            console.print("  [bold]pip install flaml[automl] xgboost[/]")
+            console.print("On macOS, you may also need to install OpenMP: [bold]brew install libomp[/]")
+            console.print("\nContinuing with limited functionality...\n")
+            
         # Create configuration
         config = {}
         if message:

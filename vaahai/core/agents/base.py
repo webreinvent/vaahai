@@ -5,9 +5,24 @@ This module contains the base agent class that all Vaahai agents must inherit fr
 """
 
 import os
+import sys
+import warnings
 from typing import Any, Dict, Optional
 
-import autogen
+# Try to import autogen, but provide fallback if dependencies are missing
+try:
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", message="flaml.automl is not available")
+        import autogen
+    AUTOGEN_AVAILABLE = True
+except (ImportError, ModuleNotFoundError) as e:
+    # Handle XGBoost/FLAML dependency issues
+    if "xgboost" in str(e) or "flaml" in str(e):
+        warnings.warn(f"Autogen dependencies not fully available: {e}. Some agent features will be limited.")
+        AUTOGEN_AVAILABLE = False
+    else:
+        # Re-raise if it's a different import error
+        raise
 
 from vaahai.core.config import config_manager
 

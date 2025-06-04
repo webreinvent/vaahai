@@ -251,6 +251,58 @@ You can customize the message using the `--message` option:
 vaahai helloworld --message "Hello, Autogen Integration!"
 ```
 
+### Language Detector Agent
+
+The Language Detector Agent is a specialized agent that analyzes code files to identify programming languages, estimate language versions, detect frameworks, and identify notable language features.
+
+### Running the Language Detector Agent
+
+You can run the Language Detector Agent using the `detect-language` command:
+
+```bash
+vaahai detect-language path/to/file.py
+```
+
+This will analyze the file and display the detected language, version, frameworks, and features.
+
+### Analyzing Multiple Files or Directories
+
+You can analyze multiple files or entire directories:
+
+```bash
+# Analyze multiple files
+vaahai detect-language file1.py file2.js file3.rb
+
+# Analyze all files in a directory
+vaahai detect-language src/
+
+# Use wildcard patterns
+vaahai detect-language *.js
+```
+
+### Output Formats
+
+The Language Detector Agent supports multiple output formats:
+
+```bash
+# Default table format
+vaahai detect-language src/
+
+# JSON output for programmatic use
+vaahai detect-language --format json src/
+
+# Markdown output for documentation
+vaahai detect-language --format markdown src/
+```
+
+### Disabling LLM Analysis
+
+You can disable LLM-based analysis and use only heuristic detection:
+
+```bash
+vaahai detect-language --no-llm src/
+```
+
 ### Using with OpenAI API Key
 
 For full Autogen capabilities, you'll need to provide an OpenAI API key. You can do this in several ways:
@@ -434,92 +486,26 @@ When using code execution:
 - Execution timeouts prevent infinite loops
 - Containers are automatically cleaned up after execution
 
-## Configuration
+## Detecting Programming Languages
 
-Vaahai can be configured using a configuration file or command-line arguments.
-
-### Interactive Configuration Setup
-
-The easiest way to set up Vaahai is to use the interactive configuration command:
+To detect programming languages, versions, and frameworks in your code, use the `detect-language` command:
 
 ```bash
-vaahai config init
+# Analyze a single file
+vaahai detect-language path/to/file.py
+
+# Analyze a directory (recursively)
+vaahai detect-language path/to/directory
+
+# Output in different formats
+vaahai detect-language path/to/directory --format json
+vaahai detect-language path/to/directory --format markdown
+
+# Disable LLM-based analysis
+vaahai detect-language path/to/directory --no-llm
 ```
 
-This will guide you through setting up your configuration with prompts for:
-
-1. OpenAI API Key
-2. Default LLM model
-3. Autogen default model
-4. Temperature settings
-5. Docker execution preferences
-
-The command creates a `.vaahai.toml` file in the current directory with your settings.
-
-### Global vs. Project Configuration
-
-Vaahai supports both global (user-level) and project-level configuration:
-
-- **Global configuration**: Applies to all projects for the current user
-- **Project configuration**: Applies only to the current project directory
-
-Project configuration takes precedence over global configuration.
-
-### Setting Configuration Values
-
-You can set configuration values using the `config set` command:
-
-```bash
-# Set a global configuration value
-vaahai config set llm.api_key your_openai_api_key --global
-
-# Set a project configuration value
-vaahai config set llm.model gpt-4
-```
-
-### Command-Line Overrides
-
-You can override configuration values using command-line arguments:
-
-```bash
-vaahai helloworld --api-key your_openai_api_key --model gpt-4
-```
-
-### Configuration Precedence
-
-Configuration settings are applied in the following order (highest to lowest priority):
-
-1. Command-line arguments
-2. Environment variables (e.g., `OPENAI_API_KEY`)
-3. Project configuration file (`.vaahai.toml` in the current directory)
-4. User configuration file (`.vaahai.toml` in the user's home directory)
-5. Default values
-
-## Static Analysis Options
-
-### Selecting Specific Analyzers
-
-Choose which static analyzers to use:
-
-```bash
-vaahai review file.py --analyzers pylint,flake8
-```
-
-### Customizing Analyzer Settings
-
-Use custom configuration files for static analyzers:
-
-```bash
-vaahai review file.py --pylint-config path/to/pylintrc
-```
-
-### Ignoring Specific Issues
-
-Ignore certain types of issues:
-
-```bash
-vaahai review file.py --ignore E501,W503
-```
+For more details, see the [Language Detection documentation](language_detection.md).
 
 ## Advanced Usage
 

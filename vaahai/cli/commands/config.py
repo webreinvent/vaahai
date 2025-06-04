@@ -13,6 +13,7 @@ from rich.table import Table
 
 from vaahai.core.config import config_manager, ReviewDepth, ReviewFocus, OutputFormat
 from vaahai.core.config.models import CURRENT_SCHEMA_VERSION
+import tomli
 import tomli_w
 import os
 
@@ -164,6 +165,11 @@ def init(
         "--use-docker/--no-use-docker",
         help="Enable or disable Docker for Autogen",
     ),
+    global_config: bool = typer.Option(
+        True,
+        "--global/--local",
+        help="Save to global user configuration (default) or local project configuration",
+    ),
 ) -> None:
     """
     Initialize configuration file.
@@ -179,10 +185,20 @@ def init(
     if force:
         console.print("[bold yellow]Force flag set, will overwrite existing configuration.[/bold yellow]")
     
-    # Check if file exists first
-    config_path = Path(os.getcwd()) / ".vaahai.toml"
+    # Determine the config path based on the global_config flag
+    if global_config:
+        # Global user config path
+        config_dir = Path(os.environ.get("HOME", str(Path.home()))) / ".config" / "vaahai"
+        config_dir.mkdir(parents=True, exist_ok=True)
+        config_path = config_dir / "config.toml"
+        config_type = "global user configuration"
+    else:
+        # Local project config path
+        config_path = Path(os.getcwd()) / ".vaahai.toml"
+        config_type = "local project configuration"
+    
     if config_path.exists() and not force:
-        console.print("[bold red]Configuration file already exists[/bold red]")
+        console.print(f"[bold red]{config_type.capitalize()} file already exists[/bold red]")
         console.print("Use [bold]--force[/bold] flag to overwrite")
         raise typer.Exit(1)
     
@@ -368,8 +384,51 @@ def init(
         with open(config_path, "wb") as f:
             tomli_w.dump(cleaned_config, f)
         
-        console.print("\n[bold green]Configuration file created successfully[/bold green]")
-        console.print(f"Created [bold].vaahai.toml[/bold] in the current directory")
+        console.print(f"\n[bold green]{config_type.capitalize()} file created successfully[/bold green]")
+        console.print(f"Created [bold]{config_path}[/bold]")
+        
+        # Verify the file was written correctly by reading it back
+        try:
+            with open(config_path, "rb") as f:
+                verified_config = tomli.load(f)
+            
+            console.print("\n[bold]Configuration File Verification:[/bold]")
+            console.print("[green]✓ Configuration file was successfully written and can be read back[/green]")
+            
+            # Verify key values were saved correctly
+            verification_table = Table()
+            verification_table.add_column("Setting", style="cyan")
+            verification_table.add_column("Requested Value", style="yellow")
+            verification_table.add_column("Saved Value", style="green")
+            verification_table.add_column("Status", style="bold")
+            
+            # Check LLM settings
+            if "llm" in cleaned_config:
+                for key, value in cleaned_config["llm"].items():
+                    saved_value = verified_config.get("llm", {}).get(key, "NOT FOUND")
+                    status = "[green]✓[/green]" if saved_value == value else "[red]✗[/red]"
+                    # Don't show full API key in output
+                    display_value = "****" if key == "api_key" and value else str(value)
+                    display_saved = "****" if key == "api_key" and saved_value else str(saved_value)
+                    verification_table.add_row(f"llm.{key}", display_value, display_saved, status)
+            
+            # Check Autogen settings
+            if "autogen" in cleaned_config:
+                for key, value in cleaned_config["autogen"].items():
+                    saved_value = verified_config.get("autogen", {}).get(key, "NOT FOUND")
+                    status = "[green]✓[/green]" if saved_value == value else "[red]✗[/red]"
+                    verification_table.add_row(f"autogen.{key}", str(value), str(saved_value), status)
+            
+            console.print(verification_table)
+        except Exception as e:
+            console.print(f"[yellow]Warning: Could not verify configuration file: {str(e)}[/yellow]")
+        
+        # Update the config_manager with the new values
+        for section, section_config in cleaned_config.items():
+            if isinstance(section_config, dict):
+                for key, value in section_config.items():
+                    config_key = f"{section}.{key}"
+                    config_manager.set(config_key, value, save=False)
         
         # Display configuration summary
         console.print("\n[bold]Configuration Summary:[/bold]")
@@ -396,6 +455,9 @@ def init(
             console.print("- Set your OpenAI API key: [bold]vaahai config set llm.api_key YOUR_API_KEY --global[/bold]")
         console.print("- Try the Hello World agent: [bold]vaahai helloworld[/bold]")
         console.print("- Edit configuration: [bold]vaahai config set <key> <value> --global[/bold]")
+        
+        # Force reload of configuration
+        config_manager.load()
         
         return True
     except Exception as e:

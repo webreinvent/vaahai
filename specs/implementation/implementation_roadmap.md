@@ -64,19 +64,27 @@ This document outlines the implementation roadmap for the Vaahai AI-augmented co
 
 #### P1-T001: Configuration Manager ✅
 
-**Description**: Implement a modular configuration system that can load and validate configuration from multiple sources.
+**Objective**: Create a robust configuration system that can load settings from multiple sources with precedence rules
 
-**Components**:
-- Configuration loading from files, environment variables, and CLI
-- Schema validation using Pydantic
-- Configuration migration for schema changes
+**Key Components**:
+- Configuration loading from multiple sources (files, environment variables, CLI)
+- Configuration validation and schema versioning
 - Default configuration values
 - Configuration persistence
+- Interactive configuration initialization
+- Secure API key management
+- Multiple configuration modes (interactive, non-interactive, CLI args)
+- Robust error handling for terminal input issues
 
-**Implementation**: 
-- Implemented as a modular package with singleton pattern
-- Created specialized modules for models, validation, migration, and management
-- Added backward compatibility layer
+**Implementation**:
+- ✅ Define configuration schema using Pydantic
+- ✅ Implement configuration loading with precedence
+- ✅ Add validation and migration capabilities
+- ✅ Create CLI commands for configuration management
+- ✅ Add interactive configuration initialization
+- ✅ Implement secure API key handling with environment variable support
+- ✅ Add robust error handling for terminal input issues
+- ✅ Fix serialization issues with None values in TOML files
 
 #### P1-T002: CLI Application Skeleton ✅
 
@@ -191,12 +199,32 @@ This document outlines the implementation roadmap for the Vaahai AI-augmented co
     - ✅ Test end-to-end functionality
       - ✅ Basic CLI tests
       - ✅ Autogen-specific tests
-- Agent Development Phase: 
-  - 🔄 Language Detector Agent (Priority 1)
-    - ✅ Define interface and responsibilities
+- Agent Development Phase:
+  - ✅ Language Detector Agent
+    - ✅ Define agent interface and responsibilities
     - ✅ Create prompt templates
-    - 🔄 Implement language detection logic
-  - ⬜ Framework/CMS Detector Agent
+    - ✅ Implement language detection logic
+      - ✅ Heuristic pattern-based detection
+      - ✅ LLM-based enhanced detection
+      - ✅ Framework and library detection
+      - ✅ Language version estimation
+    - ✅ Add support for multi-file context
+      - ✅ Project-level language distribution analysis
+      - ✅ Aggregate results across multiple files
+    - ✅ Test with various programming languages
+      - ✅ Unit tests for detection methods
+      - ✅ Integration tests for multi-file analysis
+    - ✅ CLI integration
+      - ✅ Implement detect-language command
+      - ✅ Support multiple output formats (table, JSON, markdown)
+      - ✅ Add configuration options
+      - ✅ Create standalone implementation to bypass Typer CLI issues
+      - ✅ Fix Typer CLI integration by properly registering the command
+      - ✅ Add robust script detection for finding the standalone script
+      - ✅ Ensure proper handling of all command-line options
+      - ✅ Release version 0.2.8 with full CLI integration support
+- Agent Development Phase: 
+  - 🔄 Framework/CMS Detector Agent
   - ⬜ Standards Analyzer Agent
   - ⬜ Security Auditor Agent
   - ⬜ Review Coordinator Agent
@@ -211,8 +239,7 @@ This document outlines the implementation roadmap for the Vaahai AI-augmented co
 
 **Next Steps**:
 1. Complete Docker code executor integration
-2. Finish Language Detector Agent implementation
-3. Begin Framework Detector Agent implementation
+2. Begin Framework Detector Agent implementation
 
 ### Phase 2: LLM Integration
 

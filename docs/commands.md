@@ -224,56 +224,26 @@ Manages Vaahai configuration.
 
 ##### `config init`
 
-Initializes Vaahai configuration with interactive prompts for common settings.
+Initializes configuration with default or user-provided values.
 
 ```bash
 vaahai config init [OPTIONS]
 ```
 
-#### Options
+Options:
+- `--force`, `-f`: Overwrite existing configuration file
+- `--non-interactive`, `-n`: Use default values without prompting
+- `--skip-api-key`: Skip API key input in interactive mode
+- `--api-key TEXT`: Set OpenAI API key (will be stored in config file)
+- `--llm-model TEXT`: Set default LLM model
+- `--llm-temperature FLOAT`: Set LLM temperature (0.0-1.0)
+- `--autogen-enabled/--no-autogen-enabled`: Enable or disable Autogen
+- `--autogen-model TEXT`: Set default Autogen model
+- `--autogen-temperature FLOAT`: Set Autogen temperature (0.0-1.0)
+- `--use-docker/--no-use-docker`: Enable or disable Docker for Autogen
+- `--global/--local`: Save to global user configuration (default) or local project configuration
 
-| Option | Description |
-|--------|-------------|
-| `--force`, `-f` | Overwrite existing configuration file |
-| `--non-interactive`, `-n` | Use default values without prompting |
-| `--skip-api-key` | Skip API key input in interactive mode |
-| `--api-key` TEXT | Set OpenAI API key (will be stored in config file) |
-| `--llm-model` TEXT | Set default LLM model |
-| `--llm-temperature` FLOAT | Set LLM temperature (0.0-1.0) |
-| `--autogen-enabled/--no-autogen-enabled` | Enable or disable Autogen |
-| `--autogen-model` TEXT | Set default Autogen model |
-| `--autogen-temperature` FLOAT | Set Autogen temperature (0.0-1.0) |
-| `--use-docker/--no-use-docker` | Enable or disable Docker for Autogen |
-
-#### Interactive Prompts
-
-When run in interactive mode (default), the command will prompt for:
-
-1. OpenAI API Key (can be skipped with `--skip-api-key` flag)
-2. Default LLM model
-3. LLM temperature
-4. Whether to enable Autogen
-5. Autogen default model
-6. Autogen temperature
-7. Whether to use Docker for Autogen execution
-
-The command will automatically use the `OPENAI_API_KEY` environment variable if available.
-
-#### Examples
-
-```bash
-# Interactive configuration with prompts
-vaahai config init
-
-# Skip API key prompt in interactive mode
-vaahai config init --skip-api-key
-
-# Non-interactive mode with default values
-vaahai config init --non-interactive
-
-# Fully automated configuration with custom values
-vaahai config init --api-key "your-key" --llm-model "gpt-4-turbo" --llm-temperature 0.5 --autogen-model "gpt-4" --use-docker
-```
+By default, the configuration is saved to the global user configuration file at `~/.config/vaahai/config.toml`. Use the `--local` flag to save to a local `.vaahai.toml` file in the current directory instead.
 
 This will start an interactive configuration process:
 
@@ -299,7 +269,22 @@ Autogen Temperature (0.0-1.0) [0]: 0.1
 Use Docker for Autogen [No]: Yes
 
 Configuration file created successfully
-Created .vaahai.toml in the current directory
+Created ~/.config/vaahai/config.toml
+
+Configuration File Verification:
+✓ Configuration file was successfully written and can be read back
+┏━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━┓
+┃ Setting           ┃ Requested Value ┃ Saved Value     ┃ Status ┃
+┡━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━┩
+│ llm.provider      │ openai          │ openai          │ ✓      │
+│ llm.model         │ gpt-4-turbo     │ gpt-4-turbo     │ ✓      │
+│ llm.api_key       │ ****            │ ****            │ ✓      │
+│ llm.temperature   │ 0.6             │ 0.6             │ ✓      │
+│ autogen.enabled   │ True            │ True            │ ✓      │
+│ autogen.default_model │ gpt-4       │ gpt-4           │ ✓      │
+│ autogen.temperature │ 0.1           │ 0.1             │ ✓      │
+│ autogen.use_docker │ True           │ True            │ ✓      │
+└───────────────────┴────────────────┴────────────────┴────────┘
 
 Configuration Summary:
 ┏━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━┓
@@ -632,6 +617,97 @@ vaahai completion zsh > ~/.zsh/completion/_vaahai
 
 # Generate Fish completion
 vaahai completion fish > ~/.config/fish/completions/vaahai.fish
+```
+
+## detect-language
+
+Detect programming languages, versions, and features in code files.
+
+### Usage
+
+```bash
+vaahai detect-language [OPTIONS] [FILES]...
+```
+
+### Arguments
+
+* `FILES`: Paths to files or directories to analyze. Required.
+
+### Options
+
+* `-f, --format TEXT`: Output format (table, json, markdown). Default: `table`
+* `--api-key TEXT`: OpenAI API key for LLM analysis (overrides global config)
+* `--model TEXT`: Model to use for LLM analysis (overrides global config)
+* `--temperature FLOAT`: Temperature for model generation (overrides global config)
+* `--no-llm`: Disable LLM-based analysis, use only heuristic detection
+* `-s, --save-config`: Save provided parameters to global configuration
+* `--debug`: Enable debug mode with detailed error tracebacks
+* `--help`: Show this message and exit.
+
+### Description
+
+The `detect-language` command analyzes code files to identify programming languages, estimate language versions based on syntax features, and detect frameworks and libraries being used. It uses a combination of heuristic pattern matching and LLM-based analysis for accurate detection.
+
+The command can analyze both individual files and entire directories, providing detailed information about:
+
+1. The primary programming language(s) used
+2. The confidence level of the detection
+3. Specific language version based on syntax features
+4. Frameworks or libraries being used
+5. Notable language features or patterns present
+
+#### Implementation Note
+
+As of version 0.2.8, the `detect-language` command is fully integrated with the Vaahai CLI and works seamlessly when installed via pip. The command is properly registered with Typer and delegates to a standalone script for execution, ensuring all command-line options work correctly, including the `--debug` flag.
+
+The implementation uses a robust script detection mechanism to find the standalone script in various locations, including pip-installed paths, ensuring reliable operation across different installation methods.
+
+If you're using an older version and encounter Typer CLI errors, you can install and use the standalone implementation:
+
+```bash
+# Install the standalone script (local installation)
+./bin/install-detect-language.sh --local
+
+# Add to your PATH
+export PATH="$PWD/local/bin:$PATH"
+
+# Run the command
+vaahai detect-language [path] [options]
+```
+
+### Output Formats
+
+The command supports three output formats:
+
+* `table`: Displays results in a formatted table (default)
+* `json`: Outputs raw JSON data for programmatic use
+* `markdown`: Generates a markdown report
+
+### Examples
+
+Analyze a single file:
+```bash
+vaahai detect-language app.py
+```
+
+Analyze all files in a directory with JSON output:
+```bash
+vaahai detect-language --format json src/
+```
+
+Analyze specific file types without using LLM:
+```bash
+vaahai detect-language --no-llm *.js *.ts
+```
+
+Use a specific OpenAI model and save to config:
+```bash
+vaahai detect-language --model gpt-4 --save-config src/
+```
+
+Enable debug mode for detailed error tracebacks:
+```bash
+vaahai detect-language src/ --debug
 ```
 
 ## Exit Codes

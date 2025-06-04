@@ -1,0 +1,12 @@
+I've noticed that multiple attempts have been made, and frequent requests to accept the command are causing some frustration. Before proceeding, please thoroughly analyze the problem by considering all possible scenarios and use cases. Develop a clear, well-thought-out approach that addresses these variations comprehensively. Only after this detailed understanding and planning should you implement the solution. Thank you for taking the time to ensure accuracy and completeness.
+
+1. Understand the impact of your plan on the project.
+2. Analyze and make sure it should not break anything.
+3. Confirm that the plan is aligned with the project's goals.
+4. Think whether this create any Typer error anywhere in the application
+5. Make sure all dependencies are installed.
+6. Think whether this will break any existing commands
+7. Make sure commands are properly registered
+8. Make all dependencies are properly imported
+
+Before you implement the plan, please review it carefully and ensure that it aligns with the project's objectives.

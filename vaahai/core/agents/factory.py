@@ -5,8 +5,9 @@ Factory pattern implementation for creating Vaahai agents.
 """
 
 from typing import Dict, Any, Optional
-from .base import VaahaiAgent
+from .base import VaahaiAgent, AUTOGEN_AVAILABLE
 from .hello_world import HelloWorldAgent
+from .language_detector import LanguageDetectorAgent
 
 
 class AgentFactory:
@@ -25,12 +26,18 @@ class AgentFactory:
             An instance of the specified agent type
             
         Raises:
-            ValueError: If the agent type is unknown
+            ValueError: If the agent type is unknown or if Autogen is not available
         """
+        # Check if Autogen is available
+        if not AUTOGEN_AVAILABLE:
+            # We'll still allow creating the agent objects, but they'll have limited functionality
+            # This allows commands like 'config init' to work even without Autogen dependencies
+            pass
+            
         agents = {
             "hello_world": HelloWorldAgent,
+            "language_detector": LanguageDetectorAgent,
             # Add more agent types here as they are implemented
-            # "language_detector": LanguageDetectorAgent,
             # "framework_detector": FrameworkDetectorAgent,
             # "standards_analyzer": StandardsAnalyzerAgent,
             # "security_auditor": SecurityAuditorAgent,

@@ -6,8 +6,11 @@ This agent uses Microsoft's Autogen framework for agent communication.
 """
 
 from typing import Dict, Any, Optional
-import autogen
-from .base import VaahaiAgent
+from .base import VaahaiAgent, AUTOGEN_AVAILABLE
+
+# Only import autogen if it's available
+if AUTOGEN_AVAILABLE:
+    import autogen
 
 
 class HelloWorldAgent(VaahaiAgent):
@@ -28,6 +31,12 @@ class HelloWorldAgent(VaahaiAgent):
         super().__init__(config)
         self.message = self.config.get("message", "Hello, World!")
         
+        # Check if Autogen is available
+        if not AUTOGEN_AVAILABLE:
+            self.autogen_agent = None
+            self.user_proxy = None
+            return
+            
         # Get Autogen config
         llm_config = self._create_autogen_config()
         
@@ -80,6 +89,14 @@ class HelloWorldAgent(VaahaiAgent):
                     "message": warning_message,
                     "agent_type": "hello_world",
                     "warning": "missing_api_key"
+                }
+            
+            # Check if Autogen is available
+            if not AUTOGEN_AVAILABLE:
+                return {
+                    "success": False,
+                    "message": "Autogen is not available",
+                    "agent_type": "hello_world"
                 }
             
             # Initialize chat between user proxy and assistant

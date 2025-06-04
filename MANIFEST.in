@@ -1,0 +1,4 @@
+include bin/vaahai-detect-language-script
+include bin/install-detect-language.sh
+include bin/vaahai-detect-language
+include bin/vaahai-detect-language-wrapper

@@ -6,9 +6,10 @@ Perform a comprehensive audit and update of all vaahai project documentation and
      - specs/implementation/implementation_roadmap.md
      - specs/implementation/task_tracking.md
      - README.md (implementation status table)
-   - Documentation files:
-     - ai_docs/ (AI_INTEGRATION.md, API_REFERENCE.md)
-     - docs/ (usage.md, commands.md, autogen_integration.md)
+   - Documentation folders:
+     - ai_docs/
+     - docs/
+     - specs/
    - Audit and update any inconsistencies or outdated information in docs, specs and ai_docs
 
 2. Update task statuses based on recent progress:
@@ -45,5 +46,9 @@ Perform a comprehensive audit and update of all vaahai project documentation and
 
 9. Ensure all three implementation documents (implementation_status.md, implementation_roadmap.md, and README.md) are consistent in their status reporting.
 10. Update your memory as well
-11. Confirm before proceeding to the next step.
+11. NOTE: /ai_docs contains documentation for AI tools
+12. NOTE: /docs contains user guide and command reference which will be used by developers
+13. NOTE: /specs project requirements, features, and implementation details
+14. You need to update all those folders keep the purpose in mind 
+15. Confirm before proceeding to the next step.
 

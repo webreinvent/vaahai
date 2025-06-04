@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "vaahai"
-version = "0.2.5"
+version = "0.2.11"
 description = "AI-augmented code review CLI tool"
 authors = ["WebReinvent <info@webreinvent.com>"]
 readme = "README.md"
@@ -18,6 +18,12 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Topic :: Software Development :: Quality Assurance",
+]
+include = [
+    "bin/vaahai-detect-language-script",
+    "bin/install-detect-language.sh",
+    "bin/vaahai-detect-language",
+    "bin/vaahai-detect-language-wrapper"
 ]
 
 [tool.poetry.dependencies]
@@ -39,6 +45,12 @@ markdown = "^3.4.3"
 jinja2 = "^3.1.2"
 requests = "^2.31.0"
 
+[tool.poetry.group.automl]
+optional = true
+
+[tool.poetry.group.automl.dependencies]
+flaml = {version = "^2.3.5", extras = ["automl"]}
+
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.3.1"
 pytest-cov = "^4.1.0"
@@ -54,7 +66,8 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-vaahai = "vaahai.__main__:app"
+vaahai = "vaahai.__main__:main"
+vaahai-detect-language-script = "vaahai.cli.commands.detect_language_standalone:main_cli"
 
 [tool.black]
 line-length = 100
