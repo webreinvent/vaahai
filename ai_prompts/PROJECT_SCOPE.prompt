@@ -109,9 +109,9 @@ This directory will contain all the unit and end-to-end tests
 - Example of review output (Markdown sample)
 - Configuration and installation instructions
 - Implementation tips or code snippets
-- Write in clear, professional language
+- Write in clar, professional language
 
-## Implementation and Taks
+## Implementation and Task Status
 You must create markdown files in specs to keep tracks of all the phase, tasks and their status. These files can be referred by AI tools to understand completed tasks, pick the next task.
 
 
@@ -126,4 +126,4 @@ You must create markdown files in specs to keep tracks of all the phase, tasks a
 4. Create useful ai prompts for documentation
 5. Revisit the documentation to make sure it is complete
 
-DO NOT MODIFY PROJECT_SCOPE.md file
+DO NOT MODIFY PROJECT_SCOPE.prompt file
