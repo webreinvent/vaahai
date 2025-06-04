@@ -2,50 +2,127 @@
 
 You are an AI assistant helping with the VaahAI project, a multi-agent AI CLI tool built with Microsoft's Autogen Framework.
 
-## TASK
-Analyze the current implementation status of the VaahAI project and recommend the next most appropriate task(s) to work on, considering dependencies, priorities, and project flow.
+## WORKFLOW
+Follow this complete workflow for task management and implementation:
 
-## INSTRUCTIONS
-1. Review the current project status by examining:
-   - Task tracking documentation in `/specs/TASK_TRACKING.md`
-   - Implementation status in code repositories
-   - Recent changes and completed work
-   - Current blockers and dependencies
+### 1. Verify Previous Task Completion
+- Review the code changes for the previous task
+- Run appropriate tests to verify functionality
+- Check that all acceptance criteria have been met
+- Confirm that the implementation aligns with the project architecture
+- If the task is incomplete, identify what remains to be done before proceeding
 
-2. Identify candidate tasks by considering:
-   - Tasks marked as "Not Started" that have no incomplete dependencies
-   - Tasks that are part of the defined MVP
-   - Tasks that unblock multiple other tasks if completed
-   - Tasks that align with the current phase of development
+### 2. Update Documentation
+- Update relevant documents in `/specs`, `/docs`, and `/ai_docs`
+- Ensure implementation details are documented
+- Update API documentation if applicable
+- Add usage examples where appropriate
+- Ensure the documentation reflects the current implementation
 
-3. Evaluate each candidate task based on:
-   - Strategic importance to project progress
-   - Complexity and estimated effort
-   - Available resources and expertise
-   - Technical risk and uncertainty
-   - Logical flow of implementation
+### 3. Create Git Commit
+- Summarize the changes made for the previous task
+- Include relevant task IDs in the commit message
+- Describe the functionality that was implemented
+- Note any architectural decisions made
+- Create a commit with a clear, descriptive message
 
-4. Prioritize tasks that:
-   - Follow a natural development sequence
-   - Build upon recently completed work
-   - Establish core functionality needed by other components
-   - Address critical path items
-   - Reduce overall project risk
+### 4. Select Next Task
+- Review the current project status in `/specs/TASK_TRACKING.md`
+- Identify tasks marked as "Not Started" that have no incomplete dependencies
+- Prioritize MVP tasks and those that unblock multiple other tasks
+- Consider the logical flow of implementation
+- Update the task status in `TASK_TRACKING.md` to "In Progress"
+
+### 5. Create New Branch
+- Create a branch with a name that reflects the task ID and description
+- Branch must be created from the previous task branch
+- Follow the project's branch naming conventions
+- Push the branch to the remote repository
+
+### 6. Understand Task Scope
+- Read the task description thoroughly
+- Review related documentation and requirements
+- Understand how this task fits into the overall project
+- Identify the specific deliverables for this task
+- Define clear acceptance criteria
+
+### 7. Create Implementation Plan
+- Break down the task into smaller steps
+- Identify the files that need to be created or modified
+- Determine the classes, functions, and interfaces required
+- Consider edge cases and error handling
+- Plan for testing and validation
+- Present the plan for confirmation before proceeding
+
+### 8. Implement the Task
+- Follow the confirmed implementation plan
+- Write clean, well-documented code
+- Adhere to the project's coding standards
+- Implement unit tests
+- Ensure the code integrates well with existing components
+
+## TASK SELECTION CRITERIA
+When selecting the next task, consider:
+
+1. **Dependencies**: Tasks with all dependencies satisfied
+2. **MVP Priority**: Tasks that are part of the defined MVP
+3. **Unblocking Value**: Tasks that unblock multiple other tasks if completed
+4. **Phase Alignment**: Tasks that align with the current phase of development
+5. **Strategic Importance**: Tasks critical to project progress
+6. **Complexity and Effort**: Balance between quick wins and strategic progress
+7. **Technical Risk**: Address high-risk items early when possible
+8. **Logical Flow**: Follow a natural development sequence
 
 ## OUTPUT FORMAT
-Provide a recommendation with the following structure:
+Provide a comprehensive response with the following structure:
 
-1. **Recommended Next Task(s)**: List 1-3 specific tasks to work on next, in priority order
-2. **Justification**: Explain why each task is recommended at this time
-3. **Dependencies**: Note any dependencies that have been satisfied, enabling this work
-4. **Implementation Approach**: Suggest a high-level approach to implementing each task
-5. **Expected Outcomes**: Describe what successful completion will enable
-6. **Potential Challenges**: Identify any risks or challenges to be aware of
+1. **Previous Task Verification**:
+   - Status of the previous task (Complete/Incomplete)
+   - Test results and verification details
+   - Any outstanding issues
+
+2. **Documentation Updates**:
+   - Summary of documentation changes made
+   - Files updated and why
+
+3. **Git Commit Details**:
+   - Commit message
+   - Files included in the commit
+   - Branch information
+
+4. **Next Task Selection**:
+   - Recommended task(s) to work on next, in priority order
+   - Justification for each task
+   - Dependencies that have been satisfied
+   - Task tracking updates made
+
+5. **New Branch Creation**:
+   - Branch name
+   - Base branch
+   - Creation confirmation
+
+6. **Task Scope Analysis**:
+   - Detailed understanding of the task
+   - Deliverables and acceptance criteria
+   - Relationship to other components
+
+7. **Implementation Plan**:
+   - Step-by-step approach
+   - Files to be created or modified
+   - Classes, functions, and interfaces required
+   - Testing strategy
+   - Request for confirmation
+
+8. **Implementation Execution** (after confirmation):
+   - Code implementation details
+   - Testing results
+   - Integration notes
 
 ## IMPORTANT NOTES
-- Focus on logical progression of the project
-- Consider the current phase of development
-- Respect the defined MVP scope
-- Account for technical dependencies between components
-- Prioritize foundational work that enables other features
-- Consider the balance between quick wins and strategic progress
+- Focus on incremental development with small, achievable tasks
+- Prioritize Autogen framework integration as a foundational component
+- Maintain clear dependencies between tasks
+- Enable frequent small releases
+- Ensure thorough documentation at each step
+- Follow test-driven development practices where appropriate
+- Commit early and often with clear messages
