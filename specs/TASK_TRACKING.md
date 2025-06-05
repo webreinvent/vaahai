@@ -23,9 +23,9 @@ This document tracks the implementation status of all tasks for the VaahAI proje
 | [P1-task-2.6] | Create Autogen configuration schema | 🟢 | [P1-task-2.5] | Define configuration options |
 | [P1-task-2.7] | Implement configuration loader | 🟢 | [P1-task-2.6], [P1-task-3.8] | Load Autogen configurations |
 | [P1-task-2.8] | Create basic agent class | 🟢 | [P1-task-2.5] | Implement foundational agent |
-| [P1-task-2.9] | Set up agent initialization | 🟡 | [P1-task-2.8] | Initialize agents with config |
-| [P1-task-2.10] | Implement message handling | 🔴 | [P1-task-2.8] | Process incoming/outgoing messages |
-| [P1-task-2.11] | Add basic conversation flow | 🔴 | [P1-task-2.10] | Set up simple agent interactions |
+| [P1-task-2.9] | Set up agent initialization | 🟢 | [P1-task-2.8] | Initialize agents with config |
+| [P1-task-2.10] | Implement message handling | 🟢 | [P1-task-2.8] | Process incoming/outgoing messages |
+| [P1-task-2.11] | Add basic conversation flow | 🟡 | [P1-task-2.10] | Set up simple agent interactions |
 | [P1-task-2.12] | Implement conversation history | 🔴 | [P1-task-2.11] | Track message history |
 | [P1-task-2.13] | Create conversation termination logic | 🔴 | [P1-task-2.11] | Determine when conversations end |
 | [P1-task-3.1] | Research configuration formats | 🔴 | None | Evaluate TOML, YAML, JSON options |
@@ -307,7 +307,7 @@ These tasks represent the minimum viable product (MVP) that should be prioritize
 9. 🟢 [P1-task-2.6] Create Autogen configuration schema
 10. 🟢 [P1-task-2.7] Implement configuration loader
 11. 🟢 [P1-task-2.8] Create basic agent class
-12. 🟡 [P1-task-2.9] Set up agent initialization
+12. 🟢 [P1-task-2.9] Set up agent initialization
 13. 🔴 [P1-task-3.1] Research configuration formats
 14. 🔴 [P1-task-3.2] Design configuration schema structure
 15. 🔴 [P1-task-3.7] Implement TOML parser
@@ -323,15 +323,9 @@ These tasks represent the minimum viable product (MVP) that should be prioritize
 
 ## Current Tasks
 
-1. 🟡 [P1-task-2.9] Set up agent initialization
-   - Use the configuration loader to initialize agents
-   - Implement agent factory pattern
-   - Register default agent implementations
-   - Create convenience methods for agent creation
-
-2. 🔴 [P1-task-2.10] Implement message handling
-   - Process incoming and outgoing messages
-   - Define message structure and format
+1. 🟡 [P1-task-2.11] Add basic conversation flow
+   - Set up simple agent interactions
+   - Define conversation structure and format
 
 ## Completed Tasks
 
@@ -349,6 +343,16 @@ These tasks represent the minimum viable product (MVP) that should be prioritize
    - Implemented validation against schemas
    - Added comprehensive error handling
    - Created documentation and examples
+
+3. 🟢 [P1-task-2.9] Set up agent initialization
+   - Use the configuration loader to initialize agents
+   - Implement agent factory pattern
+   - Register default agent implementations
+   - Create convenience methods for agent creation
+
+4. 🟢 [P1-task-2.10] Implement message handling
+   - Process incoming and outgoing messages
+   - Define message structure and format
 
 ## Current Blockers
 
