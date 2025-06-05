@@ -7,12 +7,16 @@ that can be reused across different agent implementations, promoting code reuse
 and consistent behavior.
 """
 
+import logging
 import uuid
 from abc import ABC, abstractmethod
+from datetime import datetime
 from typing import Dict, Any, List, Optional, Set
 
 from .interfaces import IAgent, IMessageProcessor, ITool, IGroupChat
+from .exceptions import AgentInitializationError, AgentConfigurationError
 
+logger = logging.getLogger(__name__)
 
 class BaseAgent(IAgent, ABC):
     """
@@ -42,14 +46,14 @@ class BaseAgent(IAgent, ABC):
         
         Args:
             config: Dictionary containing agent configuration parameters
-        
+            
         Raises:
-            ValueError: If the configuration is invalid
+            AgentInitializationError: If the configuration is invalid
         """
         self._config = config.copy()
         
         if not self._validate_config():
-            raise ValueError(f"Invalid configuration for agent {self._name}")
+            raise AgentInitializationError(self._name, f"Invalid configuration for agent {self._name}")
         
         self._initialize_capabilities()
         self._initialized = True

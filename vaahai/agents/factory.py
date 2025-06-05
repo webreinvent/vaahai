@@ -12,6 +12,17 @@ from typing import Dict, Any, List, Optional, Type, Union, Callable
 
 from .interfaces import IAgent, IGroupChat, ITool, IPlugin, IRegistry
 from .base import BaseAgent, BaseGroupChat, BaseTool
+from .exceptions import AgentTypeNotFoundError, AgentInitializationError
+from .impl import (
+    ConversationalAgent,
+    AssistantAgent,
+    UserProxyAgent,
+    SpecializedAgent,
+    CodeReviewAgent,
+    SecurityAuditAgent,
+    LanguageDetectionAgent,
+    ReportGenerationAgent
+)
 
 
 class Registry(IRegistry):
@@ -112,7 +123,7 @@ class BaseFactory(ABC):
     
     def register_component(self, name: str, component: Any) -> None:
         """
-        Register a component with this factory.
+        Register a component.
         
         Args:
             name: Name to register the component under
@@ -137,7 +148,7 @@ class BaseFactory(ABC):
         List all registered component names.
         
         Returns:
-            List of component names
+            List of registered component names
         """
         return self._registry.list_all()
 
@@ -154,6 +165,9 @@ class AgentFactory(BaseFactory):
         """Initialize a new agent factory."""
         super().__init__()
         self._decorators: Dict[str, Type] = {}
+        
+        # Register default agent implementations
+        self._register_default_agents()
     
     def _create_registry(self) -> Registry:
         """
@@ -163,6 +177,19 @@ class AgentFactory(BaseFactory):
             An agent registry instance
         """
         return AgentRegistry()
+    
+    def _register_default_agents(self) -> None:
+        """
+        Register the default agent implementations.
+        """
+        self.register_agent_class("conversational", ConversationalAgent)
+        self.register_agent_class("assistant", AssistantAgent)
+        self.register_agent_class("user_proxy", UserProxyAgent)
+        self.register_agent_class("specialized", SpecializedAgent)
+        self.register_agent_class("code_review", CodeReviewAgent)
+        self.register_agent_class("security_audit", SecurityAuditAgent)
+        self.register_agent_class("language_detection", LanguageDetectionAgent)
+        self.register_agent_class("report_generation", ReportGenerationAgent)
     
     def create_agent(self, agent_type: str, config: Dict[str, Any]) -> IAgent:
         """
@@ -176,23 +203,35 @@ class AgentFactory(BaseFactory):
             Agent instance
             
         Raises:
-            ValueError: If the agent type is not registered
+            AgentTypeNotFoundError: If the agent type is not registered
+            AgentInitializationError: If there's an error initializing the agent
         """
         agent_class = self.get_component(agent_type)
-        if not agent_class:
-            raise ValueError(f"Agent type not registered: {agent_type}")
+        if agent_class is None:
+            raise AgentTypeNotFoundError(agent_type)
         
-        agent = agent_class()
-        agent.initialize(config)
-        
-        # Apply decorators if specified in config
-        decorators = config.get("decorators", [])
-        for decorator_name in decorators:
-            decorator_class = self._decorators.get(decorator_name)
-            if decorator_class:
-                agent = decorator_class(agent)
-        
-        return agent
+        try:
+            # Create the agent instance
+            agent = agent_class()
+            
+            # Initialize the agent with the configuration
+            agent.initialize(config)
+            
+            # Apply decorators if specified in the configuration
+            if 'decorators' in config and isinstance(config['decorators'], list):
+                for decorator_name in config['decorators']:
+                    decorator_class = self.get_decorator(decorator_name)
+                    if decorator_class is not None:
+                        agent = decorator_class(agent)
+            
+            return agent
+        except Exception as e:
+            # Wrap any initialization errors in our custom exception
+            # Use the agent name from the configuration if available
+            agent_name = config.get('name', agent_type)
+            # Include both agent type and name in the error message
+            error_message = f"Failed to initialize {agent_type} agent '{agent_name}': {str(e)}"
+            raise AgentInitializationError(agent_name, error_message)
     
     def register_agent_class(self, name: str, agent_class: Type[IAgent]) -> None:
         """
@@ -236,25 +275,102 @@ class AgentFactory(BaseFactory):
         return list(self._decorators.keys())
     
     @classmethod
-    async def create_language_detector_agent(cls, llm_client: Any) -> IAgent:
+    def create_conversational_agent(cls, config: Dict[str, Any]) -> ConversationalAgent:
         """
-        Create a language detector agent.
+        Create a conversational agent.
         
         Args:
-            llm_client: LLM client to use for language detection
+            config: Agent configuration
             
         Returns:
-            Language detector agent instance
+            Conversational agent instance
         """
-        # This is a placeholder - actual implementation would create a language detector agent
-        # For now, we'll just return a dictionary representing the agent
-        return {
-            "type": "language_detector",
-            "name": "LanguageDetector",
-            "id": "language_detector_1",
-            "capabilities": ["language_detection"],
-            "llm_client": llm_client
-        }
+        factory = cls()
+        return factory.create_agent("conversational", config)
+    
+    @classmethod
+    def create_assistant_agent(cls, config: Dict[str, Any]) -> AssistantAgent:
+        """
+        Create an assistant agent.
+        
+        Args:
+            config: Agent configuration
+            
+        Returns:
+            Assistant agent instance
+        """
+        factory = cls()
+        return factory.create_agent("assistant", config)
+    
+    @classmethod
+    def create_user_proxy_agent(cls, config: Dict[str, Any]) -> UserProxyAgent:
+        """
+        Create a user proxy agent.
+        
+        Args:
+            config: Agent configuration
+            
+        Returns:
+            User proxy agent instance
+        """
+        factory = cls()
+        return factory.create_agent("user_proxy", config)
+    
+    @classmethod
+    def create_code_review_agent(cls, config: Dict[str, Any]) -> CodeReviewAgent:
+        """
+        Create a code review agent.
+        
+        Args:
+            config: Agent configuration
+            
+        Returns:
+            Code review agent instance
+        """
+        factory = cls()
+        return factory.create_agent("code_review", config)
+    
+    @classmethod
+    def create_security_audit_agent(cls, config: Dict[str, Any]) -> SecurityAuditAgent:
+        """
+        Create a security audit agent.
+        
+        Args:
+            config: Agent configuration
+            
+        Returns:
+            Security audit agent instance
+        """
+        factory = cls()
+        return factory.create_agent("security_audit", config)
+    
+    @classmethod
+    def create_language_detection_agent(cls, config: Dict[str, Any]) -> LanguageDetectionAgent:
+        """
+        Create a language detection agent.
+        
+        Args:
+            config: Agent configuration
+            
+        Returns:
+            Language detection agent instance
+        """
+        factory = cls()
+        return factory.create_agent("language_detection", config)
+    
+    @classmethod
+    def create_report_generation_agent(cls, config: Dict[str, Any]) -> ReportGenerationAgent:
+        """
+        Create a report generation agent.
+        
+        Args:
+            config: Agent configuration
+            
+        Returns:
+            Report generation agent instance
+        """
+        factory = cls()
+        return factory.create_agent("report_generation", config)
 
 
 class GroupChatFactory(BaseFactory):

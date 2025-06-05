@@ -29,6 +29,18 @@ from .base import (
     BaseGroupChat
 )
 
+# Agent implementations
+from .impl import (
+    ConversationalAgent,
+    AssistantAgent,
+    UserProxyAgent,
+    SpecializedAgent,
+    CodeReviewAgent,
+    SecurityAuditAgent,
+    LanguageDetectionAgent,
+    ReportGenerationAgent
+)
+
 # Adapter layer for Autogen integration
 from .adapters import (
     AutogenAgentAdapter,
@@ -50,14 +62,34 @@ from .config import (
     AgentConfig,
     GroupChatConfig,
     ToolConfig,
+    LLMConfig,
     AdapterConfig,
-    ConfigFactory,
-    BaseConfig,
     AutogenAgentConfig,
     AutogenGroupChatConfig,
     AutogenToolConfig,
-    LLMConfig
+    ConfigFactory
 )
 
-# Version information
+__all__ = [
+    # Interfaces
+    'IAgent', 'IMessageProcessor', 'ITool', 'IGroupChat', 'IAgentAdapter', 'IGroupChatAdapter', 'IConfig',
+    
+    # Base classes
+    'BaseAgent', 'AgentDecorator', 'BaseMessageProcessor', 'ChainedMessageProcessor', 'BaseTool', 'BaseGroupChat',
+    
+    # Agent implementations
+    'ConversationalAgent', 'AssistantAgent', 'UserProxyAgent', 'SpecializedAgent',
+    'CodeReviewAgent', 'SecurityAuditAgent', 'LanguageDetectionAgent', 'ReportGenerationAgent',
+    
+    # Adapters
+    'AutogenAgentAdapter', 'AutogenGroupChatAdapter', 'AutogenToolAdapter', 'AdapterFactory',
+    
+    # Factories
+    'AgentFactory', 'GroupChatFactory', 'ToolFactory', 'FactoryProvider',
+    
+    # Configuration
+    'AgentConfig', 'GroupChatConfig', 'ToolConfig', 'LLMConfig', 'AdapterConfig',
+    'AutogenAgentConfig', 'AutogenGroupChatConfig', 'AutogenToolConfig', 'ConfigFactory'
+]
+
 __version__ = "0.1.0"
