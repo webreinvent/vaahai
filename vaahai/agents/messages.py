@@ -303,6 +303,15 @@ class Message:
         """
         return self._data["sender_id"]
     
+    def set_sender_id(self, sender_id: str) -> None:
+        """
+        Set the sender ID.
+        
+        Args:
+            sender_id: New sender ID
+        """
+        self._data["sender_id"] = sender_id
+    
     def get_receiver_id(self) -> Optional[str]:
         """
         Get the receiver ID.
@@ -356,6 +365,15 @@ class Message:
             Conversation ID
         """
         return self._data["conversation_id"]
+    
+    def set_conversation_id(self, conversation_id: str) -> None:
+        """
+        Set the conversation ID.
+        
+        Args:
+            conversation_id: New conversation ID
+        """
+        self._data["conversation_id"] = conversation_id
     
     def get_metadata(self) -> Dict[str, Any]:
         """

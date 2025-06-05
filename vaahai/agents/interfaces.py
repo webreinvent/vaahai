@@ -7,7 +7,7 @@ ensuring consistency, reusability, and extensibility throughout the system.
 """
 
 from abc import ABC, abstractmethod
-from typing import Dict, Any, List, Optional, Union, Callable, TypeVar, Generic
+from typing import Dict, Any, List, Optional, Union, Callable, TypeVar, Generic, Set
 
 T = TypeVar('T')
 
@@ -438,5 +438,182 @@ class IRegistry(Generic[T], ABC):
         
         Returns:
             List of registered component names
+        """
+        pass
+
+
+class IConversation(ABC):
+    """
+    Interface for conversations between agents.
+    
+    Conversations represent structured interactions between multiple agents,
+    with defined participants, flow patterns, and message history.
+    """
+    
+    @abstractmethod
+    def get_id(self) -> str:
+        """
+        Get the unique identifier for this conversation.
+        
+        Returns:
+            Conversation identifier string
+        """
+        pass
+    
+    @abstractmethod
+    def get_participants(self) -> Set[str]:
+        """
+        Get the set of participant IDs in this conversation.
+        
+        Returns:
+            Set of participant IDs
+        """
+        pass
+    
+    @abstractmethod
+    def get_message_history(self) -> List[Dict[str, Any]]:
+        """
+        Get the message history for this conversation.
+        
+        Returns:
+            List of messages in the conversation
+        """
+        pass
+    
+    @abstractmethod
+    def add_participant(self, participant_id: str) -> None:
+        """
+        Add a participant to the conversation.
+        
+        Args:
+            participant_id: ID of the participant to add
+        """
+        pass
+    
+    @abstractmethod
+    def remove_participant(self, participant_id: str) -> None:
+        """
+        Remove a participant from the conversation.
+        
+        Args:
+            participant_id: ID of the participant to remove
+        """
+        pass
+    
+    @abstractmethod
+    def has_participant(self, participant_id: str) -> bool:
+        """
+        Check if a participant is in the conversation.
+        
+        Args:
+            participant_id: ID of the participant to check
+            
+        Returns:
+            True if the participant is in the conversation, False otherwise
+        """
+        pass
+    
+    @abstractmethod
+    def start(self) -> None:
+        """
+        Start the conversation.
+        """
+        pass
+    
+    @abstractmethod
+    def end(self) -> None:
+        """
+        End the conversation.
+        """
+        pass
+    
+    @abstractmethod
+    def add_message(self, message: Dict[str, Any]) -> None:
+        """
+        Add a message to the conversation history.
+        
+        Args:
+            message: The message to add
+        """
+        pass
+
+
+class IConversationManager(ABC):
+    """
+    Interface for conversation managers.
+    
+    Conversation managers are responsible for creating, retrieving, and ending
+    conversations, as well as routing messages to the appropriate conversation.
+    """
+    
+    @abstractmethod
+    def create_conversation(
+        self,
+        initiator_id: str,
+        participants: Optional[List[str]] = None,
+        metadata: Optional[Dict[str, Any]] = None
+    ) -> IConversation:
+        """
+        Create a new conversation.
+        
+        Args:
+            initiator_id: ID of the agent initiating the conversation
+            participants: List of participant IDs to add to the conversation
+            metadata: Additional metadata for the conversation
+            
+        Returns:
+            The created conversation
+        """
+        pass
+    
+    @abstractmethod
+    def get_conversation(self, conversation_id: str) -> Optional[IConversation]:
+        """
+        Get a conversation by ID.
+        
+        Args:
+            conversation_id: ID of the conversation to get
+            
+        Returns:
+            The conversation, or None if not found
+        """
+        pass
+    
+    @abstractmethod
+    def get_agent_conversations(self, agent_id: str) -> List[IConversation]:
+        """
+        Get all conversations that an agent is participating in.
+        
+        Args:
+            agent_id: ID of the agent
+            
+        Returns:
+            List of conversations the agent is participating in
+        """
+        pass
+    
+    @abstractmethod
+    def end_conversation(self, conversation_id: str) -> bool:
+        """
+        End a conversation.
+        
+        Args:
+            conversation_id: ID of the conversation to end
+            
+        Returns:
+            True if the conversation was ended, False if not found
+        """
+        pass
+    
+    @abstractmethod
+    def route_message(self, message: Dict[str, Any]) -> bool:
+        """
+        Route a message to the appropriate conversation.
+        
+        Args:
+            message: The message to route
+            
+        Returns:
+            True if the message was routed successfully, False otherwise
         """
         pass

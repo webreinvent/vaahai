@@ -25,7 +25,7 @@ This document tracks the implementation status of all tasks for the VaahAI proje
 | [P1-task-2.8] | Create basic agent class | 🟢 | [P1-task-2.5] | Implement foundational agent |
 | [P1-task-2.9] | Set up agent initialization | 🟢 | [P1-task-2.8] | Initialize agents with config |
 | [P1-task-2.10] | Implement message handling | 🟢 | [P1-task-2.8] | Process incoming/outgoing messages |
-| [P1-task-2.11] | Add basic conversation flow | 🟡 | [P1-task-2.10] | Set up simple agent interactions |
+| [P1-task-2.11] | Add basic conversation flow | 🟢 | [P1-task-2.10] | Set up simple agent interactions |
 | [P1-task-2.12] | Implement conversation history | 🔴 | [P1-task-2.11] | Track message history |
 | [P1-task-2.13] | Create conversation termination logic | 🔴 | [P1-task-2.11] | Determine when conversations end |
 | [P1-task-3.1] | Research configuration formats | 🔴 | None | Evaluate TOML, YAML, JSON options |
@@ -323,8 +323,8 @@ These tasks represent the minimum viable product (MVP) that should be prioritize
 
 ## Current Tasks
 
-1. 🟡 [P1-task-2.11] Add basic conversation flow
-   - Set up simple agent interactions
+1. 🔴 [P1-task-2.12] Implement conversation history
+   - Track message history
    - Define conversation structure and format
 
 ## Completed Tasks
@@ -353,6 +353,10 @@ These tasks represent the minimum viable product (MVP) that should be prioritize
 4. 🟢 [P1-task-2.10] Implement message handling
    - Process incoming and outgoing messages
    - Define message structure and format
+
+5. 🟢 [P1-task-2.11] Add basic conversation flow
+   - Set up simple agent interactions
+   - Define conversation structure and format
 
 ## Current Blockers
 

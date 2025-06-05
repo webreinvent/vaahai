@@ -41,6 +41,7 @@ class BaseAgent(IAgent, ABC):
         self._capabilities: Set[str] = set()
         self._initialized = False
         self._message_processors: List[IMessageProcessor] = []
+        self._conversations: Set[str] = set()  # Set of conversation IDs this agent is participating in
     
     def initialize(self, config: Dict[str, Any]) -> None:
         """
@@ -159,6 +160,19 @@ class BaseAgent(IAgent, ABC):
                     error_message=str(e)
                 ).to_dict()
         
+        # Check if this message is part of a conversation this agent is participating in
+        conversation_id = message.get_conversation_id()
+        if conversation_id and conversation_id not in self._conversations:
+            logger.warning(f"Agent {self._id} received message for conversation {conversation_id} it is not participating in")
+            return Message.create_error_message(
+                sender_id=self._id,
+                receiver_id=message.get_sender_id(),
+                error_type="conversation_error",
+                error_message=f"Agent {self._id} is not a participant in conversation {conversation_id}",
+                in_reply_to=message.get_id(),
+                conversation_id=conversation_id
+            )
+        
         # Apply message processors
         processed_message = message
         for processor in self._message_processors:
@@ -171,6 +185,10 @@ class BaseAgent(IAgent, ABC):
             # Ensure response is a Message object
             if isinstance(response, dict):
                 response = Message(response)
+                
+            # Set conversation ID on response if not already set
+            if conversation_id and not response.get_conversation_id():
+                response.set_conversation_id(conversation_id)
                 
             return response
         except Exception as e:
@@ -200,6 +218,16 @@ class BaseAgent(IAgent, ABC):
         """
         pass
     
+    @abstractmethod
+    def _initialize_capabilities(self) -> None:
+        """
+        Initialize the agent's capabilities based on configuration.
+        
+        This method should be overridden by subclasses to add
+        agent-specific capabilities.
+        """
+        pass
+    
     def _validate_config(self) -> bool:
         """
         Validate the agent configuration.
@@ -219,10 +247,58 @@ class BaseAgent(IAgent, ABC):
         # Additional validation can be performed by subclasses
         return True
     
-    @abstractmethod
-    def _initialize_capabilities(self) -> None:
-        """Initialize the agent's capabilities."""
-        pass
+    def _get_timestamp(self) -> str:
+        """
+        Get the current timestamp in ISO format.
+        
+        Returns:
+            ISO-formatted timestamp string
+        """
+        return datetime.now().isoformat()
+    
+    def join_conversation(self, conversation_id: str) -> None:
+        """
+        Join a conversation.
+        
+        Args:
+            conversation_id: ID of the conversation to join
+        """
+        self._conversations.add(conversation_id)
+        logger.info(f"Agent {self._id} joined conversation {conversation_id}")
+    
+    def leave_conversation(self, conversation_id: str) -> None:
+        """
+        Leave a conversation.
+        
+        Args:
+            conversation_id: ID of the conversation to leave
+        """
+        if conversation_id in self._conversations:
+            self._conversations.remove(conversation_id)
+            logger.info(f"Agent {self._id} left conversation {conversation_id}")
+        else:
+            logger.warning(f"Agent {self._id} attempted to leave conversation {conversation_id} it is not participating in")
+    
+    def is_in_conversation(self, conversation_id: str) -> bool:
+        """
+        Check if this agent is participating in a conversation.
+        
+        Args:
+            conversation_id: ID of the conversation to check
+            
+        Returns:
+            True if the agent is participating in the conversation, False otherwise
+        """
+        return conversation_id in self._conversations
+    
+    def get_conversations(self) -> Set[str]:
+        """
+        Get all conversations this agent is participating in.
+        
+        Returns:
+            Set of conversation IDs
+        """
+        return self._conversations.copy()
 
 
 class AgentDecorator(IAgent):
