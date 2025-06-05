@@ -21,6 +21,7 @@
 ### Prerequisites
 
 - Python 3.9+
+- [Poetry](https://python-poetry.org/docs/#installation) (Python package manager)
 - Git
 - Docker (optional, for code execution)
 
@@ -31,19 +32,36 @@
 git clone https://github.com/webreinvent/vaahai.git
 cd vaahai
 
-# Create and activate virtual environment
-python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+# Install dependencies with Poetry
+poetry install
 
-# Install dependencies
-pip install -e .
+# Activate the Poetry virtual environment
+poetry shell
+```
+
+### Development Setup
+
+```bash
+# Install development dependencies
+poetry install --with dev
+
+# Run tests
+poetry run pytest
+
+# Format code
+poetry run black vaahai
+poetry run isort vaahai
+
+# Lint code
+poetry run flake8 vaahai
+poetry run mypy vaahai
 ```
 
 ### Configuration
 
 ```bash
 # Run the configuration wizard
-vaahai config init
+poetry run vaahai config init
 
 # Or manually edit the configuration file
 nano ~/.vaahai/config.toml
@@ -55,35 +73,35 @@ nano ~/.vaahai/config.toml
 
 ```bash
 # Test installation and configuration
-vaahai helloworld
+poetry run vaahai helloworld
 
 # Review code in a file or directory
-vaahai review --path ./my_project --depth standard
+poetry run vaahai review --path ./my_project --depth standard
 
 # Audit a project for security and compliance
-vaahai audit --path ./my_project --security --compliance owasp
+poetry run vaahai audit --path ./my_project --security --compliance owasp
 
 # Generate code from a description
-vaahai generate "Create a Python function that sorts a list of dictionaries by a specified key"
+poetry run vaahai generate "Create a Python function that sorts a list of dictionaries by a specified key"
 
 # Apply suggested changes
-vaahai apply --file review_suggestions.json
+poetry run vaahai apply --file review_suggestions.json
 
 # Commit changes with AI-generated commit message
-vaahai commit
+poetry run vaahai commit
 ```
 
 ### Example Workflow
 
 ```bash
 # Review a Python file
-vaahai review --path ./app.py --focus quality
+poetry run vaahai review --path ./app.py --focus quality
 
 # Apply suggested changes
-vaahai apply --file review_suggestions.json
+poetry run vaahai apply --file review_suggestions.json
 
 # Commit the changes
-vaahai commit --message "Fix code quality issues in app.py"
+poetry run vaahai commit --message "Fix code quality issues in app.py"
 ```
 
 ## 🏗️ Project Structure

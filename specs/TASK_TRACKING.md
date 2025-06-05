@@ -13,9 +13,9 @@ This document tracks the tasks for the VaahAI project, organized by priority and
 
 | Task ID | Description | Status | Dependencies | Notes |
 |---------|-------------|--------|--------------|-------|
-| [P1-T1] | Set up project structure | 🔴 | None | Create basic directory structure following project scope |
-| [P1-T2] | Initialize Poetry project | 🔴 | [P1-T1] | Create pyproject.toml with initial dependencies |
-| [P1-T3] | Set up package entry points | 🔴 | [P1-T2] | Configure Poetry for CLI entry points |
+| [P1-T1] | Set up project structure | 🟢 | None | Create basic directory structure following project scope |
+| [P1-T2] | Initialize Poetry project | 🟢 | [P1-T1] | Create pyproject.toml with initial dependencies |
+| [P1-T3] | Set up package entry points | 🟡 | [P1-T2] | Configure Poetry for CLI entry points |
 | [P1-T4] | Create basic CLI module | 🔴 | [P1-T1] | Set up vaahai/cli directory and __init__.py |
 | [P1-T5] | Implement CLI entry point | 🔴 | [P1-T4] | Create main.py with Typer app |
 | [P1-T6] | Add command groups structure | 🔴 | [P1-T5] | Organize commands into logical groups |
@@ -33,12 +33,14 @@ This document tracks the tasks for the VaahAI project, organized by priority and
 
 | Task ID | Description | Status | Dependencies | Notes |
 |---------|-------------|--------|--------------|-------|
-| [P1-T1] | Set up project structure | 🔴 | None | Create basic directory structure following project scope |
-| [P1-T2] | Initialize Poetry project | 🔴 | [P1-T1] | Create pyproject.toml with initial dependencies |
+| [P1-T3] | Set up package entry points | 🟡 | [P1-T2] | Configure Poetry for CLI entry points |
 
 ## Completed Tasks
 
-None yet. We are starting with a clean implementation plan.
+| Task ID | Description | Status | Dependencies | Notes |
+|---------|-------------|--------|--------------|-------|
+| [P1-T1] | Set up project structure | 🟢 | None | Create basic directory structure following project scope |
+| [P1-T2] | Initialize Poetry project | 🟢 | [P1-T1] | Create pyproject.toml with initial dependencies |
 
 ## Current Blockers
 
@@ -46,9 +48,9 @@ None at this time.
 
 ## Next Steps
 
-1. Complete [P1-T1] Set up project structure
-2. Proceed with [P1-T2] Initialize Poetry project
-3. Implement [P1-T3] Set up package entry points
+1. Complete [P1-T3] Set up package entry points
+2. Proceed with [P1-T4] Create basic CLI module
+3. Implement [P1-T5] Implement CLI entry point
 
 ## Notes
 
