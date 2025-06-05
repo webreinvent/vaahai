@@ -8,9 +8,18 @@ from implementation.
 """
 
 from abc import abstractmethod
+import json
+import jsonschema
 from typing import Dict, Any, List, Optional, Union, Set, Type
 
 from .interfaces import IConfig
+from .schemas import (
+    get_schema_for_config_type,
+    AUTOGEN_AGENT_CONFIG_SCHEMA,
+    AUTOGEN_GROUP_CHAT_CONFIG_SCHEMA,
+    AUTOGEN_TOOL_CONFIG_SCHEMA,
+    CONFIG_LIST_SCHEMA
+)
 
 
 class BaseConfig(IConfig):
@@ -31,6 +40,7 @@ class BaseConfig(IConfig):
         self._config = kwargs
         self._required_fields: Set[str] = set()
         self._optional_fields: Dict[str, Any] = {}
+        self._schema: Dict[str, Any] = {}
     
     def to_dict(self) -> Dict[str, Any]:
         """
@@ -53,13 +63,23 @@ class BaseConfig(IConfig):
             if field not in self._config:
                 return False
         
-        # Check that all fields have valid types
+        # Validate each field
         for field, value in self._config.items():
             if not self._validate_field(field, value):
                 return False
         
+        # If schema is provided, validate against it
+        if self._schema:
+            try:
+                jsonschema.validate(instance=self._config, schema=self._schema)
+                return True
+            except jsonschema.exceptions.ValidationError:
+                # If schema validation fails, fall back to field validation
+                return False
+        
         return True
     
+    @abstractmethod
     def _validate_field(self, field: str, value: Any) -> bool:
         """
         Validate a configuration field.
@@ -71,40 +91,39 @@ class BaseConfig(IConfig):
         Returns:
             True if the field is valid, False otherwise
         """
-        # By default, all fields are valid
-        return True
+        pass
     
-    def get(self, key: str, default: Any = None) -> Any:
+    def get(self, field: str, default: Any = None) -> Any:
         """
-        Get a configuration value.
+        Get a configuration field.
         
         Args:
-            key: Configuration key
-            default: Default value to return if the key is not found
+            field: Field name
+            default: Default value if field is not present
             
         Returns:
-            Configuration value, or default if not found
+            Field value or default if field is not present
         """
-        return self._config.get(key, default)
+        return self._config.get(field, default)
     
-    def set(self, key: str, value: Any) -> None:
+    def set(self, field: str, value: Any) -> None:
         """
-        Set a configuration value.
+        Set a configuration field.
         
         Args:
-            key: Configuration key
-            value: Configuration value
+            field: Field name
+            value: Field value
         """
-        self._config[key] = value
+        self._config[field] = value
     
-    def update(self, config: Dict[str, Any]) -> None:
+    def update(self, config_dict: Dict[str, Any]) -> None:
         """
         Update configuration with values from a dictionary.
         
         Args:
-            config: Dictionary containing configuration values
+            config_dict: Dictionary containing configuration parameters
         """
-        self._config.update(config)
+        self._config.update(config_dict)
 
 
 class AgentConfig(BaseConfig):
@@ -345,52 +364,336 @@ class AdapterConfig(BaseConfig):
         return True
 
 
+class AutogenAgentConfig(BaseConfig):
+    """
+    Configuration for Autogen agents.
+    
+    This class provides structured configuration for Autogen agents, with validation
+    using JSON schema to ensure that required fields are present and have valid values.
+    """
+    
+    def __init__(self, **kwargs):
+        """
+        Initialize a new Autogen agent configuration.
+        
+        Args:
+            **kwargs: Configuration parameters
+        """
+        super().__init__(**kwargs)
+        self._required_fields = {"name", "system_message"}
+        self._optional_fields = {
+            "human_input_mode": "NEVER",
+            "max_consecutive_auto_reply": 10,
+            "llm_config": None,
+            "code_execution_config": None,
+            "is_termination_msg": None,
+            "function_map": None
+        }
+        
+        # Set default values for optional fields
+        for field, default in self._optional_fields.items():
+            if field not in self._config:
+                self._config[field] = default
+        
+        # Set schema
+        self._schema = AUTOGEN_AGENT_CONFIG_SCHEMA
+    
+    def _validate_field(self, field: str, value: Any) -> bool:
+        """
+        Validate a configuration field.
+        
+        Args:
+            field: Field name
+            value: Field value
+            
+        Returns:
+            True if the field is valid, False otherwise
+        """
+        if field == "name":
+            return isinstance(value, str) and len(value) > 0
+        elif field == "system_message":
+            return isinstance(value, str) and len(value) > 0
+        elif field == "human_input_mode":
+            return value in ["ALWAYS", "NEVER", "TERMINATE"]
+        elif field == "max_consecutive_auto_reply":
+            return isinstance(value, int) and value >= 0
+        elif field == "llm_config":
+            # llm_config can be None or a dictionary
+            return value is None or isinstance(value, dict)
+        elif field == "code_execution_config":
+            # code_execution_config can be None or a dictionary
+            return value is None or isinstance(value, dict)
+        elif field == "is_termination_msg":
+            # is_termination_msg can be None or a callable or a boolean
+            return value is None or callable(value) or isinstance(value, bool)
+        elif field == "function_map":
+            # function_map can be None or a dictionary
+            return value is None or isinstance(value, dict)
+        return True
+    
+    def validate(self) -> bool:
+        """
+        Validate the Autogen agent configuration.
+        
+        Returns:
+            True if the configuration is valid, False otherwise
+        """
+        # Check required fields
+        for field in self._required_fields:
+            if field not in self._config:
+                return False
+        
+        # Validate each field
+        for field, value in self._config.items():
+            if not self._validate_field(field, value):
+                return False
+        
+        return True
+
+
+class AutogenGroupChatConfig(BaseConfig):
+    """
+    Configuration for Autogen group chats.
+    
+    This class provides structured configuration for Autogen group chats, with validation
+    using JSON schema to ensure that required fields are present and have valid values.
+    """
+    
+    def __init__(self, **kwargs):
+        """
+        Initialize a new Autogen group chat configuration.
+        
+        Args:
+            **kwargs: Configuration parameters
+        """
+        super().__init__(**kwargs)
+        self._required_fields = {"name", "agents"}
+        self._optional_fields = {
+            "messages": [],
+            "max_round": 10,
+            "speaker_selection_method": "auto",
+            "allow_repeat_speaker": False,
+            "metadata": {}
+        }
+        
+        # Set default values for optional fields
+        for field, default in self._optional_fields.items():
+            if field not in self._config:
+                self._config[field] = default
+        
+        # Set schema
+        self._schema = AUTOGEN_GROUP_CHAT_CONFIG_SCHEMA
+    
+    def _validate_field(self, field: str, value: Any) -> bool:
+        """
+        Validate a configuration field.
+        
+        Args:
+            field: Field name
+            value: Field value
+            
+        Returns:
+            True if the field is valid, False otherwise
+        """
+        if field == "name":
+            return isinstance(value, str) and len(value) > 0
+        elif field == "agents":
+            return isinstance(value, list) and len(value) > 0
+        elif field == "messages":
+            return isinstance(value, list)
+        elif field == "max_round":
+            return isinstance(value, int) and value > 0
+        elif field == "speaker_selection_method":
+            return value in ["auto", "round_robin", "random", "manual"]
+        elif field == "allow_repeat_speaker":
+            return isinstance(value, bool)
+        elif field == "metadata":
+            return isinstance(value, dict)
+        return True
+
+
+class AutogenToolConfig(BaseConfig):
+    """
+    Configuration for Autogen tools.
+    
+    This class provides structured configuration for Autogen tools, with validation
+    using JSON schema to ensure that required fields are present and have valid values.
+    """
+    
+    def __init__(self, **kwargs):
+        """
+        Initialize a new Autogen tool configuration.
+        
+        Args:
+            **kwargs: Configuration parameters
+        """
+        super().__init__(**kwargs)
+        self._required_fields = {"name", "description"}
+        self._optional_fields = {
+            "parameters": {},
+            "return_direct": False,
+            "metadata": {}
+        }
+        
+        # Set default values for optional fields
+        for field, default in self._optional_fields.items():
+            if field not in self._config:
+                self._config[field] = default
+        
+        # Set schema
+        self._schema = AUTOGEN_TOOL_CONFIG_SCHEMA
+    
+    def _validate_field(self, field: str, value: Any) -> bool:
+        """
+        Validate a configuration field.
+        
+        Args:
+            field: Field name
+            value: Field value
+            
+        Returns:
+            True if the field is valid, False otherwise
+        """
+        if field == "name":
+            return isinstance(value, str) and len(value) > 0
+        elif field == "description":
+            return isinstance(value, str) and len(value) > 0
+        elif field == "parameters":
+            return isinstance(value, dict)
+        elif field == "return_direct":
+            return isinstance(value, bool)
+        elif field == "metadata":
+            return isinstance(value, dict)
+        return True
+
+
+class LLMConfig(BaseConfig):
+    """
+    Configuration for LLMs.
+    
+    This class provides structured configuration for LLMs, with validation
+    using JSON schema to ensure that required fields are present and have valid values.
+    """
+    
+    def __init__(self, **kwargs):
+        """
+        Initialize a new LLM configuration.
+        
+        Args:
+            **kwargs: Configuration parameters
+        """
+        super().__init__(**kwargs)
+        self._required_fields = {"model"}
+        self._optional_fields = {
+            "api_key": None,
+            "api_type": "openai",
+            "api_rate_limit": None,
+            "base_url": None,
+            "api_version": None,
+            "organization": None,
+            "tags": [],
+            "metadata": {}
+        }
+        
+        # Set default values for optional fields
+        for field, default in self._optional_fields.items():
+            if field not in self._config:
+                self._config[field] = default
+    
+    def validate(self) -> bool:
+        """
+        Validate the configuration based on the API type.
+        
+        Returns:
+            True if the configuration is valid, False otherwise
+        """
+        # Check that all required fields are present
+        for field in self._required_fields:
+            if field not in self._config:
+                return False
+        
+        # Validate each field
+        for field, value in self._config.items():
+            if not self._validate_field(field, value):
+                return False
+        
+        # Additional validation based on API type
+        api_type = self._config.get("api_type", "openai")
+        
+        if api_type == "openai":
+            # OpenAI requires model and api_type
+            return "model" in self._config and self._config["api_type"] == "openai"
+        
+        elif api_type == "azure":
+            # Azure requires model, api_type, and base_url
+            return (
+                "model" in self._config and
+                self._config["api_type"] == "azure" and
+                "base_url" in self._config and
+                self._config["base_url"] is not None
+            )
+        
+        elif api_type == "custom":
+            # Custom requires model, api_type, and base_url
+            return (
+                "model" in self._config and
+                self._config["api_type"] == "custom" and
+                "base_url" in self._config and
+                self._config["base_url"] is not None
+            )
+        
+        return False
+    
+    def _validate_field(self, field: str, value: Any) -> bool:
+        """
+        Validate a configuration field.
+        
+        Args:
+            field: Field name
+            value: Field value
+            
+        Returns:
+            True if the field is valid, False otherwise
+        """
+        if field == "model":
+            return isinstance(value, str) and len(value) > 0
+        elif field == "api_key":
+            return value is None or isinstance(value, str)
+        elif field == "api_type":
+            return value in ["openai", "azure", "custom"]
+        elif field == "api_rate_limit":
+            return value is None or (isinstance(value, (int, float)) and value > 0)
+        elif field == "base_url":
+            return value is None or isinstance(value, str)
+        elif field == "api_version":
+            return value is None or isinstance(value, str)
+        elif field == "organization":
+            return value is None or isinstance(value, str)
+        elif field == "tags":
+            return isinstance(value, list)
+        elif field == "metadata":
+            return isinstance(value, dict)
+        return True
+
+
 class ConfigFactory:
     """
     Factory for creating configuration objects.
     
-    This factory provides methods for creating different types of configuration objects,
-    centralizing configuration creation logic and enhancing extensibility.
+    This class provides methods for creating configuration objects from dictionaries,
+    JSON strings, and files. It supports all configuration types defined in this module.
     """
     
-    _config_classes: Dict[str, Type[BaseConfig]] = {
-        "agent": AgentConfig,
-        "group_chat": GroupChatConfig,
-        "tool": ToolConfig,
-        "adapter": AdapterConfig
+    _config_types = {
+        'agent': AgentConfig,
+        'group_chat': GroupChatConfig,
+        'tool': ToolConfig,
+        'adapter': AdapterConfig,
+        'autogen_agent': AutogenAgentConfig,
+        'autogen_group_chat': AutogenGroupChatConfig,
+        'autogen_tool': AutogenToolConfig,
+        'llm': LLMConfig
     }
-    
-    @classmethod
-    def create_config(cls, config_type: str, **kwargs) -> BaseConfig:
-        """
-        Create a configuration object of the specified type.
-        
-        Args:
-            config_type: Type of configuration to create
-            **kwargs: Configuration parameters
-            
-        Returns:
-            Configuration object
-            
-        Raises:
-            ValueError: If the configuration type is not supported
-        """
-        if config_type not in cls._config_classes:
-            raise ValueError(f"Unsupported configuration type: {config_type}")
-        
-        config_class = cls._config_classes[config_type]
-        return config_class(**kwargs)
-    
-    @classmethod
-    def register_config_class(cls, config_type: str, config_class: Type[BaseConfig]) -> None:
-        """
-        Register a configuration class.
-        
-        Args:
-            config_type: Type of configuration
-            config_class: Configuration class to register
-        """
-        cls._config_classes[config_type] = config_class
     
     @classmethod
     def from_dict(cls, config_type: str, config_dict: Dict[str, Any]) -> BaseConfig:
@@ -407,14 +710,81 @@ class ConfigFactory:
         Raises:
             ValueError: If the configuration type is not supported
         """
-        return cls.create_config(config_type, **config_dict)
+        if config_type not in cls._config_types:
+            raise ValueError(f"Unsupported configuration type: {config_type}")
+        
+        return cls._config_types[config_type](**config_dict)
     
     @classmethod
-    def get_supported_config_types(cls) -> List[str]:
+    def from_json(cls, config_type: str, json_string: str) -> BaseConfig:
         """
-        Get a list of supported configuration types.
+        Create a configuration object from a JSON string.
         
+        Args:
+            config_type: Type of configuration to create
+            json_string: JSON string containing configuration parameters
+            
         Returns:
-            List of configuration type names
+            Configuration object
+            
+        Raises:
+            ValueError: If the configuration type is not supported
+            json.JSONDecodeError: If the JSON string is invalid
         """
-        return list(cls._config_classes.keys())
+        config_dict = json.loads(json_string)
+        return cls.from_dict(config_type, config_dict)
+    
+    @classmethod
+    def from_file(cls, config_type: str, file_path: str) -> BaseConfig:
+        """
+        Create a configuration object from a file.
+        
+        Args:
+            config_type: Type of configuration to create
+            file_path: Path to the configuration file
+            
+        Returns:
+            Configuration object
+            
+        Raises:
+            ValueError: If the configuration type is not supported
+            FileNotFoundError: If the file does not exist
+            json.JSONDecodeError: If the file contains invalid JSON
+        """
+        with open(file_path, 'r') as f:
+            if file_path.endswith('.json'):
+                config_dict = json.load(f)
+            else:
+                raise ValueError(f"Unsupported file format: {file_path}")
+        
+        return cls.from_dict(config_type, config_dict)
+    
+    @classmethod
+    def get_config_class(cls, config_type: str) -> Type[BaseConfig]:
+        """
+        Get the configuration class for a given type.
+        
+        Args:
+            config_type: Type of configuration
+            
+        Returns:
+            Configuration class
+            
+        Raises:
+            ValueError: If the configuration type is not supported
+        """
+        if config_type not in cls._config_types:
+            raise ValueError(f"Unsupported configuration type: {config_type}")
+        
+        return cls._config_types[config_type]
+    
+    @classmethod
+    def register_config_type(cls, config_type: str, config_class: Type[BaseConfig]) -> None:
+        """
+        Register a new configuration type.
+        
+        Args:
+            config_type: Type of configuration
+            config_class: Configuration class
+        """
+        cls._config_types[config_type] = config_class
