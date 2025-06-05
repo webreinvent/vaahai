@@ -2,24 +2,24 @@
 
 You are an AI assistant helping with the VaahAI project, a multi-agent AI CLI tool built with Microsoft's Autogen Framework.
 
-## WORKFLOW
+## PREVIOUS TASK VERIFICATION
 Follow this complete workflow for task management and implementation:
 
-### 1. Verify Previous Task Completion
+### Step 1. Verify Previous Task Completion
 - Review the code changes for the previous task
 - Run appropriate tests to verify functionality
 - Check that all acceptance criteria have been met
 - Confirm that the implementation aligns with the project architecture
 - If the task is incomplete, identify what remains to be done before proceeding
 
-### 2. Update Documentation
+### Step 2. Update Documentation
 - Update relevant documents in `/specs`, `/docs`, and `/ai_docs`
 - Ensure implementation details are documented
 - Update API documentation if applicable
 - Add usage examples where appropriate
 - Ensure the documentation reflects the current implementation
 
-### 3. Git Commit is done for all files
+### Step 3. Git Commit is done for all files
 - Commit all changes to Git if applicable
 - Summarize the changes made for the previous task
 - Include relevant task IDs in the commit message
@@ -27,7 +27,7 @@ Follow this complete workflow for task management and implementation:
 - Note any architectural decisions made
 - Create a commit with a clear, descriptive message
 
-### 4. Merge/Pull Request
+### Step 4. Merge/Pull Request
 - Create a merge/pull request from the current branch to the `develop` branch if not exist`
 - Include a descriptive title that references the task ID
 - Add a detailed description of the changes made
@@ -35,22 +35,25 @@ Follow this complete workflow for task management and implementation:
 - Request appropriate reviewers if applicable
 - Add relevant labels and milestones
 
-### 5. develop contains all changes
+### Step 5. develop contains all changes
 - Ensure the `develop` branch contains all changes from previous tasks
 
 BEFORE PICKING THE NEXT TASK, CLEARLY MENTION THE STATUS OF ALL ABOVE STEPS FOR PREVIOUS TASK
 
-## Project Scope
+## NEW TASK WORKFLOW
+Follow this complete workflow for task management and implementation:
+
+### Step 0. Project Scope
 Read and learn from `./project_scope.prompt` file our the project scope again so that you still understand the project scope
 
-### 1. Select Next Task
+### Step 1. Select Next Task
 - Review the current project status in `/specs/TASK_TRACKING.md`
 - Identify tasks marked as "Not Started" that have no incomplete dependencies
 - Prioritize MVP tasks and those that unblock multiple other tasks
 - Consider the logical flow of implementation
 - Update the task status in `TASK_TRACKING.md` to "In Progress"
 
-### 2. Create New Branch
+### Step 2. Create New Branch
 - PREFERRED APPROACH: Create a branch from the previous task branch if it contains necessary code for the next task
   - First ensure you're on the previous task branch
   - Pull any recent changes from the develop branch: `git pull origin develop`
@@ -62,14 +65,14 @@ Read and learn from `./project_scope.prompt` file our the project scope again so
 - Always follow the project's branch naming conventions
 - Push the branch to the remote repository
 
-### 3. Understand Task Scope
+### Step 3. Understand Task Scope
 - Read the task description thoroughly
 - Review related documentation and requirements
 - Understand how this task fits into the overall project
 - Identify the specific deliverables for this task
 - Define clear acceptance criteria
 
-### 4. Create Implementation Plan
+### Step 4. Create Implementation Plan
 - Break down the task into smaller steps
 - Identify the files that need to be created or modified
 - Determine the classes, functions, and interfaces required
@@ -77,7 +80,7 @@ Read and learn from `./project_scope.prompt` file our the project scope again so
 - Plan for testing and validation
 - Present the plan for confirmation before proceeding
 
-### 5. Implement the Task
+### Step 5. Implement the Task
 - Follow the confirmed implementation plan
 - Write clean, well-documented code
 - Adhere to the project's coding guidelines:
@@ -91,7 +94,7 @@ Read and learn from `./project_scope.prompt` file our the project scope again so
 - Update documents in `/specs`, `/docs`, and `/ai_docs` as needed
 - Update root level README.md if applicable for the new feature, only consider important information only
 
-### 6. Create Merge/Pull Request
+### Step 6. Create Merge/Pull Request
 - Create a merge/pull request from the current branch to the `develop` branch
 - Include a descriptive title that references the task ID
 - Add a detailed description of the changes made
@@ -114,60 +117,56 @@ When selecting the next task, consider:
 ## OUTPUT FORMAT
 Provide a comprehensive response with the following structure:
 
-1. **Previous Task Verification**:
-   - Status: Complete/Incomplete
+### PREVIOUS TASK VERIFICATION
+1. **Task Completion**: /[INCOMPLETE]
    - Test results summary
    - Verification details
    - Outstanding issues (if any)
 
-2. **Documentation Updates**:
-   - Status: Complete/Incomplete
+2. **Documentation Updates**: /[INCOMPLETE]
    - Files updated
    - Summary of changes
 
-3. **Git Commit Details**:
-   - Status: Complete/Incomplete
+3. **Git Commit**: /[INCOMPLETE]
    - Commit message
    - Files included
    - Branch information
 
-4. **Merge/Pull Request Details**:
-   - Status: Complete/Incomplete
+4. **Merge/Pull Request**: /[INCOMPLETE]
    - Title and description
    - References to related tasks
    - Reviewers and labels
 
-5. **Next Task Selection**:
-   - Status: Complete/Incomplete
+5. **Develop Branch Status**: /[INCOMPLETE]
+   - Confirmation that develop contains all changes
+
+### NEW TASK WORKFLOW
+6. **Next Task Selection**: /[INCOMPLETE]
    - Recommended task(s)
    - Justification
    - Task tracking updates
 
-6. **New Branch Creation**:
-   - Status: Complete/Incomplete
+7. **New Branch Creation**: /[INCOMPLETE]
    - Branch name
    - Base branch
    - Creation confirmation
 
-7. **Task Scope Analysis**:
-   - Status: Complete/Incomplete
+8. **Task Scope Analysis**: /[INCOMPLETE]
    - Task understanding
    - Deliverables
    - Acceptance criteria
 
-8. **Implementation Plan**:
-   - Status: Complete/Incomplete
+9. **Implementation Plan**: /[INCOMPLETE]
    - Step-by-step approach
    - Files to modify
    - Testing strategy
 
-9. **Implementation Execution** (after confirmation):
-   - Status: Complete/Incomplete
-   - Code implementation details
-   - Testing results
-   - Integration notes
+10. **Implementation Execution**: /[INCOMPLETE]
+    - Code implementation details
+    - Testing results
+    - Integration notes
 
-IMPORTANT: For each section, clearly indicate whether that step has been completed or is still pending. This helps track progress through the workflow and ensures no steps are missed.
+IMPORTANT: For each section, use the green circle icon for completed steps and [INCOMPLETE] for pending steps. This helps track progress through the workflow and ensures no steps are missed.
 
 ## IMPORTANT NOTES
 - Focus on incremental development with small, achievable tasks
@@ -191,6 +190,7 @@ Follow these coding guidelines for all implementations:
 ### 2. Method and Function Design
 - Keep methods short and focused on a single task
 - Aim for methods under 30-50 lines of code
+- Feel files short or create multiple file for large code
 - Follow the Single Responsibility Principle
 - Use descriptive method names that clearly indicate their purpose
 - Limit the number of parameters (preferably 5 or fewer)
