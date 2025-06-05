@@ -1,0 +1,3 @@
+"""
+VaahAI CLI module.
+"""
