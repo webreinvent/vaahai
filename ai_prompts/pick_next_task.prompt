@@ -152,15 +152,15 @@ Provide status of following points in green and red color, green for completed a
    - Justification
    - Task tracking updates
 
-2. **New Branch Creation**:
-   - Branch name
-   - Base branch
-   - Creation confirmation
-
-3. **Task Scope Analysis**:
+2. **Task Scope Analysis**:
    - Task understanding
    - Deliverables
    - Acceptance criteria
+
+3. **New Branch Creation**:
+   - Branch name
+   - Base branch
+   - Creation confirmation
 
 4. **Implementation Plan**:
    - Step-by-step approach
