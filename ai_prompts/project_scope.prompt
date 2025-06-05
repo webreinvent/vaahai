@@ -3,11 +3,13 @@
 You need to write structured documentation for AI Tools like windsurf, claude, Junie, etc can understand for the following requirement:
 
 ## VaahAI Project Requirement
-VaahAI is a multi AI agent CLI tool and will using Microsoft Autogen Framework. It will have the capability to do the code review, code audit, generate code, generate code scaffolding and similar capabilities. 
+
+VaahAI is a multi AI agent CLI tool and will using Microsoft Autogen Framework. It will have the capability to do the code review, code audit, generate code, generate code scaffolding and similar capabilities.
 
 ### VaahAI Commands
 
 #### vaahai config init [OPTIONS]
+
 - Initial command after installation
 - It will ask for LLM to choose like OPEN AI, Cluade etc
 - It ask for LLM api keys
@@ -15,33 +17,38 @@ VaahAI is a multi AI agent CLI tool and will using Microsoft Autogen Framework. 
 - Use of docker for code execution
 
 #### vaahai helloworld [OPTIONS]
+
 - A test command to make sure VaahAI is working perfectly file
 
 #### vaahai audit [PATH] [OPTIONS]
+
 - Thorough examination of code for security, compliance, quality, and adherence to standards across larger codebases or systems
 - Broader and more formal; assesses entire application or module, often at set intervals
 - Security vulnerabilities, performance bottlenecks, licensing, regulatory compliance, maintainability
 - Identify critical issues, gaps in compliance, architectural flaws, risk areas
 
 #### vaahai review [PATH] [OPTIONS]
+
 - Focus on improving code quality, catching bugs, and enforcing coding standards before merging changes
 - Narrower and informal; targets individual code changes (e.g., pull requests, commits)
 - Bug detection, logic errors, readability, style consistency, best practices
 - Continuous and iterative; during development cycles for every feature branch or code commit
 
 ### Features
+
 - Advance debugging features
 - Warning if config is not done or incomplete
 - Allow global config setting when we run vaahai config init, but at the same time we should be able to override
 - For each command there should be multiple ai agent deployed to complete the tasks
-- Option to apply the code changes one by one, by asking for confirmation. 
+- Option to apply the code changes one by one, by asking for confirmation.
 - It can accept folders, files, model etc as arguments
 - AI agents can or should use tools to run static analysis (e.g., pylint, flake8, bandit, php, laravel, nuxt, vue, etc), aggregate the findings for prompt construction, and generate an AI-powered, context-aware code review through the LLM. Present reviews in the terminal.
-- AI agent handling (via AutoGen), configuration, formatting, and utilities. 
+- AI agent handling (via AutoGen), configuration, formatting, and utilities.
 - Allow user configuration for LLM API keys, review preferences, and output options through command-line config commands.
 - Have multiple reusable AI agents
 
 ### Possible AutoGen AI Agents
+
 - LanguageDetector: Responsible to detect the programming language
 - FrameworkOrCMSDetector: Responsible to detect the framework or cms
 - Auditor: Autogent Agents to audit the code
@@ -50,12 +57,12 @@ VaahAI is a multi AI agent CLI tool and will using Microsoft Autogen Framework. 
 - Applier: Autogent Agent, if user accept the change then apply the code change to the file
 - Commiter: Autogent Agent to commit the change in git
 
-
 ## VaahAI Tools & Stack
+
 - *Programming Language*: Python
 - *CLI Framework*: Typer with InquirerPy
 - *AI Agent Orchestration*: Microsoft AutoGen
-- *LLM*: openai, claude, junie, etc and local LLM via Ollama 
+- *LLM*: openai, claude, junie, etc and local LLM via Ollama
 - *Output*: Terminal, Markdown, HTML (via Python libraries) or apply code changes directly in files
 - *Config*: TOML-based file in user home directory
 - *Python Package Manager*: Poetry
@@ -65,24 +72,24 @@ VaahAI is a multi AI agent CLI tool and will using Microsoft Autogen Framework. 
 Create following directories with specified responsibilities:
 
 ### /ai_docs
+
 AI Coding tools persistent memory. A knowledge repository for AI tools can instantly access. It will contain API docs & integrations, Architecture docs / design docs, Hidden non-code business logic, Project-specific patterns
 
-### /ai_prompts 
+### /ai_prompts
+
 This directory will contain AI Prompts. Reusable prompts you can use with your ai tools. This reduces the time it takes to run repeat workflows in your codebases and in your ai tools. Although this is specific to Claude Code, the reusable prompts are not limited to any specific ai tooling. Few examples like:
 
 - ai_context.prompt : To ask ai to read all the documents like /specs, /docs, /ai_docs to under the project scope
-
 - update_docs_and_task_status.prompt: Update the product docs, implementation status and tasks available in /specs, /docs, /ai_docs based on recent discussion, implementation and code. Update the AI memory.
-
 - pick_next_task.prompt: Check the status of implementation and pick next task
-
 - think_before_code.prompt: Understand the entire project scope, current tasks, think about the current technical challenges, plan and then write the code.
 
+### /docs
 
-### /docs 
 To create product documentation which is a user guide who wants to use VaahAI software, like get started, installation, how to use etc
 
-### /specs 
+### /specs
+
 It will contain Project plan, Product Requirements Document, features, implementations, tasks, etc. THIS IS THE FIRST DOCUMENT WE SHOULD PREPARE.
 
 * Introduction
@@ -95,12 +102,15 @@ It will contain Project plan, Product Requirements Document, features, implement
 * References
 
 ### /specs/feature
+
 List of features of the product
 
 ### /specs/implementation
+
 List of implementation plan, roadmap, tasks tracking of the product
 
 ### /specs/non_functional
+
 Product Requirements Document - Non-Functional Requirements
 
 * Performance Requirements
@@ -112,8 +122,8 @@ Product Requirements Document - Non-Functional Requirements
 * Maintainability Requirements
 * Compliance Requirements
 
-
 ### /specs/technical
+
 Product Requirements Document - Technical Specifications
 
 * Architecture Overview
@@ -128,6 +138,7 @@ Product Requirements Document - Technical Specifications
 * Technical Architecture
 
 ### /specs/user_stories
+
 Product Requirements Document - User Stories
 
 * User Personas
@@ -137,21 +148,24 @@ Product Requirements Document - User Stories
 * Acceptance Criteria
 * Detailed User Stories
 
-
 ### /vaahai
-This directory will contain the actual source code of the product. 
+
+This directory will contain the actual source code of the product.
 
 ### /vaahai/agents
+
 This directory will contain all ai agents with it's own dedicated directory
 
-### /vaahai/commands
+### /vaahai/cli
+
 This directory will contain all commands
 
-### /vaahai/test
+### /vaahai/tests
+
 This directory will contain all the unit and end-to-end tests
 
-
 ## Documentation Must Include:
+
 - Concise overview of purpose and features
 - Technology stack table/list with justifications
 - Specific CLI commands, usage scenarios, and options
@@ -166,16 +180,17 @@ This directory will contain all the unit and end-to-end tests
 - YOU SHOULD NOT CREATE LARGE FILES, INSTEAD ORGANIZE INTO FOLDERS AND FILES
 
 ## Implementation and Task Status
+
 You must create markdown files in specs to keep tracks of all the phase, tasks and their status. These files can be referred by AI tools to understand completed tasks, pick the next task.
 
 Assign easily identifiable labels to each task, such as [P1-task-1], [P2-task-2], etc. This will make it easier to track progress and identify tasks that need attention.
 
 Try doing MVP first, test and then add more features. This will help you get a sense of the project scope and can help you prioritize tasks.
 
-
 ## What you need to do step by step:
-1. If you have any questions or need help, please ask and clearly understand what you need to do then only you need to continue to the next step. 
-2. Create all folders for documentation 
+
+1. If you have any questions or need help, please ask and clearly understand what you need to do then only you need to continue to the next step.
+2. Create all folders for documentation
 3. Create all markdown files for documentation
 4. Create useful ai prompts for documentation
 5. Revisit the documentation to make sure it is complete
