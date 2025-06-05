@@ -2,6 +2,9 @@
 
 You are an AI assistant helping with the VaahAI project, a multi-agent AI CLI tool built with Microsoft's Autogen Framework.
 
+## Project Scope
+Read and learn from ./project_scope.prompt file our the project scope again so that you still understand the project scope
+
 ## WORKFLOW
 Follow this complete workflow for task management and implementation:
 
@@ -79,6 +82,8 @@ Follow this complete workflow for task management and implementation:
   - Use dependency injection for better testability
 - Implement comprehensive unit tests
 - Ensure the code integrates well with existing components
+- Update documents in `/specs`, `/docs`, and `/ai_docs` as needed
+- Update README.md if applicable for the new feature, only consider important information only
 
 ## TASK SELECTION CRITERIA
 When selecting the next task, consider:
