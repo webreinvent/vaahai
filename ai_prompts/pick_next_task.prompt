@@ -115,58 +115,63 @@ When selecting the next task, consider:
 8. **Logical Flow**: Follow a natural development sequence
 
 ## OUTPUT FORMAT
-Provide a comprehensive response with the following structure:
+
 
 ### PREVIOUS TASK VERIFICATION
-1. **Task Completion**: /[INCOMPLETE]
+
+Provide status of following points in green and red color, green for completed and red for incomplete:
+
+1. **Verify Previous Task Completion**:
    - Test results summary
    - Verification details
    - Outstanding issues (if any)
 
-2. **Documentation Updates**: /[INCOMPLETE]
+2. **Update Documentation**:
    - Files updated
    - Summary of changes
 
-3. **Git Commit**: /[INCOMPLETE]
+3. **Git Commit**:
    - Commit message
    - Files included
    - Branch information
 
-4. **Merge/Pull Request**: /[INCOMPLETE]
+4. **Merge/Pull Request**:
    - Title and description
    - References to related tasks
    - Reviewers and labels
 
-5. **Develop Branch Status**: /[INCOMPLETE]
+5. **Develop Branch Status**:
    - Confirmation that develop contains all changes
 
 ### NEW TASK WORKFLOW
-6. **Next Task Selection**: /[INCOMPLETE]
+
+Provide status of following points in green and red color, green for completed and red for incomplete:
+
+1. **Next Task Selection**:
    - Recommended task(s)
    - Justification
    - Task tracking updates
 
-7. **New Branch Creation**: /[INCOMPLETE]
+2. **New Branch Creation**:
    - Branch name
    - Base branch
    - Creation confirmation
 
-8. **Task Scope Analysis**: /[INCOMPLETE]
+3. **Task Scope Analysis**:
    - Task understanding
    - Deliverables
    - Acceptance criteria
 
-9. **Implementation Plan**: /[INCOMPLETE]
+4. **Implementation Plan**:
    - Step-by-step approach
    - Files to modify
    - Testing strategy
 
-10. **Implementation Execution**: /[INCOMPLETE]
+5. **Implementation Execution**:
     - Code implementation details
     - Testing results
     - Integration notes
 
-IMPORTANT: For each section, use the green circle icon for completed steps and [INCOMPLETE] for pending steps. This helps track progress through the workflow and ensures no steps are missed.
 
 ## IMPORTANT NOTES
 - Focus on incremental development with small, achievable tasks
