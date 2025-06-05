@@ -53,7 +53,24 @@ Read and learn from `./project_scope.prompt` file our the project scope again so
 - Consider the logical flow of implementation
 - Update the task status in `TASK_TRACKING.md` to "In Progress"
 
-### Step 2. Create New Branch
+
+
+### Step 2. Understand Task Scope
+- Read the task description thoroughly
+- Review related documentation and requirements
+- Understand how this task fits into the overall project
+- Identify the specific deliverables for this task
+- Define clear acceptance criteria
+
+### Step 3. Create Implementation Plan
+- Break down the task into smaller steps
+- Identify the files that need to be created or modified
+- Determine the classes, functions, and interfaces required
+- Consider edge cases and error handling
+- Plan for testing and validation
+- Present the plan for confirmation before proceeding
+
+### Step 4. Create New Branch
 - PREFERRED APPROACH: Create a branch from the previous task branch if it contains necessary code for the next task
   - First ensure you're on the previous task branch
   - Pull any recent changes from the develop branch: `git pull origin develop`
@@ -64,21 +81,6 @@ Read and learn from `./project_scope.prompt` file our the project scope again so
   - Create a new branch: `git checkout -b feature/P<phase>-task-<id>-<description>`
 - Always follow the project's branch naming conventions
 - Push the branch to the remote repository
-
-### Step 3. Understand Task Scope
-- Read the task description thoroughly
-- Review related documentation and requirements
-- Understand how this task fits into the overall project
-- Identify the specific deliverables for this task
-- Define clear acceptance criteria
-
-### Step 4. Create Implementation Plan
-- Break down the task into smaller steps
-- Identify the files that need to be created or modified
-- Determine the classes, functions, and interfaces required
-- Consider edge cases and error handling
-- Plan for testing and validation
-- Present the plan for confirmation before proceeding
 
 ### Step 5. Implement the Task
 - Follow the confirmed implementation plan
@@ -94,13 +96,18 @@ Read and learn from `./project_scope.prompt` file our the project scope again so
 - Update documents in `/specs`, `/docs`, and `/ai_docs` as needed
 - Update root level README.md if applicable for the new feature, only consider important information only
 
-### Step 6. Create Merge/Pull Request
+### Step 6. Commit and Create Merge/Pull Request
+- Commit all changes to Git if applicable
 - Create a merge/pull request from the current branch to the `develop` branch
 - Include a descriptive title that references the task ID
 - Add a detailed description of the changes made
 - Reference any related issues or tasks
 - Request appropriate reviewers if applicable
 - Add relevant labels and milestones
+
+### Step 7. Update TASK_TRACKING.md
+- Update the task status in `TASK_TRACKING.md` to "Completed"
+- Add any relevant notes or updates
 
 ## TASK SELECTION CRITERIA
 When selecting the next task, consider:
@@ -157,21 +164,26 @@ Provide status of following points in green and red color, green for completed a
    - Deliverables
    - Acceptance criteria
 
-3. **New Branch Creation**:
-   - Branch name
-   - Base branch
-   - Creation confirmation
-
-4. **Implementation Plan**:
+3. **Implementation Plan**:
    - Step-by-step approach
    - Files to modify
    - Testing strategy
+
+4. **New Branch Creation**:
+   - Branch name
+   - Base branch
+   - Creation confirmation
 
 5. **Implementation Execution**:
     - Code implementation details
     - Testing results
     - Integration notes
 
+6. **Commit and Create Merge/Pull Request**:
+    - Commit message
+    - Files included
+
+ASK FOR CONFIRMATION BEFORE PROCEEDING.
 
 ## IMPORTANT NOTES
 - Focus on incremental development with small, achievable tasks
