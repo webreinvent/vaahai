@@ -69,33 +69,44 @@ nano ~/.vaahai/config.toml
 
 ## 🛠️ Usage
 
+### CLI Command Structure
+
+VaahAI provides a modular CLI with the following main commands:
+
+- `vaahai helloworld`: Test command to verify proper functioning
+- `vaahai config`: Configuration management commands
+  - `vaahai config init`: Set up initial configuration
+  - `vaahai config show`: Display current configuration
+- `vaahai review`: Code review commands
+  - `vaahai review run`: Run a code review on specified path
+- `vaahai audit`: Security and compliance audit commands
+  - `vaahai audit run`: Run a security/compliance audit on specified path
+- `vaahai version`: Display version information
+  - `vaahai version show`: Show current VaahAI version
+
+Each command supports the `--help` flag for detailed usage information.
+
 ### Basic Commands
 
 ```bash
 # Test installation and configuration
-poetry run vaahai helloworld
+poetry run vaahai helloworld run
 
 # Review code in a file or directory
-poetry run vaahai review --path ./my_project --depth standard
+poetry run vaahai review run --path ./my_project --depth standard
 
 # Audit a project for security and compliance
-poetry run vaahai audit --path ./my_project --security --compliance owasp
+poetry run vaahai audit run --path ./my_project --security --compliance owasp
 
-# Generate code from a description
-poetry run vaahai generate "Create a Python function that sorts a list of dictionaries by a specified key"
-
-# Apply suggested changes
-poetry run vaahai apply --file review_suggestions.json
-
-# Commit changes with AI-generated commit message
-poetry run vaahai commit
+# Show version information
+poetry run vaahai version show
 ```
 
 ### Example Workflow
 
 ```bash
 # Review a Python file
-poetry run vaahai review --path ./app.py --focus quality
+poetry run vaahai review run --path ./app.py --focus quality
 
 # Apply suggested changes
 poetry run vaahai apply --file review_suggestions.json
@@ -115,6 +126,13 @@ vaahai/
 ├── vaahai/          # Main package
 │   ├── agents/      # Agent implementations
 │   ├── cli/         # CLI commands and handlers
+│   │   ├── commands/  # Command implementations
+│   │   │   ├── audit/     # Audit command
+│   │   │   ├── config/    # Configuration command
+│   │   │   ├── helloworld/  # Hello world test command
+│   │   │   ├── review/    # Code review command
+│   │   │   └── version/   # Version command
+│   │   └── utils/     # CLI utilities
 │   ├── config/      # Configuration management
 │   ├── llm/         # LLM provider integrations
 │   └── utils/       # Utility functions and helpers
