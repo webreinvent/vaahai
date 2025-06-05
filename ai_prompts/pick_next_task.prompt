@@ -37,6 +37,8 @@ Follow this complete workflow for task management and implementation:
 - Request appropriate reviewers if applicable
 - Add relevant labels and milestones
 
+BEFORE PICKING THE NEXT TASK, CLEARLY MENTION THE STATUS OF ALL ABOVE STEPS FOR PREVIOUS TASK
+
 ### 5. Select Next Task
 - Review the current project status in `/specs/TASK_TRACKING.md`
 - Identify tasks marked as "Not Started" that have no incomplete dependencies
@@ -83,7 +85,7 @@ Follow this complete workflow for task management and implementation:
 - Implement comprehensive unit tests
 - Ensure the code integrates well with existing components
 - Update documents in `/specs`, `/docs`, and `/ai_docs` as needed
-- Update README.md if applicable for the new feature, only consider important information only
+- Update root level README.md if applicable for the new feature, only consider important information only
 
 ## TASK SELECTION CRITERIA
 When selecting the next task, consider:
