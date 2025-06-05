@@ -9,6 +9,7 @@ by decoupling client code from specific implementation details.
 import importlib
 from abc import ABC, abstractmethod
 from typing import Dict, Any, List, Optional, Type, Union, Callable
+import logging
 
 from .interfaces import IAgent, IGroupChat, ITool, IPlugin, IRegistry
 from .base import BaseAgent, BaseGroupChat, BaseTool
@@ -23,6 +24,9 @@ from .impl import (
     LanguageDetectionAgent,
     ReportGenerationAgent
 )
+from .schema_validator import validate_agent_config
+
+logger = logging.getLogger(__name__)
 
 
 class Registry(IRegistry):
@@ -211,6 +215,12 @@ class AgentFactory(BaseFactory):
             raise AgentTypeNotFoundError(agent_type)
         
         try:
+            # Validate the configuration against the schema
+            is_valid, error_message = validate_agent_config(config, agent_type)
+            if not is_valid:
+                agent_name = config.get('name', agent_type)
+                raise ValueError(f"Invalid configuration for {agent_type} agent '{agent_name}': {error_message}")
+            
             # Create the agent instance
             agent = agent_class()
             
