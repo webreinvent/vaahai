@@ -109,17 +109,8 @@ Read and learn from `./project_scope.prompt` file our the project scope again so
 - Update the task status in `TASK_TRACKING.md` to "Completed"
 - Add any relevant notes or updates
 
-## TASK SELECTION CRITERIA
-When selecting the next task, consider:
+CLEARLY DEFINE YOUR NEXT STEPS AND ASK FOR CONFIRMATION BEFORE PROCEEDING.
 
-1. **Dependencies**: Tasks with all dependencies satisfied
-2. **MVP Priority**: Tasks that are part of the defined MVP
-3. **Unblocking Value**: Tasks that unblock multiple other tasks if completed
-4. **Phase Alignment**: Tasks that align with the current phase of development
-5. **Strategic Importance**: Tasks critical to project progress
-6. **Complexity and Effort**: Balance between quick wins and strategic progress
-7. **Technical Risk**: Address high-risk items early when possible
-8. **Logical Flow**: Follow a natural development sequence
 
 ## OUTPUT FORMAT
 
