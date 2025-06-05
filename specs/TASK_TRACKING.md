@@ -19,7 +19,7 @@ This document tracks the implementation status of all tasks for the VaahAI proje
 | [P1-task-2.2] | Analyze Autogen agent architecture | 🟢 | [P1-task-2.1] | Understand agent structure |
 | [P1-task-2.3] | Evaluate Autogen conversation patterns | 🟢 | [P1-task-2.1] | Study message flow patterns |
 | [P1-task-2.4] | Research and document Autogen integration approach | 🟢 | [P1-task-2.2], [P1-task-2.3] | Combined research on group chat functionality and documentation of overall integration approach |
-| [P1-task-2.5] | Design custom agent architecture | 🔴 | [P1-task-2.4] | Plan VaahAI-specific agent structure |
+| [P1-task-2.5] | Design custom agent architecture | 🟡 | [P1-task-2.4] | Plan VaahAI-specific agent structure |
 | [P1-task-2.6] | Create Autogen configuration schema | 🔴 | [P1-task-2.5] | Define configuration options |
 | [P1-task-2.7] | Implement configuration loader | 🔴 | [P1-task-2.6], [P1-task-3.8] | Load Autogen configurations |
 | [P1-task-2.8] | Create basic agent class | 🔴 | [P1-task-2.5] | Implement foundational agent |
@@ -303,20 +303,21 @@ These tasks represent the minimum viable product (MVP) that should be prioritize
 5. 🟢 [P1-task-2.2] Analyze Autogen agent architecture
 6. 🟢 [P1-task-2.3] Evaluate Autogen conversation patterns
 7. 🟢 [P1-task-2.4] Research and document Autogen integration approach
-8. 🔴 [P1-task-2.8] Create basic agent class
-9. 🔴 [P1-task-2.11] Add basic conversation flow
-10. 🔴 [P1-task-3.1] Research configuration formats
-11. 🔴 [P1-task-3.2] Design configuration schema structure
-12. 🔴 [P1-task-3.7] Implement TOML parser
-13. 🔴 [P1-task-3.8] Create config manager class
-14. 🔴 [P1-task-3.15] Create secure storage for API keys
-15. 🔴 [P1-task-4.1] Create basic CLI project structure
-16. 🔴 [P1-task-4.3] Implement Typer app instance
-17. 🔴 [P1-task-4.5] Implement help and version commands
-18. 🔴 [P1-task-4.8] Set up InquirerPy integration
-19. 🔴 [P1-task-5.1] Design LLM provider interface
-20. 🔴 [P1-task-5.7] Implement OpenAI provider
-21. 🔴 [P1-task-5.13] Create provider factory
+8. 🟡 [P1-task-2.5] Design custom agent architecture
+9. 🔴 [P1-task-2.8] Create basic agent class
+10. 🔴 [P1-task-2.11] Add basic conversation flow
+11. 🔴 [P1-task-3.1] Research configuration formats
+12. 🔴 [P1-task-3.2] Design configuration schema structure
+13. 🔴 [P1-task-3.7] Implement TOML parser
+14. 🔴 [P1-task-3.8] Create config manager class
+15. 🔴 [P1-task-3.15] Create secure storage for API keys
+16. 🔴 [P1-task-4.1] Create basic CLI project structure
+17. 🔴 [P1-task-4.3] Implement Typer app instance
+18. 🔴 [P1-task-4.5] Implement help and version commands
+19. 🔴 [P1-task-4.8] Set up InquirerPy integration
+20. 🔴 [P1-task-5.1] Design LLM provider interface
+21. 🔴 [P1-task-5.7] Implement OpenAI provider
+22. 🔴 [P1-task-5.13] Create provider factory
 
 ## Current Blockers
 
