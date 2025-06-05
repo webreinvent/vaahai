@@ -11,10 +11,11 @@ import logging
 import uuid
 from abc import ABC, abstractmethod
 from datetime import datetime
-from typing import Dict, Any, List, Optional, Set
+from typing import Dict, Any, List, Optional, Set, Union
 
 from .interfaces import IAgent, IMessageProcessor, ITool, IGroupChat
-from .exceptions import AgentInitializationError, AgentConfigurationError
+from .exceptions import AgentInitializationError, AgentConfigurationError, MessageValidationError
+from .messages import Message
 
 logger = logging.getLogger(__name__)
 
@@ -39,6 +40,7 @@ class BaseAgent(IAgent, ABC):
         self._config: Dict[str, Any] = {}
         self._capabilities: Set[str] = set()
         self._initialized = False
+        self._message_processors: List[IMessageProcessor] = []
     
     def initialize(self, config: Dict[str, Any]) -> None:
         """
@@ -115,13 +117,83 @@ class BaseAgent(IAgent, ABC):
         """
         return capability in self._capabilities
     
-    @abstractmethod
-    async def process_message(self, message: Dict[str, Any]) -> Dict[str, Any]:
+    def add_message_processor(self, processor: IMessageProcessor) -> None:
+        """
+        Add a message processor to this agent.
+        
+        Args:
+            processor: The message processor to add
+        """
+        self._message_processors.append(processor)
+    
+    def remove_message_processor(self, processor: IMessageProcessor) -> None:
+        """
+        Remove a message processor from this agent.
+        
+        Args:
+            processor: The message processor to remove
+        """
+        if processor in self._message_processors:
+            self._message_processors.remove(processor)
+    
+    async def process_message(self, message: Union[Dict[str, Any], Message]) -> Union[Dict[str, Any], Message]:
         """
         Process an incoming message and return a response.
         
         Args:
-            message: The message to process
+            message: The message to process, either as a Message object or a dict
+            
+        Returns:
+            The agent's response message
+        """
+        # Convert dict to Message object if needed
+        if isinstance(message, dict):
+            try:
+                message = Message(message)
+            except MessageValidationError as e:
+                logger.error(f"Invalid message received by agent {self._name}: {e}")
+                return Message.create_error_message(
+                    sender_id=self._id,
+                    receiver_id=message.get("sender_id") if isinstance(message, dict) else None,
+                    error_type="validation_error",
+                    error_message=str(e)
+                ).to_dict()
+        
+        # Apply message processors
+        processed_message = message
+        for processor in self._message_processors:
+            processed_message = await processor.process(processed_message)
+        
+        # Generate response
+        try:
+            response = await self._generate_response(processed_message)
+            
+            # Ensure response is a Message object
+            if isinstance(response, dict):
+                response = Message(response)
+                
+            return response
+        except Exception as e:
+            logger.exception(f"Error generating response in agent {self._name}: {e}")
+            return Message.create_error_message(
+                sender_id=self._id,
+                receiver_id=message.get_sender_id(),
+                error_type="processing_error",
+                error_message=str(e),
+                in_reply_to=message.get_id(),
+                conversation_id=message.get_conversation_id()
+            )
+    
+    @abstractmethod
+    async def _generate_response(self, message: Message) -> Union[Dict[str, Any], Message]:
+        """
+        Generate a response to a message.
+        
+        This method should be implemented by subclasses to provide
+        agent-specific message handling logic.
+        
+        Args:
+            message: The message to respond to
             
         Returns:
             The agent's response message

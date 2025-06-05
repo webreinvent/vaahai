@@ -70,6 +70,15 @@ class AgentCommunicationError(AgentError):
         super().__init__(message)
 
 
+class MessageValidationError(AgentError):
+    """Exception raised when a message fails validation."""
+    
+    def __init__(self, reason: str):
+        self.reason = reason
+        message = f"Message validation error: {reason}"
+        super().__init__(message)
+
+
 class AgentToolError(AgentError):
     """Exception raised when there's an error with agent tool usage."""
     
