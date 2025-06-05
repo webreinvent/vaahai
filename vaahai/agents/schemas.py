@@ -301,6 +301,120 @@ AUTOGEN_CONFIG_SCHEMA = {
     }
 }
 
+# Base schema for all agent configurations
+BASE_AGENT_CONFIG_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "name": {
+            "type": "string",
+            "description": "Display name for the agent"
+        },
+        "type": {
+            "type": "string",
+            "description": "Type of agent to create"
+        },
+        "max_history_length": {
+            "type": "integer",
+            "description": "Maximum number of messages to keep in conversation history",
+            "minimum": 1
+        },
+        "decorators": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "List of decorator names to apply to the agent"
+        }
+    },
+    "required": ["name", "type"]
+}
+
+# Schema for specialized agents (base)
+SPECIALIZED_AGENT_CONFIG_SCHEMA = {
+    **BASE_AGENT_CONFIG_SCHEMA,
+    "properties": {
+        **BASE_AGENT_CONFIG_SCHEMA["properties"],
+        "domain": {
+            "type": "string",
+            "description": "Domain of expertise for the agent"
+        },
+        "expertise": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "List of areas of expertise for the agent"
+        }
+    }
+}
+
+# Schema for CodeReviewAgent
+CODE_REVIEW_AGENT_CONFIG_SCHEMA = {
+    **SPECIALIZED_AGENT_CONFIG_SCHEMA,
+    "properties": {
+        **SPECIALIZED_AGENT_CONFIG_SCHEMA["properties"],
+        "languages": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "List of programming languages the agent can review"
+        },
+        "review_criteria": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "List of criteria to use for code reviews"
+        }
+    }
+}
+
+# Schema for SecurityAuditAgent
+SECURITY_AUDIT_AGENT_CONFIG_SCHEMA = {
+    **SPECIALIZED_AGENT_CONFIG_SCHEMA,
+    "properties": {
+        **SPECIALIZED_AGENT_CONFIG_SCHEMA["properties"],
+        "vulnerability_types": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Types of vulnerabilities to check for"
+        },
+        "severity_levels": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Severity levels to report"
+        }
+    }
+}
+
+# Schema for LanguageDetectionAgent
+LANGUAGE_DETECTION_AGENT_CONFIG_SCHEMA = {
+    **SPECIALIZED_AGENT_CONFIG_SCHEMA,
+    "properties": {
+        **SPECIALIZED_AGENT_CONFIG_SCHEMA["properties"],
+        "supported_languages": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "List of languages the agent can detect"
+        },
+        "confidence_threshold": {
+            "type": "number",
+            "description": "Minimum confidence level for language detection",
+            "minimum": 0,
+            "maximum": 1
+        }
+    }
+}
+
+# Schema for ReportGenerationAgent
+REPORT_GENERATION_AGENT_CONFIG_SCHEMA = {
+    **SPECIALIZED_AGENT_CONFIG_SCHEMA,
+    "properties": {
+        **SPECIALIZED_AGENT_CONFIG_SCHEMA["properties"],
+        "report_formats": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "List of supported report formats"
+        },
+        "templates": {
+            "type": "object",
+            "description": "Report templates by format"
+        }
+    }
+}
 
 def get_schema_for_config_type(config_type: str) -> Dict[str, Any]:
     """
@@ -316,7 +430,12 @@ def get_schema_for_config_type(config_type: str) -> Dict[str, Any]:
         ValueError: If the config_type is not supported
     """
     schema_map = {
-        "agent": AUTOGEN_AGENT_CONFIG_SCHEMA,
+        "agent": BASE_AGENT_CONFIG_SCHEMA,
+        "specialized_agent": SPECIALIZED_AGENT_CONFIG_SCHEMA,
+        "code_review_agent": CODE_REVIEW_AGENT_CONFIG_SCHEMA,
+        "security_audit_agent": SECURITY_AUDIT_AGENT_CONFIG_SCHEMA,
+        "language_detection_agent": LANGUAGE_DETECTION_AGENT_CONFIG_SCHEMA,
+        "report_generation_agent": REPORT_GENERATION_AGENT_CONFIG_SCHEMA,
         "group_chat": AUTOGEN_GROUP_CHAT_CONFIG_SCHEMA,
         "tool": AUTOGEN_TOOL_CONFIG_SCHEMA,
         "llm": BASE_LLM_CONFIG_SCHEMA,

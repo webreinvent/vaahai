@@ -128,7 +128,6 @@ class BaseAgent(IAgent, ABC):
         """
         pass
     
-    @abstractmethod
     def _validate_config(self) -> bool:
         """
         Validate the agent configuration.
@@ -136,7 +135,17 @@ class BaseAgent(IAgent, ABC):
         Returns:
             True if the configuration is valid, False otherwise
         """
-        pass
+        from .schema_validator import validate_agent_config
+        
+        # Validate the configuration against the schema
+        is_valid, error_message = validate_agent_config(self._config, self.__class__.__name__.lower())
+        
+        if not is_valid:
+            logger.error(f"Configuration validation failed for {self._name}: {error_message}")
+            return False
+        
+        # Additional validation can be performed by subclasses
+        return True
     
     @abstractmethod
     def _initialize_capabilities(self) -> None:
