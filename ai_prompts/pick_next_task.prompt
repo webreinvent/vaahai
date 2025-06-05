@@ -71,8 +71,13 @@ Follow this complete workflow for task management and implementation:
 ### 9. Implement the Task
 - Follow the confirmed implementation plan
 - Write clean, well-documented code
-- Adhere to the project's coding standards
-- Implement unit tests
+- Adhere to the project's coding guidelines:
+  - Create small, focused files with single responsibilities
+  - Keep methods short (under 30-50 lines)
+  - Apply appropriate design patterns (Singleton, Factory, Adapter, etc.)
+  - Follow SOLID principles
+  - Use dependency injection for better testability
+- Implement comprehensive unit tests
 - Ensure the code integrates well with existing components
 
 ## TASK SELECTION CRITERIA
@@ -133,9 +138,11 @@ Provide a comprehensive response with the following structure:
    - Request for confirmation
 
 9. **Implementation Execution** (after confirmation):
-   - Code implementation details
-   - Testing results
-   - Integration notes
+   - Code implementation details following the coding guidelines
+   - Application of appropriate design patterns
+   - Proper file organization and method design
+   - Testing results and coverage metrics
+   - Integration notes and performance considerations
 
 ## IMPORTANT NOTES
 - Focus on incremental development with small, achievable tasks
@@ -145,3 +152,55 @@ Provide a comprehensive response with the following structure:
 - Ensure thorough documentation at each step
 - Follow test-driven development practices where appropriate
 - Commit early and often with clear messages
+
+## CODING GUIDELINES
+Follow these coding guidelines for all implementations:
+
+### 1. File Organization
+- Keep files small and focused on a single responsibility
+- Split large modules into multiple files with clear separation of concerns
+- Aim for files under 300-400 lines of code
+- Use appropriate directory structure to organize related files
+- Create separate files for interfaces, implementations, and utilities
+
+### 2. Method and Function Design
+- Keep methods short and focused on a single task
+- Aim for methods under 30-50 lines of code
+- Follow the Single Responsibility Principle
+- Use descriptive method names that clearly indicate their purpose
+- Limit the number of parameters (preferably 5 or fewer)
+- Use type hints consistently for better code readability
+
+### 3. Class Design
+- Follow the SOLID principles
+- Keep classes focused on a single responsibility
+- Prefer composition over inheritance
+- Use abstract base classes and interfaces to define contracts
+- Implement design patterns appropriately:
+  - Singleton for classes that should have only one instance
+  - Factory for object creation
+  - Adapter for interfacing with external libraries
+  - Strategy for interchangeable algorithms
+  - Observer for event handling
+
+### 4. Code Organization
+- Separate configuration from implementation
+- Use dependency injection to improve testability
+- Implement proper error handling with custom exceptions
+- Add appropriate logging at different levels
+- Include comprehensive docstrings for all public APIs
+- Use constants instead of magic numbers or strings
+
+### 5. Testing
+- Write unit tests for all functionality
+- Aim for high test coverage (at least 80%)
+- Use test fixtures and mocks appropriately
+- Test edge cases and error conditions
+- Implement integration tests for component interactions
+
+### 6. Performance Considerations
+- Be mindful of memory usage
+- Avoid unnecessary computations
+- Consider asynchronous operations for I/O-bound tasks
+- Use appropriate data structures for the task at hand
+- Profile code when necessary to identify bottlenecks
