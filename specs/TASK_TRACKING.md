@@ -18,17 +18,16 @@ This document tracks the implementation status of all tasks for the VaahAI proje
 | [P1-task-2.1] | Research Autogen framework capabilities | 🟢 | None | Study Autogen documentation |
 | [P1-task-2.2] | Analyze Autogen agent architecture | 🟢 | [P1-task-2.1] | Understand agent structure |
 | [P1-task-2.3] | Evaluate Autogen conversation patterns | 🟢 | [P1-task-2.1] | Study message flow patterns |
-| [P1-task-2.4] | Research Autogen group chat functionality | 🔴 | [P1-task-2.1] | Understand multi-agent conversations |
-| [P1-task-2.5] | Document Autogen integration approach | 🔴 | [P1-task-2.2], [P1-task-2.3], [P1-task-2.4] | Create integration design doc |
-| [P1-task-2.6] | Design custom agent architecture | 🔴 | [P1-task-2.5] | Plan VaahAI-specific agent structure |
-| [P1-task-2.7] | Create Autogen configuration schema | 🔴 | [P1-task-2.6] | Define configuration options |
-| [P1-task-2.8] | Implement configuration loader | 🔴 | [P1-task-2.7], [P1-task-3.8] | Load Autogen configurations |
-| [P1-task-2.9] | Create basic agent class | 🔴 | [P1-task-2.6] | Implement foundational agent |
-| [P1-task-2.10] | Set up agent initialization | 🔴 | [P1-task-2.9] | Initialize agents with config |
-| [P1-task-2.11] | Implement message handling | 🔴 | [P1-task-2.9] | Process incoming/outgoing messages |
-| [P1-task-2.12] | Add basic conversation flow | 🔴 | [P1-task-2.11] | Set up simple agent interactions |
-| [P1-task-2.13] | Implement conversation history | 🔴 | [P1-task-2.12] | Track message history |
-| [P1-task-2.14] | Create conversation termination logic | 🔴 | [P1-task-2.12] | Determine when conversations end |
+| [P1-task-2.4] | Research and document Autogen integration approach | 🟡 | [P1-task-2.2], [P1-task-2.3] | Combined research on group chat functionality and documentation of overall integration approach |
+| [P1-task-2.5] | Design custom agent architecture | 🔴 | [P1-task-2.4] | Plan VaahAI-specific agent structure |
+| [P1-task-2.6] | Create Autogen configuration schema | 🔴 | [P1-task-2.5] | Define configuration options |
+| [P1-task-2.7] | Implement configuration loader | 🔴 | [P1-task-2.6], [P1-task-3.8] | Load Autogen configurations |
+| [P1-task-2.8] | Create basic agent class | 🔴 | [P1-task-2.5] | Implement foundational agent |
+| [P1-task-2.9] | Set up agent initialization | 🔴 | [P1-task-2.8] | Initialize agents with config |
+| [P1-task-2.10] | Implement message handling | 🔴 | [P1-task-2.8] | Process incoming/outgoing messages |
+| [P1-task-2.11] | Add basic conversation flow | 🔴 | [P1-task-2.10] | Set up simple agent interactions |
+| [P1-task-2.12] | Implement conversation history | 🔴 | [P1-task-2.11] | Track message history |
+| [P1-task-2.13] | Create conversation termination logic | 🔴 | [P1-task-2.11] | Determine when conversations end |
 | [P1-task-3.1] | Research configuration formats | 🔴 | None | Evaluate TOML, YAML, JSON options |
 | [P1-task-3.2] | Design configuration schema structure | 🔴 | [P1-task-3.1] | Define overall schema organization |
 | [P1-task-3.3] | Create LLM provider config schema | 🔴 | [P1-task-3.2] | Define LLM provider options |
@@ -78,7 +77,7 @@ This document tracks the implementation status of all tasks for the VaahAI proje
 
 | Task ID | Description | Status | Dependencies | Notes |
 |---------|------------|--------|--------------|-------|
-| [P2-task-1.1] | Design agent interface hierarchy | 🔴 | [P1-task-2.14] | Plan agent class structure |
+| [P2-task-1.1] | Design agent interface hierarchy | 🔴 | [P1-task-2.5] | Plan agent class structure |
 | [P2-task-1.2] | Define base agent interface | 🔴 | [P2-task-1.1] | Core agent abstraction with Autogen |
 | [P2-task-1.3] | Create agent base class | 🔴 | [P2-task-1.2] | Implement shared functionality |
 | [P2-task-1.4] | Implement agent initialization | 🔴 | [P2-task-1.3] | Agent creation process |
@@ -303,9 +302,9 @@ These tasks represent the minimum viable product (MVP) that should be prioritize
 4. 🟢 [P1-task-2.1] Research Autogen framework capabilities
 5. 🟢 [P1-task-2.2] Analyze Autogen agent architecture
 6. 🟢 [P1-task-2.3] Evaluate Autogen conversation patterns
-7. 🔴 [P1-task-2.5] Document Autogen integration approach
-8. 🔴 [P1-task-2.9] Create basic agent class
-9. 🔴 [P1-task-2.12] Add basic conversation flow
+7. 🟡 [P1-task-2.4] Research and document Autogen integration approach
+8. 🔴 [P1-task-2.8] Create basic agent class
+9. 🔴 [P1-task-2.11] Add basic conversation flow
 10. 🔴 [P1-task-3.1] Research configuration formats
 11. 🔴 [P1-task-3.2] Design configuration schema structure
 12. 🔴 [P1-task-3.7] Implement TOML parser
