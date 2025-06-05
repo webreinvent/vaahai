@@ -27,6 +27,149 @@ graph TD
     Committer --> SharedContext
 ```
 
+## Custom Agent Architecture
+
+VaahAI implements a custom agent architecture designed for reusability and extensibility. The architecture follows interface-driven design principles and leverages several design patterns to ensure components are loosely coupled and easily extensible.
+
+### Core Components
+
+The agent architecture consists of the following core components:
+
+1. **Interfaces**: Define contracts for all components in the system
+2. **Base Classes**: Provide common functionality for concrete implementations
+3. **Adapters**: Enable integration with external frameworks like Microsoft Autogen
+4. **Factories**: Centralize object creation logic
+5. **Configuration**: Manage component configuration
+6. **Plugins**: Support dynamic extension of functionality
+7. **Events**: Enable loose coupling through event-based communication
+
+### Architecture Diagram
+
+```mermaid
+classDiagram
+    class IAgent {
+        <<interface>>
+        +get_id() str
+        +get_name() str
+        +get_capabilities() List[str]
+        +process_message(message) Dict
+    }
+    
+    class IMessageProcessor {
+        <<interface>>
+        +process(message) Dict
+    }
+    
+    class IGroupChat {
+        <<interface>>
+        +add_agent(agent)
+        +remove_agent(agent)
+        +get_agents() List
+        +start_chat(initial_message)
+        +end_chat() Dict
+    }
+    
+    class ITool {
+        <<interface>>
+        +get_name() str
+        +get_description() str
+        +get_parameters() Dict
+        +execute(parameters) Any
+    }
+    
+    class BaseAgent {
+        -_id: str
+        -_name: str
+        -_capabilities: List[str]
+        +get_id() str
+        +get_name() str
+        +get_capabilities() List[str]
+        #_validate_config() bool
+        #_initialize_capabilities()
+    }
+    
+    class AgentDecorator {
+        -_agent: IAgent
+        +get_id() str
+        +get_name() str
+        +get_capabilities() List[str]
+        +process_message(message) Dict
+    }
+    
+    class BaseGroupChat {
+        -_name: str
+        -_agents: List[IAgent]
+        -_history: List[Dict]
+        +add_agent(agent)
+        +remove_agent(agent)
+        +get_agents() List
+    }
+    
+    class IAgentAdapter {
+        <<interface>>
+        +adapt_agent(agent) Any
+        +adapt_message_to_external(message) Any
+        +adapt_message_from_external(message) Dict
+    }
+    
+    class AutogenAgentAdapter {
+        +adapt_agent(agent) Any
+        +adapt_message_to_external(message) Any
+        +adapt_message_from_external(message) Dict
+    }
+    
+    class AgentFactory {
+        +create_agent(agent_type, config) IAgent
+        +register_agent_class(name, agent_class)
+    }
+    
+    class ConfigFactory {
+        +create_config(config_type, **kwargs) IConfig
+    }
+    
+    IAgent <|-- BaseAgent
+    IAgent <|-- AgentDecorator
+    AgentDecorator o-- IAgent
+    IGroupChat <|-- BaseGroupChat
+    IAgentAdapter <|-- AutogenAgentAdapter
+```
+
+### Key Design Patterns
+
+The architecture leverages several design patterns to enhance reusability and extensibility:
+
+1. **Interface-Driven Design**: All components implement interfaces, enabling loose coupling and component interchangeability.
+
+2. **Adapter Pattern**: Isolates VaahAI from external frameworks like Autogen, making it easier to maintain and extend.
+
+3. **Factory Pattern**: Centralizes object creation logic, making it easier to create and configure components.
+
+4. **Decorator Pattern**: Enables dynamic behavior extension of agents without modifying their core functionality.
+
+5. **Registry Pattern**: Supports dynamic component registration and discovery.
+
+6. **Plugin System**: Allows extending functionality without modifying core code.
+
+7. **Event System**: Enables loose coupling through event-based communication.
+
+### Module Structure
+
+The agent architecture is organized into the following modules:
+
+1. **interfaces.py**: Core interfaces for agents, message processors, tools, group chats, adapters, plugins, and configuration.
+
+2. **base.py**: Abstract base classes providing reusable common functionality.
+
+3. **adapters.py**: Adapter classes for integrating with external frameworks like Autogen.
+
+4. **factory.py**: Factory classes for creating agents, group chats, tools, and plugins.
+
+5. **config.py**: Configuration classes for agents, group chats, tools, and adapters.
+
+6. **plugins.py**: Plugin system for extending functionality without modifying core code.
+
+7. **events.py**: Event system for loose coupling through event-based communication.
+
 ## Agent Types and Responsibilities
 
 ### 1. Language Detector Agent
