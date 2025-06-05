@@ -51,7 +51,12 @@ from .config import (
     GroupChatConfig,
     ToolConfig,
     AdapterConfig,
-    ConfigFactory
+    ConfigFactory,
+    BaseConfig,
+    AutogenAgentConfig,
+    AutogenGroupChatConfig,
+    AutogenToolConfig,
+    LLMConfig
 )
 
 # Version information
