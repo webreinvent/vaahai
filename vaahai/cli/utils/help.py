@@ -4,12 +4,14 @@ Custom help formatting utilities for VaahAI CLI.
 This module provides utilities for enhancing Typer's help output with Rich formatting.
 """
 
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Dict
 import typer
 from rich.console import Console
 from rich.panel import Panel
 from rich.text import Text
 from rich.table import Table
+from rich.markdown import Markdown
+from rich.box import ROUNDED
 
 console = Console()
 
@@ -45,18 +47,30 @@ def show_custom_help(ctx: typer.Context):
     usage.append(f"{command_name} [OPTIONS] COMMAND [ARGS]...\n\n")
     
     # Create commands table
-    commands_table = Table(title="Commands", box=None, padding=(0, 2))
-    commands_table.add_column("Command", style="cyan")
+    commands_table = Table(title="Commands", box=ROUNDED, padding=(0, 2), expand=True)
+    commands_table.add_column("Command", style="cyan", no_wrap=True)
     commands_table.add_column("Description")
+    commands_table.add_column("Example", style="green")
+    
+    # Command examples dictionary
+    examples: Dict[str, str] = {
+        "helloworld": f"{command_name} helloworld run",
+        "config": f"{command_name} config init",
+        "review": f"{command_name} review run ./my-project",
+        "audit": f"{command_name} audit run ./my-project --security",
+        "version": f"{command_name} version show",
+    }
     
     # Add commands to table
     for name, command in sorted(ctx.command.commands.items()):
-        commands_table.add_row(name, command.help or "")
+        example = examples.get(name, f"{command_name} {name}")
+        commands_table.add_row(name, command.help or "", example)
     
     # Create options table
-    options_table = Table(title="Options", box=None, padding=(0, 2))
-    options_table.add_column("Option", style="green")
+    options_table = Table(title="Global Options", box=ROUNDED, padding=(0, 2), expand=True)
+    options_table.add_column("Option", style="green", no_wrap=True)
     options_table.add_column("Description")
+    options_table.add_column("Default", style="dim")
     
     # Add options to table
     for param in ctx.command.params:
@@ -64,11 +78,122 @@ def show_custom_help(ctx: typer.Context):
         for opt in param.opts:
             options.append(opt)
         options_str = ", ".join(options)
-        options_table.add_row(options_str, param.help or "")
+        
+        # Get default value if any
+        default = ""
+        if param.default is not None and param.default is not ...:
+            default = str(param.default)
+        
+        options_table.add_row(options_str, param.help or "", default)
+    
+    # Create environment variables panel
+    env_vars_md = """
+    **Environment Variables:**
+    
+    * `VAAHAI_DEBUG=1` - Enable debug mode with full error tracebacks
+    * `VAAHAI_CONFIG_DIR` - Override default config directory location
+    """
     
     # Print everything
-    console.print(header)
+    console.print(Panel(header, border_style="cyan", expand=False))
     console.print(usage)
     console.print(commands_table)
     console.print(options_table)
-    console.print("\nRun a command with --help to see command-specific options.\n")
+    console.print(Markdown(env_vars_md))
+    console.print("\nRun a command with --help to see command-specific options and examples.\n")
+
+
+def format_command_help(ctx: typer.Context):
+    """
+    Format help for a specific command.
+    
+    Args:
+        ctx: Typer context object for the command
+    """
+    command = ctx.command
+    command_path = " ".join(ctx.command_path.split())
+    
+    # Create header
+    header = Text()
+    header.append(f"\n{command_path}\n", style="bold cyan")
+    
+    if command.help:
+        header.append(f"\n{command.help}\n", style="italic")
+    
+    # Create usage section
+    usage = Text("Usage: ", style="bold")
+    usage.append(f"{command_path} [OPTIONS]")
+    
+    if command.params:
+        for param in command.params:
+            if param.param_type_name == "argument":
+                usage.append(f" {param.name.upper()}")
+    
+    usage.append("\n\n")
+    
+    # Create options table if there are options
+    has_options = False
+    for param in command.params:
+        if param.param_type_name == "option":
+            has_options = True
+            break
+    
+    if has_options:
+        options_table = Table(title="Options", box=ROUNDED, padding=(0, 2), expand=True)
+        options_table.add_column("Option", style="green", no_wrap=True)
+        options_table.add_column("Description")
+        options_table.add_column("Default", style="dim")
+        
+        for param in command.params:
+            if param.param_type_name == "option":
+                options = []
+                for opt in param.opts:
+                    options.append(opt)
+                options_str = ", ".join(options)
+                
+                # Get default value if any
+                default = ""
+                if param.default is not None and param.default is not ...:
+                    default = str(param.default)
+                
+                options_table.add_row(options_str, param.help or "", default)
+    
+    # Create arguments table if there are arguments
+    has_args = False
+    for param in command.params:
+        if param.param_type_name == "argument":
+            has_args = True
+            break
+    
+    if has_args:
+        args_table = Table(title="Arguments", box=ROUNDED, padding=(0, 2), expand=True)
+        args_table.add_column("Argument", style="cyan", no_wrap=True)
+        args_table.add_column("Description")
+        args_table.add_column("Type", style="dim")
+        
+        for param in command.params:
+            if param.param_type_name == "argument":
+                arg_type = getattr(param.type, "__name__", str(param.type))
+                args_table.add_row(param.name, param.help or "", arg_type)
+    
+    # Print everything
+    console.print(Panel(header, border_style="cyan", expand=False))
+    console.print(usage)
+    
+    if has_args:
+        console.print(args_table)
+    
+    if has_options:
+        console.print(options_table)
+    
+    # Print subcommands if any
+    if hasattr(command, "commands") and command.commands:
+        subcommands_table = Table(title="Subcommands" if command.info.help or "" else "Commands", box=ROUNDED, padding=(0, 2), expand=True)
+        subcommands_table.add_column("Command", style="cyan", no_wrap=True)
+        subcommands_table.add_column("Description")
+        
+        for name, subcmd in sorted(command.commands.items()):
+            subcommands_table.add_row(name, subcmd.help or "")
+        
+        console.print(subcommands_table)
+        console.print("\nRun a subcommand with --help to see command-specific options.\n")
