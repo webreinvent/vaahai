@@ -126,7 +126,7 @@ When selecting the next task, consider:
 
 ### PREVIOUS TASK VERIFICATION
 
-Provide status of following points in green and red color, green for completed and red for incomplete:
+Provide status of following points in green and red color icon, green icon for completed and red icon for incomplete:
 
 1. **Verify Previous Task Completion**:
    - Test results summary
@@ -150,9 +150,9 @@ Provide status of following points in green and red color, green for completed a
 5. **Develop Branch Status**:
    - Confirmation that develop contains all changes
 
-### **NEW TASK WORKFLOW**
+### NEW TASK WORKFLOW
 
-Provide status of following points in green and red color, green for completed and red for incomplete:
+Provide status of following points in green and red color icon, green icon for completed and red icon for incomplete:
 
 1. **Next Task Selection**:
    - Recommended task(s)
