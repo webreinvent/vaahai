@@ -18,8 +18,8 @@ This document tracks the tasks for the VaahAI project, organized by priority and
 | [P1-T3] | Set up package entry points | 🟢 | [P1-T2] | Configure Poetry for CLI entry points |
 | [P1-T4] | Create basic CLI module | 🟢 | [P1-T1] | Set up vaahai/cli directory and __init__.py |
 | [P1-T5] | Implement CLI entry point | 🟢 | [P1-T4] | Create main.py with Typer app |
-| [P1-T6] | Add command groups structure | 🟡 | [P1-T5] | Organize commands into logical groups |
-| [P1-T7] | Set up Rich integration | 🔴 | [P1-T5] | Configure Rich for terminal output formatting |
+| [P1-T6] | Add command groups structure | 🟢 | [P1-T5] | Organize commands into logical groups |
+| [P1-T7] | Set up Rich integration | 🟡 | [P1-T5] | Configure Rich for terminal output formatting |
 | [P1-T8] | Create basic console output utilities | 🔴 | [P1-T7] | Implement helper functions for consistent output |
 | [P1-T9] | Implement InquirerPy integration | 🔴 | [P1-T5] | Set up interactive prompts base structure |
 | [P1-T10] | Create prompt utility functions | 🔴 | [P1-T9] | Implement reusable prompt patterns |
@@ -33,7 +33,7 @@ This document tracks the tasks for the VaahAI project, organized by priority and
 
 | Task ID | Description | Status | Dependencies | Notes |
 |---------|-------------|--------|--------------|-------|
-| [P1-T6] | Add command groups structure | 🟡 | [P1-T5] | Organize commands into logical groups |
+| [P1-T7] | Set up Rich integration | 🟡 | [P1-T5] | Configure Rich for terminal output formatting |
 
 ## Completed Tasks
 
@@ -44,6 +44,7 @@ This document tracks the tasks for the VaahAI project, organized by priority and
 | [P1-T3] | Set up package entry points | 🟢 | [P1-T2] | Configure Poetry for CLI entry points |
 | [P1-T4] | Create basic CLI module | 🟢 | [P1-T1] | Set up vaahai/cli directory and __init__.py |
 | [P1-T5] | Implement CLI entry point | 🟢 | [P1-T4] | Create main.py with Typer app |
+| [P1-T6] | Add command groups structure | 🟢 | [P1-T5] | Organize commands into logical groups |
 
 ## Current Blockers
 
@@ -51,9 +52,9 @@ None at this time.
 
 ## Next Steps
 
-1. Complete [P1-T6] Add command groups structure
-2. Implement [P1-T7] Set up Rich integration
-3. Implement [P1-T8] Create basic console output utilities
+1. Complete [P1-T7] Set up Rich integration
+2. Implement [P1-T8] Create basic console output utilities
+3. Implement [P1-T9] Implement InquirerPy integration
 
 ## Notes
 
