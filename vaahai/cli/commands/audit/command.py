@@ -35,7 +35,6 @@ def run(
     path: Path = typer.Argument(
         ...,
         help="Path to the file or directory to audit",
-        exists=True,
     ),
     security: bool = typer.Option(
         True,
