@@ -19,7 +19,8 @@ This document is to implement and track the following steps for the VaahAI proje
 - Update root level README.md with any changes
 
 ### Step 3. Publish
-- Update version in `pyproject.toml`
+- Check the last published version
+- Increment the version in `pyproject.toml`
 - Use Poetry Package Manager
 - Build the package
 - Publish the package to PyPI
