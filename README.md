@@ -71,49 +71,121 @@ nano ~/.vaahai/config.toml
 
 ### CLI Command Structure
 
-VaahAI provides a modular CLI with the following main commands:
+VaahAI provides a modular CLI organized into logical command groups. The command structure follows this hierarchy:
 
-- `vaahai helloworld`: Test command to verify proper functioning
-- `vaahai config`: Configuration management commands
+```
+vaahai [command_group] [command] [action] [options]
+```
+
+Where:
+- `vaahai` is the main CLI application
+- `command_group` is one of the logical groups (core, project, dev)
+- `command` is a specific command within that group
+- `action` is a subcommand or action for that command
+- `options` are additional flags and parameters
+
+#### Core Commands
+- `vaahai config`: Configuration management
   - `vaahai config init`: Set up initial configuration
   - `vaahai config show`: Display current configuration
+- `vaahai version`: Display version information
+
+#### Project Commands
 - `vaahai review`: Code review commands
   - `vaahai review run`: Run a code review on specified path
 - `vaahai audit`: Security and compliance audit commands
   - `vaahai audit run`: Run a security/compliance audit on specified path
-- `vaahai version`: Display version information
-  - `vaahai version show`: Show current VaahAI version
 
-Each command supports the `--help` flag for detailed usage information.
+#### Development Commands
+- `vaahai dev helloworld`: Test command to verify proper functioning
+  - `vaahai dev helloworld run`: Execute the hello world test
+- `vaahai dev showcase`: Demonstrate Rich formatting capabilities
+- `vaahai dev prompts`: Demonstrate InquirerPy prompt capabilities
+
+All commands support the `--help` flag for detailed usage information. For backward compatibility, direct command access (e.g., `vaahai helloworld` instead of `vaahai dev helloworld`) is also supported.
+
+### Interactive Prompts
+
+VaahAI CLI uses InquirerPy to provide interactive command-line prompts with rich styling. The prompt utilities include:
+
+- Text input with validation
+- Password input with masking
+- Confirmation prompts (yes/no)
+- Selection from a list of options
+- Multi-selection from a list of options
+- Fuzzy search selection
+- Number input with range validation
+- Path selection with auto-completion
+
+All prompts support non-interactive mode with default values or appropriate error handling.
+
+### Global Options
+
+The following options are available for all commands:
+
+- `--verbose`: Enable verbose output (can also be set with `VAAHAI_VERBOSE=1`)
+- `--quiet`: Suppress non-essential output (can also be set with `VAAHAI_QUIET=1`)
+- `--config PATH`: Specify a custom configuration file path
+- `--help`: Show help message and exit
 
 ### Basic Commands
 
 ```bash
+# Show help information
+vaahai --help
+
+# Show help for a specific command group
+vaahai dev --help
+
+# Show help for a specific command
+vaahai dev helloworld --help
+
 # Test installation and configuration
-poetry run vaahai helloworld run
+vaahai dev helloworld run
+# Or using backward compatibility
+vaahai helloworld run
 
 # Review code in a file or directory
-poetry run vaahai review run --path ./my_project --depth standard
+vaahai review run --path ./my_project --depth standard
+# This follows the structure: vaahai [command_group] [command] [action] [options]
 
 # Audit a project for security and compliance
-poetry run vaahai audit run --path ./my_project --security --compliance owasp
+vaahai audit run --path ./my_project --security --compliance owasp
 
 # Show version information
-poetry run vaahai version show
+vaahai version
+
+# Apply suggested changes
+vaahai apply --file review_suggestions.json
+
+# Commit the changes
+vaahai commit --message "Fix code quality issues in app.py"
 ```
 
 ### Example Workflow
 
 ```bash
+# Initialize configuration
+vaahai config init
+
 # Review a Python file
-poetry run vaahai review run --path ./app.py --focus quality
+vaahai review run --path ./app.py --focus quality
 
 # Apply suggested changes
-poetry run vaahai apply --file review_suggestions.json
+vaahai apply --file review_suggestions.json
 
 # Commit the changes
-poetry run vaahai commit --message "Fix code quality issues in app.py"
+vaahai commit --message "Fix code quality issues in app.py"
 ```
+
+### Terminal Output
+
+VaahAI CLI uses Rich for consistent, styled terminal output. Output behavior can be controlled with:
+
+- Verbose mode: Set `--verbose` flag or `VAAHAI_VERBOSE=1` environment variable
+- Quiet mode: Set `--quiet` flag or `VAAHAI_QUIET=1` environment variable
+
+For more details on the Rich integration, see the [Rich Integration Documentation](/docs/cli/rich_integration.md).
 
 ## 🏗️ Project Structure
 
@@ -122,21 +194,31 @@ vaahai/
 ├── ai_docs/         # AI-specific documentation
 ├── ai_prompts/      # Prompt templates for AI agents
 ├── docs/            # User and developer documentation
+│   └── cli/         # CLI-specific documentation
 ├── specs/           # Project specifications and requirements
 ├── vaahai/          # Main package
 │   ├── agents/      # Agent implementations
 │   ├── cli/         # CLI commands and handlers
 │   │   ├── commands/  # Command implementations
-│   │   │   ├── audit/     # Audit command
-│   │   │   ├── config/    # Configuration command
-│   │   │   ├── helloworld/  # Hello world test command
-│   │   │   ├── review/    # Code review command
-│   │   │   └── version/   # Version command
-│   │   └── utils/     # CLI utilities
+│   │   │   ├── core/      # Core command group
+│   │   │   │   ├── config/    # Configuration commands
+│   │   │   │   └── version/   # Version commands
+│   │   │   ├── project/   # Project command group
+│   │   │   │   ├── audit/     # Audit commands
+│   │   │   │   └── review/    # Code review commands
+│   │   │   ├── dev/       # Development command group
+│   │   │   │   ├── helloworld/  # Hello world test command
+│   │   │   │   └── showcase/   # Rich formatting showcase
+│   │   │   └── helloworld/  # Legacy direct command (for backward compatibility)
+│   │   ├── main.py     # CLI entry point
+│   │   └── utils/      # CLI utilities
+│   │       ├── console.py  # Rich formatting utilities
+│   │       └── help.py     # Custom help formatting
 │   ├── config/      # Configuration management
 │   ├── llm/         # LLM provider integrations
 │   └── utils/       # Utility functions and helpers
 └── tests/           # Test suite
+    └── cli/         # CLI tests
 ```
 
 ## 📝 Documentation
@@ -148,6 +230,9 @@ For more detailed documentation, please refer to:
 - [Technical Architecture](/specs/TECHNICAL_ARCHITECTURE.md)
 - [User Guide](/docs/USER_GUIDE.md)
 - [API Reference](/docs/API_REFERENCE.md)
+- [CLI Documentation](/docs/cli/)
+  - [Rich Integration Guide](/docs/cli/rich_integration.md)
+  - [Command Groups Structure](/docs/cli/command_groups.md)
 
 ## 🤝 Contributing
 

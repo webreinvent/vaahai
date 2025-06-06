@@ -1,0 +1,33 @@
+# Publish VaahAI to PyPI
+
+## Instructions
+
+This document is to implement and track the following steps for the VaahAI project. Use appropriate labels for each step.
+
+## Status Legend
+- 🔴 Not Started
+- 🟡 In Progress
+- 🟢 Completed
+
+### Step 1. Tests
+- Run all unit tests
+- Install VaahAI locally
+- Test all commands
+- Fix any issues
+
+### Step 2. Documentation
+- Update root level README.md with any changes
+
+### Step 3. Publish
+- Check the last published version on pypi.org
+- Increment the version in `pyproject.toml`
+- Use Poetry Package Manager
+- Build the package
+- Publish the package to PyPI
+
+### Step 4. Apply Git Tag
+- Create a Git tag for the release based on the version in `pyproject.toml`
+- Push the tag to the remote repository
+
+## Output Format
+Use appropriate labels for each step to show the status. But don't modify the `publish.prompt` file
