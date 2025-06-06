@@ -100,6 +100,7 @@ Where:
 - `vaahai dev helloworld`: Test command to verify proper functioning
   - `vaahai dev helloworld run`: Execute the hello world test
 - `vaahai dev showcase`: Demonstrate Rich formatting capabilities
+- `vaahai dev prompts`: Demonstrate InquirerPy prompt capabilities
 
 All commands support the `--help` flag for detailed usage information. For backward compatibility, direct command access (e.g., `vaahai helloworld` instead of `vaahai dev helloworld`) is also supported.
 
@@ -154,8 +155,11 @@ vaahai audit run --path ./my_project --security --compliance owasp
 # Show version information
 vaahai version
 
-# View Rich formatting showcase
-vaahai dev showcase
+# Apply suggested changes
+vaahai apply --file review_suggestions.json
+
+# Commit the changes
+vaahai commit --message "Fix code quality issues in app.py"
 ```
 
 ### Example Workflow
