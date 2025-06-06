@@ -12,7 +12,12 @@ import typer
 from typing import Optional
 from rich.console import Console
 
-# Import command modules
+# Import command groups
+from vaahai.cli.commands.core import core_app
+from vaahai.cli.commands.project import project_app
+from vaahai.cli.commands.dev import dev_app
+
+# Import direct command modules for backward compatibility
 from vaahai.cli.commands.helloworld.command import helloworld_app
 from vaahai.cli.commands.config.command import config_app
 from vaahai.cli.commands.review.command import review_app
@@ -33,6 +38,11 @@ app = typer.Typer(
 console = Console()
 
 # Add command groups to the main app
+app.add_typer(core_app, name="core")
+app.add_typer(project_app, name="project")
+app.add_typer(dev_app, name="dev")
+
+# Add direct commands for backward compatibility
 app.add_typer(helloworld_app, name="helloworld")
 app.add_typer(config_app, name="config")
 app.add_typer(review_app, name="review")

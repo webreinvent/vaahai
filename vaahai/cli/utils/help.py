@@ -46,8 +46,32 @@ def show_custom_help(ctx: typer.Context):
     usage = Text("Usage: ", style="bold")
     usage.append(f"{command_name} [OPTIONS] COMMAND [ARGS]...\n\n")
     
-    # Create commands table
-    commands_table = Table(title="Commands", box=ROUNDED, padding=(0, 2), expand=True)
+    # Create command groups table
+    groups_table = Table(title="Command Groups", box=ROUNDED, padding=(0, 2), expand=True)
+    groups_table.add_column("Group", style="magenta", no_wrap=True)
+    groups_table.add_column("Description")
+    groups_table.add_column("Example", style="green")
+    
+    # Command group examples dictionary
+    group_examples: Dict[str, str] = {
+        "core": f"{command_name} core config init",
+        "project": f"{command_name} project review run ./my-project",
+        "dev": f"{command_name} dev helloworld run",
+    }
+    
+    # Add command groups to table
+    group_commands = {
+        "core": "Essential VaahAI commands",
+        "project": "Project analysis commands",
+        "dev": "Development and testing commands",
+    }
+    
+    for name, description in sorted(group_commands.items()):
+        example = group_examples.get(name, f"{command_name} {name}")
+        groups_table.add_row(name, description, example)
+    
+    # Create commands table for backward compatibility
+    commands_table = Table(title="Commands (Direct Access)", box=ROUNDED, padding=(0, 2), expand=True)
     commands_table.add_column("Command", style="cyan", no_wrap=True)
     commands_table.add_column("Description")
     commands_table.add_column("Example", style="green")
@@ -61,8 +85,14 @@ def show_custom_help(ctx: typer.Context):
         "version": f"{command_name} version show",
     }
     
-    # Add commands to table
+    # Filter out command groups from direct commands
+    direct_commands = {}
     for name, command in sorted(ctx.command.commands.items()):
+        if name not in group_commands:
+            direct_commands[name] = command
+    
+    # Add commands to table
+    for name, command in sorted(direct_commands.items()):
         example = examples.get(name, f"{command_name} {name}")
         commands_table.add_row(name, command.help or "", example)
     
@@ -97,6 +127,7 @@ def show_custom_help(ctx: typer.Context):
     # Print everything
     console.print(Panel(header, border_style="cyan", expand=False))
     console.print(usage)
+    console.print(groups_table)
     console.print(commands_table)
     console.print(options_table)
     console.print(Markdown(env_vars_md))
