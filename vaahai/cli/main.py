@@ -65,7 +65,7 @@ def callback(
         "-q",
         help="Suppress all non-essential output",
     ),
-    config_file: Optional[Path] = typer.Option(
+    config_file: Optional[str] = typer.Option(
         None,
         "--config",
         "-c",
@@ -96,16 +96,18 @@ def callback(
     
     # Handle custom config file
     if config_file:
-        if not config_file.exists():
-            print_error(f"Config file not found: {config_file}")
+        config_path = Path(config_file)
+        if not config_path.exists():
+            print_error(f"Config file not found: {config_path}")
             raise typer.Exit(code=1)
-        ctx.obj["config_file"] = config_file
+        ctx.obj["config_file"] = config_path
         if verbose:
-            print_info(f"Using custom config file: {config_file}")
+            print_info(f"Using custom config file: {config_path}")
     
     # Show help if no command is provided
     if ctx.invoked_subcommand is None:
-        custom_callback(ctx)
+        # custom_callback(ctx)  # Temporarily disabled for diagnostics
+        ctx.command.get_help(ctx)
 
 
 def main():

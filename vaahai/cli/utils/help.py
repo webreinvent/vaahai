@@ -94,7 +94,7 @@ def show_custom_help(ctx: typer.Context):
     # Add commands to table
     for name, command in sorted(direct_commands.items()):
         example = examples.get(name, f"{command_name} {name}")
-        commands_table.add_row(name, command.help or "", example)
+        commands_table.add_row(name, getattr(command, "help", ""), example)
     
     # Create options table
     options_table = Table(title="Global Options", box=ROUNDED, padding=(0, 2), expand=True)
@@ -105,16 +105,17 @@ def show_custom_help(ctx: typer.Context):
     # Add options to table
     for param in ctx.command.params:
         options = []
-        for opt in param.opts:
+        for opt in getattr(param, "opts", []):
             options.append(opt)
         options_str = ", ".join(options)
         
         # Get default value if any
         default = ""
-        if param.default is not None and param.default is not ...:
+        if hasattr(param, "default") and param.default is not None and param.default is not ...:
             default = str(param.default)
         
-        options_table.add_row(options_str, param.help or "", default)
+        help_text = getattr(param, "help", "")
+        options_table.add_row(options_str, help_text, default)
     
     # Create environment variables panel
     env_vars_md = """
@@ -178,16 +179,17 @@ def format_command_help(ctx: typer.Context):
         for param in command.params:
             if param.param_type_name == "option":
                 options = []
-                for opt in param.opts:
+                for opt in getattr(param, "opts", []):
                     options.append(opt)
                 options_str = ", ".join(options)
                 
                 # Get default value if any
                 default = ""
-                if param.default is not None and param.default is not ...:
+                if hasattr(param, "default") and param.default is not None and param.default is not ...:
                     default = str(param.default)
                 
-                options_table.add_row(options_str, param.help or "", default)
+                help_text = getattr(param, "help", "")
+                options_table.add_row(options_str, help_text, default)
     
     # Create arguments table if there are arguments
     has_args = False
@@ -205,7 +207,8 @@ def format_command_help(ctx: typer.Context):
         for param in command.params:
             if param.param_type_name == "argument":
                 arg_type = getattr(param.type, "__name__", str(param.type))
-                args_table.add_row(param.name, param.help or "", arg_type)
+                help_text = getattr(param, "help", "")
+                args_table.add_row(param.name, help_text, arg_type)
     
     # Print everything
     console.print(Panel(header, border_style="cyan", expand=False))
@@ -224,7 +227,7 @@ def format_command_help(ctx: typer.Context):
         subcommands_table.add_column("Description")
         
         for name, subcmd in sorted(command.commands.items()):
-            subcommands_table.add_row(name, subcmd.help or "")
+            subcommands_table.add_row(name, getattr(subcmd, "help", ""))
         
         console.print(subcommands_table)
         console.print("\nRun a subcommand with --help to see command-specific options.\n")
