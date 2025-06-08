@@ -39,9 +39,11 @@ from vaahai.cli.utils.console import (
     format_status,
     progress_spinner,
 )
+from vaahai.cli.utils.help import create_typer_app, CustomHelpCommand
 
-# Create a Typer instance for the showcase command
-showcase_app = typer.Typer(
+# Create a Typer instance for the showcase command with custom help formatting
+showcase_app = create_typer_app(
+    name="showcase",
     help="Demonstrate Rich formatting capabilities",
     add_completion=False,
 )
@@ -54,19 +56,19 @@ def callback(ctx: typer.Context):
         run_showcase()
 
 
-@showcase_app.command("basic")
+@showcase_app.command("basic", cls=CustomHelpCommand)
 def basic_formatting():
     """Demonstrate basic Rich formatting."""
     showcase_basic()
 
 
-@showcase_app.command("advanced")
+@showcase_app.command("advanced", cls=CustomHelpCommand)
 def advanced_formatting():
     """Demonstrate advanced Rich formatting."""
     showcase_advanced()
 
 
-@showcase_app.command("all")
+@showcase_app.command("all", cls=CustomHelpCommand)
 def all_formatting():
     """Run all Rich formatting showcases."""
     showcase_all()

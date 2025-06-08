@@ -7,9 +7,10 @@ which is used to test the proper functioning of the VaahAI CLI.
 
 import typer
 from vaahai.cli.utils.console import print_panel, print_success, console
+from vaahai.cli.utils.help import create_typer_app, CustomHelpCommand
 
-# Create the helloworld command group
-helloworld_app = typer.Typer(
+# Create the helloworld command group with custom help formatting
+helloworld_app = create_typer_app(
     name="helloworld",
     help="Test command to verify proper functioning of VaahAI",
     add_completion=False,
@@ -24,7 +25,7 @@ def callback():
     pass
 
 
-@helloworld_app.command("run")
+@helloworld_app.command("run", cls=CustomHelpCommand)
 def run():
     """
     Run the helloworld command to test VaahAI functionality.
