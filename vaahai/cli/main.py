@@ -23,11 +23,11 @@ from vaahai.cli.commands.config.command import config_app
 from vaahai.cli.commands.review.command import review_app
 from vaahai.cli.commands.audit.command import audit_app
 from vaahai.cli.commands.version.command import version_app
-from vaahai.cli.utils.help import custom_callback
+from vaahai.cli.utils.help import create_typer_app
 from vaahai.cli.utils.console import print_error, print_info
 
-# Create the main Typer app instance
-app = typer.Typer(
+# Create the main Typer app instance with custom help formatting
+app = create_typer_app(
     name="vaahai",
     help="A multi AI agent CLI tool using Microsoft Autogen Framework",
     add_completion=True,
@@ -124,8 +124,8 @@ def callback(
     
     # Show help if no command is provided
     if ctx.invoked_subcommand is None:
-        # custom_callback(ctx)  # Temporarily disabled for diagnostics
-        ctx.command.get_help(ctx)
+        ctx.obj["help"] = True
+        raise typer.Exit()
 
 
 def main():

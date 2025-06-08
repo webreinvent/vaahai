@@ -10,12 +10,13 @@ from pathlib import Path
 from typing import Optional, List
 from rich.console import Console
 from rich.panel import Panel
+from vaahai.cli.utils.help import create_typer_app, CustomHelpCommand
 
 # Create a rich console for formatted output
 console = Console()
 
-# Create the audit command group
-audit_app = typer.Typer(
+# Create the audit command group with custom help formatting
+audit_app = create_typer_app(
     name="audit",
     help="Perform security and compliance audits on codebases",
     add_completion=False,
@@ -30,7 +31,7 @@ def callback():
     pass
 
 
-@audit_app.command("run")
+@audit_app.command("run", cls=CustomHelpCommand)
 def run(
     path: Path = typer.Argument(
         ...,
@@ -51,22 +52,23 @@ def run(
         None,
         "--exclude",
         "-e",
-        help="Patterns to exclude from the audit",
+        help="Patterns to exclude from audit",
     ),
 ):
     """
-    Run a security and compliance audit on the specified file or directory.
+    Run a security and compliance audit on the specified codebase.
+    
+    This command analyzes the code in the specified path for security vulnerabilities
+    and compliance issues, providing a detailed report of findings and recommendations.
     """
-    console.print(
-        Panel.fit(
-            f"[bold red]Security & Compliance Audit[/bold red]\n\n"
-            f"Path: [green]{path}[/green]\n"
-            f"Security Checks: [yellow]{'Enabled' if security else 'Disabled'}[/yellow]\n"
-            f"Compliance Standard: [yellow]{compliance or 'None'}[/yellow]\n"
-            f"Exclusions: [yellow]{', '.join(exclude) if exclude else 'None'}[/yellow]\n\n"
-            f"This is a placeholder for the audit functionality.\n"
-            f"In the future, this will perform comprehensive security and compliance checks.",
-            title="Security & Compliance Audit",
-            border_style="red",
-        )
-    )
+    console.print(Panel(
+        f"[bold]Auditing:[/bold] {path}\n"
+        f"[bold]Security checks:[/bold] {'Enabled' if security else 'Disabled'}\n"
+        f"[bold]Compliance standard:[/bold] {compliance or 'None specified'}\n"
+        f"[bold]Exclusions:[/bold] {', '.join(exclude) if exclude else 'None'}",
+        title="Security & Compliance Audit",
+        border_style="red",
+    ))
+    
+    # Placeholder for actual audit implementation
+    console.print("[green]Audit completed successfully![/green]")

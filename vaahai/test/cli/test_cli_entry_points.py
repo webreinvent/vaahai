@@ -37,7 +37,8 @@ def test_config_command():
     result = runner.invoke(app, ["config", "--help"])
     assert result.exit_code == 0
     assert "config" in result.stdout
-    assert "Commands" in result.stdout
+    # With custom help formatting, we're looking for the subcommands by name
+    # rather than the exact "Commands" heading
     assert "init" in result.stdout
     assert "show" in result.stdout
 
