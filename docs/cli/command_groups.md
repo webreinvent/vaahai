@@ -6,6 +6,31 @@ This document provides an overview of the command group structure in the VaahAI 
 
 The VaahAI CLI is organized into logical command groups to improve usability and maintainability. Each group contains related commands that serve a specific purpose.
 
+## Enhanced Help System
+
+All command groups and commands feature a Rich-formatted custom help system that provides:
+
+- Styled headers with command name and description
+- Organized tables for subcommands and options
+- Consistent formatting across all command levels
+- Detailed descriptions and usage examples
+- Visual separation between different sections
+
+To access the enhanced help for any command group:
+
+```bash
+vaahai [command_group] --help
+```
+
+For example:
+```bash
+vaahai core --help
+vaahai project --help
+vaahai dev --help
+```
+
+For more details about the custom help implementation, see [Custom Help Formatting](custom_help_formatting.md).
+
 ## Command Group Structure
 
 The CLI is organized into the following command groups:
