@@ -26,7 +26,7 @@ This document is to implement and track the following steps for the VaahAI proje
 - Publish the package to PyPI
 
 ### Step 4. Apply Git Tag
-- Create a Git tag for the release based on the version in `pyproject.toml`
+- Create a git tag from version in `pyproject.toml`.
 - Push the tag to the remote repository
 
 ## Output Format
