@@ -32,6 +32,7 @@ app = typer.Typer(
     help="A multi AI agent CLI tool using Microsoft Autogen Framework",
     add_completion=True,
     no_args_is_help=True,
+    context_settings={"help_option_names": ["--help", "-h"]},
 )
 
 # Create a rich console for formatted output
@@ -53,10 +54,17 @@ app.add_typer(version_app, name="version")
 @app.callback(invoke_without_command=True)
 def callback(
     ctx: typer.Context,
+    version: bool = typer.Option(
+        False,
+        "--version",
+        "-v",
+        help="Show the version and exit",
+        is_flag=True,
+    ),
     verbose: bool = typer.Option(
         False,
         "--verbose",
-        "-v",
+        "-V",
         help="Enable verbose output with detailed logs and information",
     ),
     quiet: bool = typer.Option(
@@ -88,6 +96,16 @@ def callback(
     ctx.ensure_object(dict)
     ctx.obj["verbose"] = verbose
     ctx.obj["quiet"] = quiet
+    
+    # Show version and exit if --version flag is used
+    if version:
+        try:
+            import importlib.metadata
+            version_str = importlib.metadata.version("vaahai")
+        except importlib.metadata.PackageNotFoundError:
+            version_str = "unknown (development mode)"
+        console.print(f"VaahAI version: [bold green]{version_str}[/bold green]")
+        raise typer.Exit()
     
     # Handle conflicting options
     if verbose and quiet:
