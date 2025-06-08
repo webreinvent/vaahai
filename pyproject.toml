@@ -22,6 +22,7 @@ black = "^23.3.0"
 isort = "^5.12.0"
 flake8 = "^6.0.0"
 mypy = "^1.3.0"
+toml = "^0.10.2"
 
 [build-system]
 requires = ["poetry-core"]
@@ -46,5 +47,22 @@ disallow_untyped_defs = true
 disallow_incomplete_defs = true
 
 [tool.pytest.ini_options]
-testpaths = ["vaahai/tests"]
+testpaths = ["vaahai/test"]
 python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
+addopts = "--cov=vaahai --cov-report=term --cov-report=html"
+
+[tool.coverage.run]
+source = ["vaahai"]
+omit = ["vaahai/test/*"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "pass",
+    "raise ImportError",
+]
