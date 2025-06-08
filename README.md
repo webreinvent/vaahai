@@ -84,6 +84,13 @@ Where:
 - `action` is a subcommand or action for that command
 - `options` are additional flags and parameters
 
+#### Global Options
+- `--version`, `-v`: Display the current version of VaahAI and exit
+- `--verbose`, `-V`: Enable verbose output with detailed logs and information
+- `--quiet`, `-q`: Suppress non-essential output
+- `--config`: Specify an alternative configuration file path
+- `--help`, `-h`: Show help message and exit
+
 #### Core Commands
 - `vaahai config`: Configuration management
   - `vaahai config init`: Set up initial configuration
@@ -118,15 +125,6 @@ VaahAI CLI uses InquirerPy to provide interactive command-line prompts with rich
 - Path selection with auto-completion
 
 All prompts support non-interactive mode with default values or appropriate error handling.
-
-### Global Options
-
-The following options are available for all commands:
-
-- `--verbose`: Enable verbose output (can also be set with `VAAHAI_VERBOSE=1`)
-- `--quiet`: Suppress non-essential output (can also be set with `VAAHAI_QUIET=1`)
-- `--config PATH`: Specify a custom configuration file path
-- `--help`: Show help message and exit
 
 ### Basic Commands
 
