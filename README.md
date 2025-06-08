@@ -48,6 +48,9 @@ poetry install --with dev
 # Run tests
 poetry run pytest
 
+# Run tests with coverage
+poetry run pytest --cov=vaahai
+
 # Format code
 poetry run black vaahai
 poetry run isort vaahai
@@ -184,6 +187,38 @@ VaahAI CLI uses Rich for consistent, styled terminal output. Output behavior can
 - Quiet mode: Set `--quiet` flag or `VAAHAI_QUIET=1` environment variable
 
 For more details on the Rich integration, see the [Rich Integration Documentation](/docs/cli/rich_integration.md).
+
+## 🧪 Testing
+
+VaahAI includes a comprehensive test suite organized into unit tests and integration tests:
+
+```
+vaahai/test/
+├── unit/                 # Tests for individual components
+│   ├── test_cli_utils.py # Tests for console output utilities
+│   ├── test_help_utils.py # Tests for help formatting utilities
+│   └── test_version.py   # Tests for version command
+└── integration/          # Tests for component interactions
+    └── test_config_integration.py # Tests for config command
+```
+
+Run the test suite:
+
+```bash
+# Run all tests
+poetry run pytest
+
+# Run tests with coverage report
+poetry run pytest --cov=vaahai
+
+# Run specific test file
+poetry run pytest vaahai/test/unit/test_cli_utils.py
+
+# Run tests matching a pattern
+poetry run pytest -k "config"
+```
+
+For more details on testing, see [Testing Guide](docs/development/testing.md) and [Test Implementation](docs/development/test_implementation.md).
 
 ## 🏗️ Project Structure
 
