@@ -84,6 +84,32 @@ Where:
 - `action` is a subcommand or action for that command
 - `options` are additional flags and parameters
 
+#### Enhanced Help System
+
+VaahAI features a Rich-formatted custom help system that provides visually appealing and well-organized help information:
+
+- Styled headers and descriptions with visual separation
+- Organized tables for commands, options, and environment variables
+- Consistent formatting across all commands and subcommands
+- Detailed descriptions and usage examples
+- Color-coded elements for improved readability
+
+To access the enhanced help for any command:
+
+```bash
+# Main CLI help
+vaahai --help
+
+# Command group help
+vaahai [command_group] --help
+
+# Specific command help
+vaahai [command_group] [command] --help
+
+# Command action help
+vaahai [command_group] [command] [action] --help
+```
+
 #### Global Options
 - `--version`, `-v`: Display the current version of VaahAI and exit
 - `--verbose`, `-V`: Enable verbose output with detailed logs and information

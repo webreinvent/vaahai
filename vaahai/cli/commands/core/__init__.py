@@ -8,9 +8,10 @@ configuration management and version information.
 import typer
 from vaahai.cli.commands.config.command import config_app
 from vaahai.cli.commands.version.command import version_app
+from vaahai.cli.utils.help import create_typer_app
 
-# Create the core commands group
-core_app = typer.Typer(
+# Create the core commands group with custom help formatting
+core_app = create_typer_app(
     name="core",
     help="Essential VaahAI commands",
     add_completion=True,
