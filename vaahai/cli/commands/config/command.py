@@ -12,13 +12,13 @@ from typing import Optional
 from rich.console import Console
 
 from vaahai.cli.utils.console import print_panel, print_success, print_info, print_error
-from vaahai.cli.utils.help import format_command_help
+from vaahai.cli.utils.help import create_typer_app, CustomHelpCommand
 
 # Create a rich console for formatted output
 console = Console()
 
-# Create the config command group
-config_app = typer.Typer(
+# Create the config command group with custom help formatting
+config_app = create_typer_app(
     name="config",
     help="Manage VaahAI configuration settings",
     add_completion=True,
@@ -30,15 +30,12 @@ config_app = typer.Typer(
 def callback(ctx: typer.Context):
     """
     Manage VaahAI configuration settings.
-    
-    This command group provides tools to initialize and manage your VaahAI configuration,
-    including LLM provider selection, API keys, model preferences, and Docker settings.
     """
     if ctx.invoked_subcommand is None:
-        format_command_help(ctx)
+        ctx.invoke(show)
 
 
-@config_app.command("init")
+@config_app.command("init", cls=CustomHelpCommand)
 def init(
     ctx: typer.Context,
     config_dir: Optional[Path] = typer.Option(
@@ -88,7 +85,7 @@ def init(
     print_success("Configuration initialized successfully!")
 
 
-@config_app.command("show")
+@config_app.command("show", cls=CustomHelpCommand)
 def show(
     ctx: typer.Context,
     config_file: Optional[Path] = typer.Option(

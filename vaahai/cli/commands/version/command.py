@@ -8,9 +8,10 @@ which displays the current version of VaahAI.
 import typer
 import importlib.metadata
 from vaahai.cli.utils.console import print_panel, console
+from vaahai.cli.utils.help import create_typer_app, CustomHelpCommand
 
-# Create the version command group
-version_app = typer.Typer(
+# Create the version command group with custom help formatting
+version_app = create_typer_app(
     name="version",
     help="Display VaahAI version information",
     add_completion=False,
@@ -25,7 +26,7 @@ def callback():
     pass
 
 
-@version_app.command("show")
+@version_app.command("show", cls=CustomHelpCommand)
 def show():
     """
     Show the current version of VaahAI.

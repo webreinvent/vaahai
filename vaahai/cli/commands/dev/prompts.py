@@ -32,9 +32,11 @@ from vaahai.cli.utils.prompts import (
     number_prompt,
     create_choice,
 )
+from vaahai.cli.utils.help import create_typer_app, CustomHelpCommand
 
-# Create a Typer instance for the prompt showcase command
-prompts_app = typer.Typer(
+# Create a Typer instance for the prompt showcase command with custom help formatting
+prompts_app = create_typer_app(
+    name="prompts",
     help="Demonstrate InquirerPy prompt capabilities",
     add_completion=False,
 )
@@ -47,25 +49,25 @@ def callback(ctx: typer.Context):
         run_showcase()
 
 
-@prompts_app.command("all")
+@prompts_app.command("all", cls=CustomHelpCommand)
 def all_prompts():
     """Run all prompt showcase examples."""
     showcase_all()
 
 
-@prompts_app.command("basic")
+@prompts_app.command("basic", cls=CustomHelpCommand)
 def basic_prompts():
     """Demonstrate basic prompt types."""
     showcase_basic()
 
 
-@prompts_app.command("selection")
+@prompts_app.command("selection", cls=CustomHelpCommand)
 def selection_prompts():
     """Demonstrate selection prompt types."""
     showcase_selection()
 
 
-@prompts_app.command("advanced")
+@prompts_app.command("advanced", cls=CustomHelpCommand)
 def advanced_prompts():
     """Demonstrate advanced prompt types."""
     showcase_advanced()
