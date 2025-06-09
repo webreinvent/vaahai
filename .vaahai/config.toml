@@ -1,0 +1,57 @@
+[llm]
+provider = "junie"
+
+[llm.openai]
+api_key = ""
+api_base = ""
+organization = ""
+model = "gpt-4"
+temperature = 0.7
+max_tokens = 4000
+
+[llm.claude]
+api_key = ""
+model = "claude-3-sonnet-20240229"
+temperature = 0.7
+max_tokens = 4000
+
+[llm.junie]
+api_key = ""
+model = "junie-8b"
+temperature = 0.7
+max_tokens = 4000
+
+[llm.ollama]
+api_base = "http://localhost:11434"
+model = "llama3"
+temperature = 0.7
+max_tokens = 4000
+
+[docker]
+enabled = false
+image = "vaahai/execution:latest"
+
+[docker.resource_limits]
+cpu = 2.0
+memory = "2g"
+
+[output]
+format = "terminal"
+verbosity = "normal"
+color = true
+
+[agents]
+enabled = [
+    "audit",
+    "review",
+    "security",
+    "quality",
+]
+timeout = 300
+cache = true
+cache_expiration = 24
+
+[security]
+allow_external_code_sharing = false
+anonymize_code = true
+use_secure_storage = true

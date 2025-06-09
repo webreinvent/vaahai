@@ -1,105 +1,90 @@
 # Development Tools
 
-This document describes the development tools used in the VaahAI project and how to set them up.
+VaahAI uses several development tools to maintain code quality and consistency. This document describes the tools and how to use them.
 
 ## Code Quality Tools
 
-VaahAI uses several tools to ensure code quality:
-
-### Pre-commit Hooks
-
-Pre-commit hooks run automatically before each commit to ensure code quality standards are met.
-
-To install pre-commit hooks:
-
-```bash
-# Install pre-commit
-pip install pre-commit
-
-# Install the git hooks
-pre-commit install
-```
-
-To run pre-commit manually on all files:
-
-```bash
-pre-commit run --all-files
-```
+The following tools are used to ensure code quality:
 
 ### Code Formatting
 
-VaahAI uses the following code formatters:
+#### Black
 
-1. **Black** - Python code formatter that enforces a consistent style
-2. **isort** - Import statement organizer that sorts imports alphabetically and separates them into sections
+Black is an uncompromising code formatter that formats Python code according to a consistent style.
 
-Configuration for these tools is in `pyproject.toml`.
+```bash
+# Format all Python files
+poetry run black .
+
+# Check formatting without changing files
+poetry run black --check .
+```
+
+#### isort
+
+isort automatically sorts and formats import statements in Python files.
+
+```bash
+# Sort imports in all Python files
+poetry run isort .
+
+# Check import sorting without changing files
+poetry run isort --check .
+```
 
 ### Linting
 
-VaahAI uses Flake8 for linting Python code. Flake8 checks for:
+#### Flake8
 
-- PEP 8 style guide violations
-- Programming errors
-- Code complexity issues
-
-Configuration is in `.flake8`.
-
-## Running the Tools
-
-### Black
-
-To format code with Black:
+Flake8 is a code linter that checks Python code for style and syntax errors.
 
 ```bash
-# Format a specific file
-black path/to/file.py
+# Run flake8 on all Python files
+poetry run flake8
 
-# Format all Python files
-black .
+# Run flake8 on a specific file
+poetry run flake8 path/to/file.py
 ```
 
-### isort
+## Running Code Quality Tools Manually
 
-To sort imports with isort:
+You can run all code quality tools manually using Poetry:
 
 ```bash
-# Sort imports in a specific file
-isort path/to/file.py
+# Run black
+poetry run black .
 
-# Sort imports in all Python files
-isort .
+# Run isort
+poetry run isort .
+
+# Run flake8
+poetry run flake8
 ```
-
-### Flake8
-
-To check code with Flake8:
-
-```bash
-# Check a specific file
-flake8 path/to/file.py
-
-# Check all Python files
-flake8
-```
-
-## Integration with Pre-commit
-
-All these tools are configured to run automatically via pre-commit hooks before each commit. If any tool reports issues, the commit will be blocked until the issues are fixed.
 
 ## Configuration Files
 
-- `.pre-commit-config.yaml` - Pre-commit hooks configuration
-- `pyproject.toml` - Black and isort configuration
+The following configuration files are used to configure the development tools:
+
 - `.flake8` - Flake8 configuration
+- `pyproject.toml` - Contains configuration for Black and isort
 
 ## Best Practices
 
-1. Always run pre-commit hooks before pushing changes
-2. Fix all linting and formatting issues before submitting a pull request
-3. Keep configuration files in sync with project requirements
-4. Update tool versions periodically to benefit from improvements
+1. Run code quality tools before pushing changes
+2. Fix all issues reported by the tools
+3. Keep configuration files up to date
+4. Follow the style guide enforced by the tools
 
-## Code Quality Improvement Plan
+## Continuous Integration
 
-The project has a phased approach to improving code quality. See the [Code Quality Improvement Plan](code_quality_improvement.md) for details on how we're gradually enhancing code quality across the codebase.
+These tools are also run as part of the continuous integration pipeline to ensure that all code meets the project's quality standards before being merged.
+
+## Future Improvements
+
+We plan to enhance our development tools setup with:
+
+1. Additional linting tools for specific use cases
+2. Type checking with mypy
+3. Security scanning tools
+4. Coverage reporting integration
+5. Automated dependency updates
