@@ -1,6 +1,6 @@
 # VaahAI CLI Command Groups
 
-This document provides an overview of the command group structure in the VaahAI CLI.
+This document provides an overview of the command group structure in the VaahAI CLI. For a more comprehensive explanation of the CLI architecture, including extension points and best practices, see the [CLI Architecture Documentation](/docs/architecture/cli_architecture.md).
 
 ## Overview
 
@@ -123,24 +123,26 @@ When adding new commands to the VaahAI CLI, follow these guidelines:
 
 1. Determine which command group the new command belongs to (core, project, or dev)
 2. Create a new module in the appropriate command group directory
-3. Define a `typer.Typer()` instance for your command
-4. Implement the command functionality using Typer decorators
+3. Define a `typer.Typer()` instance for your command using the `create_typer_app` utility
+4. Implement the command functionality using Typer decorators with `cls=CustomHelpCommand`
 5. Register your command with the appropriate command group
+
+For detailed instructions and best practices, refer to the [CLI Architecture Documentation](/docs/architecture/cli_architecture.md).
 
 For example, to add a new command to the core group:
 
 ```python
 # In vaahai/cli/commands/core/mycommand.py
-import typer
+from vaahai.cli.utils.help import create_typer_app, CustomHelpCommand
 
-mycommand_app = typer.Typer(help="My new command")
+mycommand_app = create_typer_app(help="My new command")
 
 @mycommand_app.callback()
 def callback():
     """My new command."""
     pass
 
-@mycommand_app.command("run")
+@mycommand_app.command("run", cls=CustomHelpCommand)
 def run():
     """Run my new command."""
     # Command implementation here
