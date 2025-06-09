@@ -5,10 +5,11 @@ This module provides utility functions for creating consistent interactive
 prompts using InquirerPy across all CLI commands.
 """
 
-from typing import List, Dict, Any, Optional, Union, Callable
+from typing import Any, Callable, Dict, List, Optional, Union
+
 from InquirerPy import inquirer
 from InquirerPy.base.control import Choice
-from InquirerPy.validator import PathValidator, EmptyInputValidator, NumberValidator
+from InquirerPy.validator import EmptyInputValidator, NumberValidator, PathValidator
 
 
 def text_prompt(
@@ -20,14 +21,14 @@ def text_prompt(
 ) -> str:
     """
     Display a text input prompt.
-    
+
     Args:
         message: The prompt message to display
         default: Optional default value
         validate: Whether to validate that input is not empty
         transformer: Optional function to transform the input
         instruction: Optional help text shown below the prompt
-        
+
     Returns:
         The user's input as a string
     """
@@ -48,12 +49,12 @@ def password_prompt(
 ) -> str:
     """
     Display a password input prompt (input is masked).
-    
+
     Args:
         message: The prompt message to display
         validate: Whether to validate that input is not empty
         instruction: Optional help text shown below the prompt
-        
+
     Returns:
         The user's input as a string
     """
@@ -72,12 +73,12 @@ def confirm_prompt(
 ) -> bool:
     """
     Display a yes/no confirmation prompt.
-    
+
     Args:
         message: The prompt message to display
         default: Default value (True for Yes, False for No)
         instruction: Optional help text shown below the prompt
-        
+
     Returns:
         Boolean representing the user's choice
     """
@@ -96,13 +97,13 @@ def select_prompt(
 ) -> str:
     """
     Display a selection prompt with a list of choices.
-    
+
     Args:
         message: The prompt message to display
         choices: List of choices (strings or Choice objects)
         default: Optional default choice
         instruction: Optional help text shown below the prompt
-        
+
     Returns:
         The selected choice
     """
@@ -124,7 +125,7 @@ def multiselect_prompt(
 ) -> List[str]:
     """
     Display a multi-selection prompt allowing multiple choices.
-    
+
     Args:
         message: The prompt message to display
         choices: List of choices (strings or Choice objects)
@@ -132,7 +133,7 @@ def multiselect_prompt(
         max_selections: Maximum number of selections allowed
         default: Optional list of default selected choices
         instruction: Optional help text shown below the prompt
-        
+
     Returns:
         List of selected choices
     """
@@ -155,14 +156,14 @@ def path_prompt(
 ) -> str:
     """
     Display a prompt for file or directory path input with validation.
-    
+
     Args:
         message: The prompt message to display
         default: Optional default path
         only_directories: Whether to only accept directories
         only_files: Whether to only accept files
         instruction: Optional help text shown below the prompt
-        
+
     Returns:
         The validated path as a string
     """
@@ -186,13 +187,13 @@ def editor_prompt(
 ) -> str:
     """
     Open an editor for multi-line text input.
-    
+
     Args:
         message: The prompt message to display
         default: Optional default text
         file_extension: File extension for syntax highlighting
         instruction: Optional help text shown below the prompt
-        
+
     Returns:
         The text entered in the editor
     """
@@ -212,13 +213,13 @@ def fuzzy_prompt(
 ) -> str:
     """
     Display a fuzzy search prompt for selecting from a large list of choices.
-    
+
     Args:
         message: The prompt message to display
         choices: List of choices (strings or Choice objects)
         default: Optional default choice
         instruction: Optional help text shown below the prompt
-        
+
     Returns:
         The selected choice
     """
@@ -239,14 +240,14 @@ def number_prompt(
 ) -> int:
     """
     Display a numeric input prompt with optional range validation.
-    
+
     Args:
         message: The prompt message to display
         default: Optional default value
         min_allowed: Optional minimum allowed value
         max_allowed: Optional maximum allowed value
         instruction: Optional help text shown below the prompt
-        
+
     Returns:
         The entered number as an integer
     """
@@ -256,7 +257,7 @@ def number_prompt(
             min_allowed=min_allowed,
             max_allowed=max_allowed,
         )
-    
+
     return inquirer.number(
         message=message,
         default=default,
@@ -272,12 +273,12 @@ def create_choice(
 ) -> Choice:
     """
     Create a Choice object for use in selection prompts.
-    
+
     Args:
         name: Display name of the choice
         value: Value to return when selected (defaults to name if None)
         enabled: Whether the choice is pre-selected in checkbox prompts
-        
+
     Returns:
         A Choice object
     """

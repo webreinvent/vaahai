@@ -5,10 +5,12 @@ This module contains the implementation of the version command,
 which displays the current version of VaahAI.
 """
 
-import typer
 import importlib.metadata
-from vaahai.cli.utils.console import print_panel, console
-from vaahai.cli.utils.help import create_typer_app, CustomHelpCommand
+
+import typer
+
+from vaahai.cli.utils.console import console, print_panel
+from vaahai.cli.utils.help import CustomHelpCommand, create_typer_app
 
 # Create the version command group with custom help formatting
 version_app = create_typer_app(
@@ -35,7 +37,7 @@ def show():
         version = importlib.metadata.version("vaahai")
     except importlib.metadata.PackageNotFoundError:
         version = "unknown (development mode)"
-    
+
     print_panel(
         f"VaahAI version: [bold green]{version}[/bold green]",
         title="Version Information",

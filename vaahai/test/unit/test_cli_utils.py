@@ -6,7 +6,7 @@ This module contains tests for the CLI utility functions.
 
 import os
 from pathlib import Path
-from unittest.mock import patch, MagicMock, ANY
+from unittest.mock import ANY, MagicMock, patch
 
 import pytest
 from rich.console import Console
@@ -14,13 +14,13 @@ from rich.panel import Panel
 from typer.testing import CliRunner
 
 from vaahai.cli.utils.console import (
-    print_error,
-    print_success,
-    print_info,
-    print_warning,
-    print_panel,
-    format_path,
     format_command,
+    format_path,
+    print_error,
+    print_info,
+    print_panel,
+    print_success,
+    print_warning,
 )
 from vaahai.test.utils.base_test import BaseTest
 

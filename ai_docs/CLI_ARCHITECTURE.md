@@ -56,15 +56,15 @@ All commands inherit from a base command class that provides common functionalit
 ```python
 class Command:
     """Base class for all VaahAI commands."""
-    
+
     def __init__(self, config_manager):
         """Initialize the command with configuration."""
         self.config_manager = config_manager
-    
+
     def run(self, **kwargs):
         """Run the command with the provided arguments."""
         raise NotImplementedError("Commands must implement run method")
-    
+
     def validate_args(self, **kwargs):
         """Validate command arguments."""
         # Default implementation
@@ -126,13 +126,13 @@ Rich, colored output for interactive use:
 
 ```
 ✓ Review completed for example.py
-  
+
   Issues found: 3 (1 critical, 1 high, 1 medium)
-  
+
   CRITICAL: SQL Injection Vulnerability
   Line 10: User input is concatenated into SQL query
   Recommendation: Use parameterized queries
-  
+
   HIGH: Missing Error Handling
   Lines 5-6: No error handling for file operations
   Recommendation: Add try/except blocks
@@ -242,17 +242,17 @@ graph TD
     CLI --> Scaffold[Scaffold Command]
     CLI --> Explain[Explain Command]
     CLI --> HelloWorld[HelloWorld Command]
-    
+
     Config --> ConfigInit[Config Init]
     Config --> ConfigSet[Config Set]
     Config --> ConfigShow[Config Show]
-    
+
     Review --> ReviewResult[Review Result]
     Audit --> AuditResult[Audit Result]
-    
+
     Apply --> ReviewResult
     Apply --> AuditResult
-    
+
     Commit --> Apply
 ```
 
@@ -301,28 +301,28 @@ if __name__ == "__main__":
 ```python
 class ReviewCommand(Command):
     """Command for code review."""
-    
+
     def run(self, path, depth, focus, output):
         """Run code review on the specified path."""
         # Validate arguments
         self.validate_args(path=path, depth=depth, focus=focus, output=output)
-        
+
         # Initialize components
         agent_factory = AgentFactory(self.config_manager)
-        
+
         # Create and run agents
         language_detector = agent_factory.create_agent("language_detector")
         languages = language_detector.detect(path)
-        
+
         framework_detector = agent_factory.create_agent("framework_detector")
         frameworks = framework_detector.detect(path, languages)
-        
+
         reviewer = agent_factory.create_agent("reviewer")
         review_results = reviewer.review(path, languages, frameworks, depth, focus)
-        
+
         reporter = agent_factory.create_agent("reporter")
         report = reporter.format_review(review_results, output)
-        
+
         # Output results
         if output == "terminal":
             console.print(report)

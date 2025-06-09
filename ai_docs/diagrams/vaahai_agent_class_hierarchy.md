@@ -12,19 +12,19 @@ classDiagram
         +process_message(message) Dict
         +get_capabilities() List~string~
     }
-    
+
     class IMessageProcessor {
         <<interface>>
         +process(message) Dict
     }
-    
+
     class ITool {
         <<interface>>
         +execute(parameters) Any
         +get_description() string
         +get_parameters() Dict
     }
-    
+
     class IGroupChat {
         <<interface>>
         +add_agent(agent) void
@@ -32,7 +32,7 @@ classDiagram
         +start_chat(message) void
         +end_chat() void
     }
-    
+
     IAgent <|-- BaseAgent
     IMessageProcessor <|-- BaseMessageProcessor
     ITool <|-- BaseTool
@@ -52,7 +52,7 @@ classDiagram
         +get_capabilities() List~string~
         #_validate_config() bool
     }
-    
+
     class AgentDecorator {
         <<abstract>>
         -_agent IAgent
@@ -60,17 +60,17 @@ classDiagram
         +process_message(message) Dict
         +get_capabilities() List~string~
     }
-    
+
     BaseAgent <|-- ConversationalAgent
     BaseAgent <|-- AssistantAgent
     BaseAgent <|-- UserProxyAgent
     BaseAgent <|-- SpecializedAgent
-    
+
     AgentDecorator <|-- LoggingAgentDecorator
     AgentDecorator <|-- MetricsAgentDecorator
     AgentDecorator <|-- CachingAgentDecorator
     AgentDecorator <|-- RateLimitingAgentDecorator
-    
+
     SpecializedAgent <|-- CodeReviewAgent
     SpecializedAgent <|-- SecurityAuditAgent
     SpecializedAgent <|-- LanguageDetectionAgent
@@ -88,7 +88,7 @@ classDiagram
         +adapt_message_to_external(message) Dict
         +adapt_message_from_external(message) Dict
     }
-    
+
     class AutogenAgentAdapter {
         -_vaah_agent IAgent
         -_autogen_agent Any
@@ -99,7 +99,7 @@ classDiagram
         -_convert_to_autogen_format(message) Dict
         -_convert_to_vaah_format(message) Dict
     }
-    
+
     class AutogenGroupChatAdapter {
         -_vaah_group_chat IGroupChat
         -_autogen_group_chat Any
@@ -108,7 +108,7 @@ classDiagram
         +adapt_message_to_external(message) Dict
         +adapt_message_from_external(message) Dict
     }
-    
+
     IAgentAdapter <|-- AutogenAgentAdapter
     IAgentAdapter <|-- AutogenGroupChatAdapter
 ```
@@ -122,13 +122,13 @@ classDiagram
         +register_agent_type(agent_type, agent_class) void
         +get_registered_agent_types() List~string~
     }
-    
+
     class GroupChatFactory {
         +create_group_chat(chat_type, config) IGroupChat
         +register_chat_type(chat_type, chat_class) void
         +get_registered_chat_types() List~string~
     }
-    
+
     class ToolFactory {
         +create_tool(tool_type, config) ITool
         +register_tool_type(tool_type, tool_class) void
@@ -144,21 +144,21 @@ classDiagram
         <<interface>>
         +process(message) Dict
     }
-    
+
     class SimpleProcessingStrategy {
         +process(message) Dict
     }
-    
+
     class AdvancedProcessingStrategy {
         +process(message) Dict
     }
-    
+
     class ChainProcessingStrategy {
         -_strategies List~IMessageProcessingStrategy~
         +add_strategy(strategy) void
         +process(message) Dict
     }
-    
+
     IMessageProcessingStrategy <|-- SimpleProcessingStrategy
     IMessageProcessingStrategy <|-- AdvancedProcessingStrategy
     IMessageProcessingStrategy <|-- ChainProcessingStrategy
@@ -175,7 +175,7 @@ classDiagram
         +register_factory(interface_type, factory) void
         +resolve(interface_type) Any
     }
-    
+
     class ServiceLocator {
         -_services Map~string, Any~
         +register_service(name, service) void
@@ -194,7 +194,7 @@ classDiagram
         +get_plugin(plugin_name) Any
         +register_plugin_hooks(plugin_name, hooks) void
     }
-    
+
     class IPlugin {
         <<interface>>
         +initialize() void
@@ -202,7 +202,7 @@ classDiagram
         +get_name() string
         +get_version() string
     }
-    
+
     class BasePlugin {
         <<abstract>>
         #_name string
@@ -213,7 +213,7 @@ classDiagram
         +get_name() string
         +get_version() string
     }
-    
+
     IPlugin <|-- BasePlugin
 ```
 
@@ -226,17 +226,17 @@ classDiagram
         +subscribe(event_type, handler) void
         +publish(event_type, event_data) void
     }
-    
+
     class IEventHandler {
         <<interface>>
         +handle_event(event_data) void
     }
-    
+
     class BaseEventHandler {
         <<abstract>>
         +handle_event(event_data) void
     }
-    
+
     IEventHandler <|-- BaseEventHandler
     BaseEventHandler <|-- MessageReceivedHandler
     BaseEventHandler <|-- AgentCreatedHandler
@@ -252,7 +252,7 @@ classDiagram
         +to_dict() Dict
         +validate() bool
     }
-    
+
     class BaseConfig {
         <<abstract>>
         #_data Dict
@@ -260,7 +260,7 @@ classDiagram
         +validate() bool
         +from_dict(data) BaseConfig
     }
-    
+
     class AgentConfig {
         -_agent_type string
         -_parameters Dict
@@ -268,7 +268,7 @@ classDiagram
         +get_parameters() Dict
         +set_parameter(key, value) void
     }
-    
+
     class GroupChatConfig {
         -_chat_type string
         -_agents List~AgentConfig~
@@ -278,7 +278,7 @@ classDiagram
         +add_agent(agent_config) void
         +get_parameters() Dict
     }
-    
+
     IConfig <|-- BaseConfig
     BaseConfig <|-- AgentConfig
     BaseConfig <|-- GroupChatConfig

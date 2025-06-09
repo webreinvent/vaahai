@@ -16,39 +16,39 @@ classDiagram
         +to_dict() Dict
         +from_dict(dict) Message
     }
-    
+
     class TextMessage {
         +content: str
         +to_text() str
     }
-    
+
     class MultiModalMessage {
         +content: List[ContentItem]
         +to_text() str
     }
-    
+
     class ContentItem {
         +type: str
         +data: Any
     }
-    
+
     class TextContentItem {
         +type: "text"
         +data: str
     }
-    
+
     class ImageContentItem {
         +type: "image"
         +data: bytes
         +mime_type: str
     }
-    
+
     class ToolCallRequestEvent {
         +tool_name: str
         +parameters: Dict
         +request_id: str
     }
-    
+
     class ToolCallExecutionEvent {
         +tool_name: str
         +result: Any
@@ -56,19 +56,19 @@ classDiagram
         +success: bool
         +error: Optional[str]
     }
-    
+
     class ToolCallSummaryMessage {
         +tool_name: str
         +summary: str
         +request_id: str
     }
-    
+
     Message <|-- TextMessage
     Message <|-- MultiModalMessage
     Message <|-- ToolCallRequestEvent
     Message <|-- ToolCallExecutionEvent
     Message <|-- ToolCallSummaryMessage
-    
+
     MultiModalMessage *-- ContentItem
     ContentItem <|-- TextContentItem
     ContentItem <|-- ImageContentItem
@@ -85,7 +85,7 @@ classDiagram
         TOOL
         FUNCTION
     }
-    
+
     class ConversationContext {
         +messages: List[Message]
         +add_message(message)
@@ -93,14 +93,14 @@ classDiagram
         +get_messages_by_role(role) List[Message]
         +clear()
     }
-    
+
     class MessageThread {
         +root_message: Message
         +replies: List[Message]
         +add_reply(message)
         +get_thread() List[Message]
     }
-    
+
     ConversationContext *-- Message
     MessageThread *-- Message
 ```
@@ -114,7 +114,7 @@ flowchart TD
     C -->|Processes| B
     C -->|Creates| D[TextMessage Response]
     D -->|Sent to| A
-    
+
     A -->|Creates| E[ToolCallRequestEvent]
     E -->|Sent to| F[Tool]
     F -->|Executes| F
@@ -131,7 +131,7 @@ flowchart TD
     A[MultiModalMessage] -->|Contains| B[Text Content]
     A -->|Contains| C[Image Content]
     A -->|Contains| D[Other Media Content]
-    
+
     B -->|Rendered as| E[Text in Conversation]
     C -->|Rendered as| F[Image in Conversation]
     D -->|Rendered as| G[Media in Conversation]
@@ -148,7 +148,7 @@ classDiagram
         +conversation_id: str
         +custom_data: Dict
     }
-    
+
     class Message {
         +content: Any
         +role: str
@@ -156,7 +156,7 @@ classDiagram
         +id: str
         +parent_id: Optional[str]
     }
-    
+
     Message *-- MessageMetadata
 ```
 
@@ -167,7 +167,7 @@ flowchart TD
     A[Message Object] -->|Serialization| B[JSON Representation]
     B -->|Network Transport| C[Remote System]
     C -->|Deserialization| D[Reconstructed Message]
-    
+
     E[MultiModalMessage] -->|Special Serialization| F[JSON + Binary Data]
     F -->|Network Transport| G[Remote System]
     G -->|Special Deserialization| H[Reconstructed MultiModalMessage]
@@ -192,7 +192,7 @@ sequenceDiagram
     participant Agent
     participant ToolManager
     participant Tool
-    
+
     Agent->>ToolManager: ToolCallRequestEvent
     ToolManager->>ToolManager: Validate Request
     ToolManager->>Tool: Execute Tool

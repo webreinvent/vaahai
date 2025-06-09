@@ -16,7 +16,7 @@ sequenceDiagram
     participant FrameworkDetector
     participant Reviewer
     participant Reporter
-    
+
     User->>Orchestrator: Review code
     Orchestrator->>LanguageDetector: Detect language
     LanguageDetector-->>Orchestrator: Language info
@@ -86,7 +86,7 @@ The Configuration Manager uses a Singleton pattern to ensure a single point of a
 ```python
 class ConfigManager:
     _instance = None
-    
+
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super(ConfigManager, cls).__new__(cls)
@@ -146,11 +146,11 @@ class Result:
         self.success = success
         self.data = data
         self.error = error
-        
+
     @classmethod
     def success(cls, data=None):
         return cls(True, data=data)
-        
+
     @classmethod
     def failure(cls, error):
         return cls(False, error=error)
@@ -184,7 +184,7 @@ def mock_llm():
     with patch("vaahai.llm.OpenAIProvider") as mock:
         mock.return_value.generate.return_value = "Mocked response"
         yield mock
-        
+
 def test_reviewer_agent(mock_llm):
     agent = ReviewerAgent(config=mock_config)
     result = agent.review("/path/to/file")
@@ -199,10 +199,10 @@ Components accept dependencies that can be replaced with test doubles.
 def test_review_command():
     mock_reviewer = Mock()
     mock_reviewer.review.return_value = Result.success({"issues": []})
-    
+
     cmd = ReviewCommand(config=mock_config)
     cmd.reviewer = mock_reviewer
-    
+
     result = cmd.execute("/path/to/file")
     assert result.success
 ```
@@ -217,10 +217,10 @@ Vaahai uses a plugin system for extending functionality without modifying core c
 class PluginManager:
     def __init__(self):
         self.plugins = {}
-        
+
     def register(self, name, plugin):
         self.plugins[name] = plugin
-        
+
     def get_plugin(self, name):
         return self.plugins.get(name)
 ```

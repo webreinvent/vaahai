@@ -26,14 +26,14 @@ This document tracks the tasks for the VaahAI project, organized by priority and
 | [P1-T11] | Add version command | 🟢 | [P1-T5] | Implemented version display command and --version flag |
 | [P1-T12] | Add help command customization | 🟢 | [P1-T5] | Implemented Rich-formatted custom help across all CLI commands with comprehensive documentation and tests (2025-06-08) |
 | [P1-T13] | Create basic test structure | 🟢 | [P1-T5] | Implemented comprehensive test suite with unit tests for CLI utilities and integration tests for commands, achieving 35% overall coverage (2025-06-08) |
-| [P1-T14] | Set up development tools | 🔴 | [P1-T2] | Configure pre-commit hooks, linting, and formatting |
+| [P1-T14] | Set up development tools | 🟡 | [P1-T2] | Configure pre-commit hooks, linting, and formatting |
 | [P1-T15] | Document CLI architecture | 🔴 | [P1-T6] | Create CLI architecture documentation |
 
 ## Current Tasks
 
 | Task ID | Description | Status | Dependencies | Notes |
 |---------|-------------|--------|--------------|-------|
-| [P1-T14] | Set up development tools | 🔴 | [P1-T2] | Configure pre-commit hooks, linting, and formatting |
+| [P1-T14] | Set up development tools | 🟡 | [P1-T2] | Configure pre-commit hooks, linting, and formatting |
 
 ## Completed Tasks
 

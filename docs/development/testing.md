@@ -48,12 +48,12 @@ Example:
 def test_config_init_creates_directory():
     with tempfile.TemporaryDirectory() as temp_dir:
         config_path = Path(temp_dir)
-        
+
         # Run config init with the temporary config path
         with patch.dict(os.environ, {"VAAHAI_CONFIG_DIR": str(config_path)}):
             init_result = self.invoke_cli(["config", "init"])
             assert_command_success(init_result)
-        
+
         # Verify the config directory was created
         assert config_path.exists()
         assert config_path.is_dir()

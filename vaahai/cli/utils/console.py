@@ -5,14 +5,15 @@ This module provides utility functions for consistent console output formatting
 using Rich library across all CLI commands.
 """
 
-from rich.console import Console
-from rich.panel import Panel
-from rich.table import Table
-from rich.markdown import Markdown
-from rich.syntax import Syntax
-from typing import Optional, List, Dict, Any, Union, Generator
 from contextlib import contextmanager
+from typing import Any, Dict, Generator, List, Optional, Union
+
 from rich import print
+from rich.console import Console
+from rich.markdown import Markdown
+from rich.panel import Panel
+from rich.syntax import Syntax
+from rich.table import Table
 
 # Create a shared console instance for consistent styling
 console = Console()
@@ -21,7 +22,7 @@ console = Console()
 def print_header(title: str, subtitle: Optional[str] = None) -> None:
     """
     Print a formatted header with optional subtitle.
-    
+
     Args:
         title: The main title text
         subtitle: Optional subtitle text
@@ -35,7 +36,7 @@ def print_header(title: str, subtitle: Optional[str] = None) -> None:
 def print_success(message: str) -> None:
     """
     Print a success message.
-    
+
     Args:
         message: The success message to print
     """
@@ -45,7 +46,7 @@ def print_success(message: str) -> None:
 def print_error(message: str) -> None:
     """
     Print an error message.
-    
+
     Args:
         message: The error message to print
     """
@@ -55,7 +56,7 @@ def print_error(message: str) -> None:
 def print_warning(message: str) -> None:
     """
     Print a warning message.
-    
+
     Args:
         message: The warning message to print
     """
@@ -65,7 +66,7 @@ def print_warning(message: str) -> None:
 def print_info(message: str) -> None:
     """
     Print an info message.
-    
+
     Args:
         message: The info message to print
     """
@@ -104,7 +105,7 @@ def print_panel(
 ) -> None:
     """
     Print content in a panel with optional title.
-    
+
     Args:
         content: The content to display in the panel
         title: Optional title for the panel
@@ -128,7 +129,7 @@ def print_code(
 ) -> None:
     """
     Print formatted code with syntax highlighting.
-    
+
     Args:
         code: The code to print
         language: The programming language for syntax highlighting
@@ -149,7 +150,7 @@ def print_code(
 def print_markdown(markdown_text: str) -> None:
     """
     Print formatted markdown text.
-    
+
     Args:
         markdown_text: The markdown text to print
     """
@@ -157,7 +158,9 @@ def print_markdown(markdown_text: str) -> None:
     console.print(md)
 
 
-def print_key_value(key: str, value: Any, key_style: str = "bold cyan", value_style: str = "white") -> None:
+def print_key_value(
+    key: str, value: Any, key_style: str = "bold cyan", value_style: str = "white"
+) -> None:
     """
     Print a key-value pair.
 
@@ -167,10 +170,14 @@ def print_key_value(key: str, value: Any, key_style: str = "bold cyan", value_st
         key_style: The Rich style for the key.
         value_style: The Rich style for the value.
     """
-    console.print(f"[{key_style}]{key}:[/{key_style}] [{value_style}]{value}[/{value_style}]")
+    console.print(
+        f"[{key_style}]{key}:[/{key_style}] [{value_style}]{value}[/{value_style}]"
+    )
 
 
-def print_list(items: List[Any], title: Optional[str] = None, style: str = "* ") -> None:
+def print_list(
+    items: List[Any], title: Optional[str] = None, style: str = "* "
+) -> None:
     """
     Print a list of items with optional title.
 
@@ -183,7 +190,7 @@ def print_list(items: List[Any], title: Optional[str] = None, style: str = "* ")
         console.print(f"[bold]{title}[/bold]")
     for item in items:
         console.print(f"{style}{item}")
-    console.print() # Add a blank line after the list
+    console.print()  # Add a blank line after the list
 
 
 def print_tree(data: Dict[str, Any], title: Optional[str] = None) -> None:
@@ -239,13 +246,15 @@ def print_columns(*columns_data: List[Any], title: Optional[str] = None) -> None
     num_rows = len(columns_data[0])
     for col_data in columns_data:
         if len(col_data) != num_rows:
-            print_error("All columns must have the same number of rows for print_columns.")
+            print_error(
+                "All columns must have the same number of rows for print_columns."
+            )
             return
 
     for i in range(num_rows):
         row_data = [str(columns_data[j][i]) for j in range(num_cols)]
         table.add_row(*row_data)
-    
+
     console.print(table)
     console.print()
 
@@ -259,18 +268,19 @@ def print_json(data: Any, title: Optional[str] = None) -> None:
         title: Optional title for the JSON output.
     """
     import json
+
     from rich.syntax import Syntax
 
     if title:
         console.print(f"[bold]{title}[/bold]")
-    
+
     try:
         json_string = json.dumps(data, indent=4)
         syntax = Syntax(json_string, "json", theme="monokai", line_numbers=True)
         console.print(syntax)
     except TypeError as e:
         print_error(f"Could not serialize data to JSON: {e}")
-        console.print(str(data)) # Print raw data if serialization fails
+        console.print(str(data))  # Print raw data if serialization fails
     console.print()
 
 
@@ -296,7 +306,7 @@ def print_command_result(output: str, error: bool = False) -> None:
         console.print(f"[red]{output}[/red]")
     else:
         console.print(output)
-    console.print() # Add a blank line after the result
+    console.print()  # Add a blank line after the result
 
 
 def print_step(step_number: Union[int, str], description: str) -> None:
@@ -406,7 +416,9 @@ def format_status(status: str, success: bool = True) -> str:
 
 
 @contextmanager
-def progress_spinner(message: str, success_message: Optional[str] = None) -> Generator[None, None, None]:
+def progress_spinner(
+    message: str, success_message: Optional[str] = None
+) -> Generator[None, None, None]:
     """
     A context manager that displays a spinner while a task is in progress.
 
@@ -442,23 +454,23 @@ def create_table(
 ) -> Table:
     """
     Create a formatted table.
-    
+
     Args:
         columns: List of column headers
         rows: List of rows, each containing values for each column
         title: Optional title for the table
-        
+
     Returns:
         A Rich Table object that can be printed with console.print()
     """
     table = Table(title=title)
-    
+
     # Add columns
     for column in columns:
         table.add_column(column)
-    
+
     # Add rows
     for row in rows:
         table.add_row(*[str(cell) for cell in row])
-    
+
     return table

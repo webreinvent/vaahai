@@ -8,7 +8,7 @@ This document illustrates the communication patterns and message flow between ag
 sequenceDiagram
     participant User
     participant AssistantAgent
-    
+
     User->>AssistantAgent: TextMessage (Task)
     AssistantAgent->>AssistantAgent: Process with LLM
     AssistantAgent-->>User: TextMessage (Response)
@@ -21,7 +21,7 @@ sequenceDiagram
     participant User
     participant AssistantAgent
     participant Tool
-    
+
     User->>AssistantAgent: TextMessage (Task)
     AssistantAgent->>AssistantAgent: Process with LLM
     AssistantAgent->>Tool: ToolCallRequestEvent
@@ -40,7 +40,7 @@ sequenceDiagram
     participant AssistantAgent1
     participant AssistantAgent2
     participant AssistantAgent3
-    
+
     User->>GroupChatManager: TextMessage (Task)
     GroupChatManager->>AssistantAgent1: Forward Message
     AssistantAgent1->>GroupChatManager: TextMessage (Response)
@@ -61,7 +61,7 @@ sequenceDiagram
     participant Agent1
     participant Agent2
     participant Agent3
-    
+
     User->>SelectorAgent: TextMessage (Task)
     SelectorAgent->>SelectorAgent: Select Next Speaker
     SelectorAgent->>Agent1: Forward Message
@@ -84,7 +84,7 @@ sequenceDiagram
     participant UserProxyAgent
     participant AssistantAgent
     participant Tool
-    
+
     Human->>UserProxyAgent: TextMessage (Task)
     UserProxyAgent->>AssistantAgent: Forward Message
     AssistantAgent->>AssistantAgent: Process with LLM
@@ -108,7 +108,7 @@ sequenceDiagram
     participant AgentRuntime
     participant ReceiverAgent
     participant MessageHandler
-    
+
     Sender->>AgentRuntime: send_message(message, recipient)
     AgentRuntime->>ReceiverAgent: handle_message(message, ctx)
     ReceiverAgent->>MessageHandler: Route by Message Type
@@ -125,19 +125,19 @@ sequenceDiagram
     participant AgentA
     participant AgentB
     participant AgentC
-    
+
     User->>AgentA: TextMessage (Task)
     activate AgentA
     AgentA->>AgentB: TextMessage (Subtask 1)
     activate AgentB
     AgentA->>AgentC: TextMessage (Subtask 2)
     activate AgentC
-    
+
     AgentB-->>AgentA: TextMessage (Result 1)
     deactivate AgentB
     AgentC-->>AgentA: TextMessage (Result 2)
     deactivate AgentC
-    
+
     AgentA->>AgentA: Combine Results
     AgentA-->>User: TextMessage (Final Result)
     deactivate AgentA
@@ -152,7 +152,7 @@ sequenceDiagram
     participant HostServicer
     participant WorkerB
     participant AgentB
-    
+
     AgentA->>WorkerA: Local Message
     WorkerA->>HostServicer: Forward Message
     HostServicer->>WorkerB: Route Message

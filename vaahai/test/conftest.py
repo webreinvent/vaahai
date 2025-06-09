@@ -65,11 +65,11 @@ def mock_config_file(temp_file: str) -> str:
     [vaahai]
     verbose = false
     quiet = false
-    
+
     [llm]
     provider = "openai"
     model = "gpt-4"
-    
+
     [agents]
     default_agent = "assistant"
     """

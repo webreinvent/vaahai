@@ -2,9 +2,9 @@
 
 ## Product Requirements Document - Non-Functional Requirements
 
-**Version:** 1.0.0  
-**Date:** June 1, 2025  
-**Status:** Draft  
+**Version:** 1.0.0
+**Date:** June 1, 2025
+**Status:** Draft
 
 ## Table of Contents
 

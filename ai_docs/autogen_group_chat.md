@@ -142,7 +142,7 @@ code_reviewer = AssistantAgent(
     2. Identify potential bugs or edge cases not handled
     3. Suggest optimizations for performance or readability
     4. Evaluate security considerations
-    
+
     Provide specific, actionable feedback that would improve the code.
     """,
     model_client=model_client
@@ -193,23 +193,23 @@ Custom termination conditions can be implemented by defining a termination funct
 def custom_termination(messages, max_rounds=10):
     """
     Custom termination condition that checks for task completion or max rounds.
-    
+
     Args:
         messages: List of messages in the conversation
         max_rounds: Maximum number of rounds before termination
-        
+
     Returns:
         Boolean indicating whether the conversation should terminate
     """
     # Check if max rounds reached
     if len(messages) >= max_rounds * 2:  # *2 because each round has at least 2 messages
         return True
-    
+
     # Check for task completion indicator
     last_message = messages[-1]["content"] if messages else ""
     if "TASK COMPLETED" in last_message:
         return True
-    
+
     return False
 
 # Using the custom termination condition
@@ -260,16 +260,16 @@ Custom agent selection logic can be implemented for specialized conversation pat
 def custom_agent_selector(group_chat, messages):
     """
     Custom agent selection based on message content.
-    
+
     Args:
         group_chat: The group chat instance
         messages: List of messages in the conversation
-        
+
     Returns:
         The next agent to speak
     """
     last_message = messages[-1]["content"] if messages else ""
-    
+
     if "code" in last_message.lower():
         return next(agent for agent in group_chat.agents if agent.name == "code_reviewer")
     elif "security" in last_message.lower():
@@ -286,11 +286,11 @@ Messages can be filtered or transformed before being sent to agents:
 def message_filter(message, agent):
     """
     Filter or transform messages before sending to agents.
-    
+
     Args:
         message: The message to filter
         agent: The agent receiving the message
-        
+
     Returns:
         The filtered message or None to skip
     """
@@ -298,7 +298,7 @@ def message_filter(message, agent):
     if "technical" in agent.metadata and not agent.metadata["technical"]:
         if "code" in message["content"] or "API" in message["content"]:
             return None
-    
+
     return message
 ```
 

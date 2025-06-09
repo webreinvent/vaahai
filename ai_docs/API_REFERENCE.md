@@ -63,7 +63,7 @@ from vaahai.agents.base import VaahaiAgent
 class CustomAgent(VaahaiAgent):
     def __init__(self, config, **kwargs):
         super().__init__(config, **kwargs)
-        
+
     def run(self, *args, **kwargs):
         # Agent-specific implementation
         pass

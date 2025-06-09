@@ -22,7 +22,7 @@ class TestVersion(BaseTest):
         result = self.invoke_cli(["version", "show"])
         assert result.exit_code == 0
         assert "VaahAI version" in result.stdout
-        
+
         # Get the actual version from metadata
         version = importlib.metadata.version("vaahai")
         assert version in result.stdout
@@ -32,7 +32,7 @@ class TestVersion(BaseTest):
         result = self.invoke_cli(["--version"])
         assert result.exit_code == 0
         assert "VaahAI version" in result.stdout
-        
+
         # Get the actual version from metadata
         version = importlib.metadata.version("vaahai")
         assert version in result.stdout

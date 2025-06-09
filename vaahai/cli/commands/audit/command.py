@@ -5,12 +5,14 @@ This module contains the implementation of the audit command,
 which is used to perform security and compliance audits on codebases.
 """
 
-import typer
 from pathlib import Path
-from typing import Optional, List
+from typing import List, Optional
+
+import typer
 from rich.console import Console
 from rich.panel import Panel
-from vaahai.cli.utils.help import create_typer_app, CustomHelpCommand
+
+from vaahai.cli.utils.help import CustomHelpCommand, create_typer_app
 
 # Create a rich console for formatted output
 console = Console()
@@ -57,18 +59,20 @@ def run(
 ):
     """
     Run a security and compliance audit on the specified codebase.
-    
+
     This command analyzes the code in the specified path for security vulnerabilities
     and compliance issues, providing a detailed report of findings and recommendations.
     """
-    console.print(Panel(
-        f"[bold]Auditing:[/bold] {path}\n"
-        f"[bold]Security checks:[/bold] {'Enabled' if security else 'Disabled'}\n"
-        f"[bold]Compliance standard:[/bold] {compliance or 'None specified'}\n"
-        f"[bold]Exclusions:[/bold] {', '.join(exclude) if exclude else 'None'}",
-        title="Security & Compliance Audit",
-        border_style="red",
-    ))
-    
+    console.print(
+        Panel(
+            f"[bold]Auditing:[/bold] {path}\n"
+            f"[bold]Security checks:[/bold] {'Enabled' if security else 'Disabled'}\n"
+            f"[bold]Compliance standard:[/bold] {compliance or 'None specified'}\n"
+            f"[bold]Exclusions:[/bold] {', '.join(exclude) if exclude else 'None'}",
+            title="Security & Compliance Audit",
+            border_style="red",
+        )
+    )
+
     # Placeholder for actual audit implementation
     console.print("[green]Audit completed successfully![/green]")

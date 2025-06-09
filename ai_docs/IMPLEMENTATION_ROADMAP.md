@@ -324,32 +324,32 @@ graph TD
     P1T003[P1-T003: Code Scanner]
     P1T004[P1-T004: Basic Output Formatting]
     P1T005[P1-T005: Simplified CLI Command Structure]
-    
+
     P2T001[P2-T001: Autogen Framework Setup]
     P2T002[P2-T002: Language Detector Agent]
     P2T003[P2-T003: Framework/CMS Detector Agent]
     P2T004[P2-T004: Docker-based Code Execution]
-    
+
     P3T001[P3-T001: Reviewer Agent]
     P3T002[P3-T002: Auditor Agent]
     P3T003[P3-T003: Reporter Agent]
     P3T004[P3-T004: Applier Agent]
-    
+
     P4T001[P4-T001: Commiter Agent]
     P4T002[P4-T002: Multi-Agent Orchestration]
     P4T003[P4-T003: Advanced Configuration Options]
     P4T004[P4-T004: Local LLM Integration]
-    
+
     P1T001 --> P1T002
     P1T001 --> P1T003
     P1T001 --> P1T004
     P1T001 --> P1T005
-    
+
     P1T002 --> P2T001
     P1T002 --> P2T004
-    
+
     P1T003 --> P2T002
-    
+
     P2T001 --> P2T002
     P2T001 --> P2T003
     P2T001 --> P3T001
@@ -358,25 +358,25 @@ graph TD
     P2T001 --> P3T004
     P2T001 --> P4T002
     P2T001 --> P4T004
-    
+
     P2T002 --> P2T003
     P2T002 --> P3T001
     P2T002 --> P3T002
-    
+
     P2T003 --> P3T001
     P2T003 --> P3T002
-    
+
     P1T004 --> P3T003
-    
+
     P3T001 --> P3T004
-    
+
     P3T004 --> P4T001
-    
+
     P3T001 --> P4T002
     P3T002 --> P4T002
     P3T003 --> P4T002
     P3T004 --> P4T002
-    
+
     P1T002 --> P4T003
     P4T002 --> P4T003
 ```

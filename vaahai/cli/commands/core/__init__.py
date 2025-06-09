@@ -6,6 +6,7 @@ configuration management and version information.
 """
 
 import typer
+
 from vaahai.cli.commands.config.command import config_app
 from vaahai.cli.commands.version.command import version_app
 from vaahai.cli.utils.help import create_typer_app

@@ -8,7 +8,7 @@ This document provides visual representations of the various conversation patter
 sequenceDiagram
     participant Agent1
     participant Agent2
-    
+
     Agent1->>Agent2: TextMessage (Request)
     Agent2->>Agent2: Process Request
     Agent2-->>Agent1: TextMessage (Response)
@@ -20,7 +20,7 @@ sequenceDiagram
 sequenceDiagram
     participant Agent1
     participant Agent2
-    
+
     Agent1->>Agent2: TextMessage (Request)
     Agent2->>Agent2: Begin Processing
     Agent2-->>Agent1: TextMessage (Chunk 1)
@@ -37,7 +37,7 @@ sequenceDiagram
     participant Human
     participant AssistantAgent
     participant Tool
-    
+
     Human->>AssistantAgent: TextMessage (Task)
     AssistantAgent->>AssistantAgent: Process Task
     AssistantAgent-->>Human: TextMessage (Proposed Action)
@@ -56,7 +56,7 @@ sequenceDiagram
     participant Agent1
     participant Agent2
     participant Agent3
-    
+
     User->>GroupChatManager: TextMessage (Task)
     GroupChatManager->>Agent1: Forward Message
     Agent1->>GroupChatManager: TextMessage (Response)
@@ -78,7 +78,7 @@ sequenceDiagram
     participant Agent1
     participant Agent2
     participant Agent3
-    
+
     User->>SelectorAgent: TextMessage (Task)
     SelectorAgent->>SelectorAgent: Select Next Agent
     SelectorAgent->>Agent2: Forward Message
@@ -99,7 +99,7 @@ sequenceDiagram
     participant User
     participant AssistantAgent
     participant Tool
-    
+
     User->>AssistantAgent: TextMessage (Task)
     AssistantAgent->>AssistantAgent: Process with LLM
     AssistantAgent->>Tool: ToolCallRequestEvent
@@ -117,7 +117,7 @@ sequenceDiagram
     participant AssistantAgent
     participant Tool1
     participant Tool2
-    
+
     User->>AssistantAgent: TextMessage (Task)
     AssistantAgent->>AssistantAgent: Process with LLM
     AssistantAgent->>Tool1: ToolCallRequestEvent
@@ -136,7 +136,7 @@ sequenceDiagram
     participant Agent1
     participant MessageQueue
     participant Agent2
-    
+
     Agent1->>MessageQueue: Send Message
     Agent1->>Agent1: Continue Processing
     MessageQueue->>Agent2: Deliver Message (When Available)
@@ -154,7 +154,7 @@ sequenceDiagram
     participant HostServicer
     participant WorkerB
     participant AgentB
-    
+
     AgentA->>WorkerA: Local Message
     WorkerA->>HostServicer: Remote Message
     HostServicer->>WorkerB: Forward Message
@@ -173,7 +173,7 @@ sequenceDiagram
     participant GroupChatManager
     participant Agent1
     participant Agent2
-    
+
     User->>GroupChatManager: TextMessage (Task)
     GroupChatManager->>Agent1: Forward Message
     Agent1->>GroupChatManager: TextMessage (Response)
@@ -189,7 +189,7 @@ sequenceDiagram
 sequenceDiagram
     participant Human
     participant AssistantAgent
-    
+
     Human->>AssistantAgent: TextMessage (Task)
     AssistantAgent->>AssistantAgent: Process Task
     AssistantAgent-->>Human: TextMessage (Initial Response)
@@ -208,7 +208,7 @@ sequenceDiagram
     participant Agent2
     participant Agent3
     participant Aggregator
-    
+
     Broadcaster->>Agent1: Broadcast Message
     Broadcaster->>Agent2: Broadcast Message
     Broadcaster->>Agent3: Broadcast Message

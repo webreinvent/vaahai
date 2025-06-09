@@ -7,6 +7,7 @@ including the core, project, and dev command groups.
 
 import pytest
 from typer.testing import CliRunner
+
 from vaahai.cli.main import app
 
 runner = CliRunner()
@@ -78,12 +79,12 @@ def test_backward_compatibility():
     result = runner.invoke(app, ["config", "--help"])
     assert result.exit_code == 0
     assert "Manage VaahAI configuration settings" in result.stdout
-    
+
     # Test direct access to review command
     result = runner.invoke(app, ["review", "--help"])
     assert result.exit_code == 0
     assert "review" in result.stdout.lower()
-    
+
     # Test direct access to helloworld command
     result = runner.invoke(app, ["helloworld", "--help"])
     assert result.exit_code == 0

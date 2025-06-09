@@ -295,16 +295,16 @@ graph TD
     vaahai --> detect
     vaahai --> scaffold
     vaahai --> explain
-    
+
     config --> config_init[config init]
     config --> config_show[config show]
     config --> config_set[config set]
     config --> config_get[config get]
     config --> config_reset[config reset]
-    
+
     detect --> detect_language[detect language]
     detect --> detect_framework[detect framework]
-    
+
     review --> apply
     audit --> apply
     apply --> commit

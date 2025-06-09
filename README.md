@@ -45,6 +45,9 @@ poetry shell
 # Install development dependencies
 poetry install --with dev
 
+# Install pre-commit hooks
+pre-commit install
+
 # Run tests
 poetry run pytest
 
@@ -58,7 +61,12 @@ poetry run isort vaahai
 # Lint code
 poetry run flake8 vaahai
 poetry run mypy vaahai
+
+# Run all pre-commit hooks manually
+pre-commit run --all-files
 ```
+
+For more details on development tools, see [Development Tools Documentation](docs/development/development_tools.md).
 
 ### Configuration
 

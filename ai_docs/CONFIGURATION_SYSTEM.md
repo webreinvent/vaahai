@@ -246,7 +246,7 @@ The configuration system supports:
 ```python
 class ConfigManager:
     """Manages VaahAI configuration from all sources."""
-    
+
     def __init__(self):
         """Initialize the configuration manager."""
         self._config = {}
@@ -255,15 +255,15 @@ class ConfigManager:
         self._load_project_config()
         self._load_env_vars()
         self._validate()
-    
+
     def get(self, path, default=None):
         """Get a configuration value by path."""
         # Implementation
-    
+
     def set(self, path, value):
         """Set a configuration value by path."""
         # Implementation
-    
+
     def save(self):
         """Save the current configuration."""
         # Implementation
@@ -294,15 +294,15 @@ CONFIG_SCHEMA = {
 ```python
 class SecureStorage:
     """Handles secure storage of sensitive information."""
-    
+
     def store(self, key, value):
         """Store a value securely."""
         # Implementation using system keyring
-    
+
     def retrieve(self, key):
         """Retrieve a securely stored value."""
         # Implementation using system keyring
-    
+
     def delete(self, key):
         """Delete a securely stored value."""
         # Implementation using system keyring

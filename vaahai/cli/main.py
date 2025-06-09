@@ -5,26 +5,28 @@ This module serves as the entry point for the VaahAI CLI application.
 It defines the main Typer app instance and registers all command groups.
 """
 
-import sys
 import os
+import sys
 from pathlib import Path
-import typer
 from typing import Optional
+
+import typer
 from rich.console import Console
+
+from vaahai.cli.commands.audit.command import audit_app
+from vaahai.cli.commands.config.command import config_app
 
 # Import command groups
 from vaahai.cli.commands.core import core_app
-from vaahai.cli.commands.project import project_app
 from vaahai.cli.commands.dev import dev_app
 
 # Import direct command modules for backward compatibility
 from vaahai.cli.commands.helloworld.command import helloworld_app
-from vaahai.cli.commands.config.command import config_app
+from vaahai.cli.commands.project import project_app
 from vaahai.cli.commands.review.command import review_app
-from vaahai.cli.commands.audit.command import audit_app
 from vaahai.cli.commands.version.command import version_app
-from vaahai.cli.utils.help import create_typer_app
 from vaahai.cli.utils.console import print_error, print_info
+from vaahai.cli.utils.help import create_typer_app
 
 # Create the main Typer app instance with custom help formatting
 app = create_typer_app(
@@ -82,11 +84,11 @@ def callback(
 ):
     """
     VaahAI: A multi AI agent CLI tool using Microsoft Autogen Framework.
-    
+
     VaahAI provides a suite of AI-powered tools for code analysis, review, and auditing.
     It leverages Microsoft's Autogen Framework to create a multi-agent system that can
     understand, analyze, and improve your codebase.
-    
+
     Examples:
         vaahai config init                   # Initialize configuration
         vaahai review run ./my-project       # Review code in a directory
@@ -96,22 +98,23 @@ def callback(
     ctx.ensure_object(dict)
     ctx.obj["verbose"] = verbose
     ctx.obj["quiet"] = quiet
-    
+
     # Show version and exit if --version flag is used
     if version:
         try:
             import importlib.metadata
+
             version_str = importlib.metadata.version("vaahai")
         except importlib.metadata.PackageNotFoundError:
             version_str = "unknown (development mode)"
         console.print(f"VaahAI version: [bold green]{version_str}[/bold green]")
         raise typer.Exit()
-    
+
     # Handle conflicting options
     if verbose and quiet:
         print_error("Cannot use both --verbose and --quiet options together")
         raise typer.Exit(code=1)
-    
+
     # Handle custom config file
     if config_file:
         config_path = Path(config_file)
@@ -121,7 +124,7 @@ def callback(
         ctx.obj["config_file"] = config_path
         if verbose:
             print_info(f"Using custom config file: {config_path}")
-    
+
     # Show help if no command is provided
     if ctx.invoked_subcommand is None:
         ctx.obj["help"] = True

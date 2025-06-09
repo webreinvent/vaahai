@@ -283,7 +283,7 @@ if should_output("important"):
 ```python
 def my_command():
     print_header("My Command", "Does something useful")
-    
+
     try:
         # Command logic
         print_success("Command completed successfully")
@@ -296,19 +296,19 @@ def my_command():
 ```python
 def complex_command():
     print_command_start("complex-command", "Performs a multi-step operation")
-    
+
     # Step 1
     print_step(1, 3, "Preparing data")
     # Step 1 logic
-    
+
     # Step 2
     print_step(2, 3, "Processing data")
     # Step 2 logic
-    
+
     # Step 3
     print_step(3, 3, "Finalizing results")
     # Step 3 logic
-    
+
     print_command_result(True, "Complex command completed successfully")
 ```
 
@@ -317,12 +317,12 @@ def complex_command():
 ```python
 def show_config():
     print_header("Configuration")
-    
+
     # Show key-value pairs
     print_key_value("API Key", "****abcd")
     print_key_value("Model", "gpt-4")
     print_key_value("Debug Mode", "Enabled")
-    
+
     # Show a tree structure
     config_data = {
         "api": {
@@ -343,15 +343,15 @@ def long_running_task():
         # Process first batch
         spinner.update("Processing batch 1/3...")
         # Processing logic
-        
+
         # Process second batch
         spinner.update("Processing batch 2/3...")
         # Processing logic
-        
+
         # Process third batch
         spinner.update("Processing batch 3/3...")
         # Processing logic
-    
+
     print_success("All files processed successfully")
 ```
 
