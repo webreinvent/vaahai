@@ -1,89 +1,64 @@
 # Code Quality Improvement Plan
 
-This document outlines the plan for gradually improving code quality in the VaahAI project using the newly established development tools.
+This document outlines the phased approach to improving code quality in the VaahAI project.
 
-## Current Status
+## Current Code Quality Tools
 
-The project now has the following code quality tools set up:
+We currently use the following code quality tools:
 
-1. **Pre-commit hooks** - Automatically run checks before each commit
-2. **Black** - Code formatting
-3. **isort** - Import sorting
-4. **Flake8** - Linting
+1. **Code formatting** - Black and isort for consistent code style
+2. **Linting** - Flake8 for identifying code issues
+3. **Testing** - pytest for unit and integration tests
 
-However, to allow for a smooth transition, the initial configuration is intentionally lenient. This allows the project to continue development while gradually improving code quality.
+## Phase 1: Basic Code Quality (Completed)
 
-## Phased Approach
+- ✅ Set up Black for code formatting
+- ✅ Set up isort for import sorting
+- ✅ Set up Flake8 for linting
+- ✅ Create basic test structure
+- ✅ Document code quality tools and practices
 
-### Phase 1: Initial Setup (Current)
+## Phase 2: Enhanced Testing (In Progress)
 
-- ✅ Set up pre-commit hooks with basic checks
-- ✅ Configure Black and isort with project standards
-- ✅ Configure Flake8 with lenient settings
-- ✅ Document development tools and workflow
+- ✅ Expand unit test coverage
+- ⏳ Add integration tests for all CLI commands
+- ⏳ Set up test fixtures for common testing scenarios
+- ⏳ Implement test coverage reporting
+- ⏳ Establish minimum coverage requirements
 
-### Phase 2: Gradual Improvement
+## Phase 3: Advanced Code Quality (Planned)
 
-1. **Address Unused Imports**
-   - Systematically remove unused imports (F401 violations)
-   - Update the Flake8 configuration to enforce this rule
+- ⏳ Add type checking with mypy
+- ⏳ Implement security scanning
+- ⏳ Add complexity analysis
+- ⏳ Set up automated dependency updates
+- ⏳ Create custom linting rules for project-specific patterns
 
-2. **Fix Line Length Issues**
-   - Gradually reduce the max line length from 130 to the target of 88
-   - Refactor long lines to improve readability
+## Phase 4: Continuous Improvement (Planned)
 
-3. **Address Other Linting Issues**
-   - Fix bare except statements (E722)
-   - Fix f-string issues (F541)
-   - Fix unused variable issues (F841)
-
-### Phase 3: Strict Enforcement
-
-- Update Flake8 configuration to enforce stricter rules
-- Remove ignore directives as issues are fixed
-- Consider adding additional checks (complexity, docstrings, etc.)
-
-## Implementation Strategy
-
-### For New Code
-
-All new code should follow the target standards:
-- Maximum line length of 88 characters
-- Proper import organization
-- No unused imports or variables
-- Proper exception handling
-
-### For Existing Code
-
-1. **Opportunistic Fixes**
-   - Fix issues in files you're already modifying
-   - Make small, focused changes
-
-2. **Dedicated Clean-up Tasks**
-   - Create specific tasks for addressing categories of issues
-   - Prioritize fixes in core modules
-
-## Configuration Targets
-
-The target configuration for Flake8 is:
-
-```ini
-[flake8]
-max-line-length = 88
-extend-ignore = E203  # Black-compatible
-exclude = .git,__pycache__,build,dist,.venv
-```
-
-## Monitoring Progress
-
-Track code quality improvement over time:
-- Run periodic code quality reports
-- Monitor the number of violations
-- Celebrate progress in reducing technical debt
+- ⏳ Integrate code quality metrics into CI/CD pipeline
+- ⏳ Implement automated code review comments
+- ⏳ Create quality dashboards
+- ⏳ Set up automated refactoring suggestions
+- ⏳ Establish code quality improvement goals and tracking
 
 ## Best Practices
 
-1. **Run pre-commit locally** before pushing changes
-2. **Fix issues incrementally** rather than in large batches
-3. **Document reasons** for any permanent ignores
-4. **Keep configuration files** in sync with project requirements
+1. Run code quality tools locally before pushing changes
+2. Address all code quality issues promptly
+3. Write tests for all new features and bug fixes
+4. Maintain or improve code coverage with each change
+5. Review code quality reports regularly
+
+## Metrics and Goals
+
+- Current test coverage: 64%
+- Target test coverage: 80%
+- Current linting compliance: 95%
+- Target linting compliance: 100%
+- Current type checking coverage: 0%
+- Target type checking coverage: 60%
+
+## Continuous Integration
+
+Code quality checks are run as part of our CI pipeline to ensure that all code meets our quality standards before being merged.

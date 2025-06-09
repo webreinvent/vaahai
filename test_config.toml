@@ -1,0 +1,21 @@
+# Test configuration file for VaahAI
+
+[llm]
+provider = "claude"
+
+[llm.claude]
+model = "claude-3-opus"
+api_key = "test-api-key"
+
+[docker]
+enabled = false
+resource_limits.cpu = 4
+resource_limits.memory = "8G"
+
+[output]
+format = "markdown"
+verbosity = "verbose"
+color = true
+
+[agents]
+default_timeout = 60
