@@ -300,6 +300,7 @@ For more detailed documentation, please refer to:
 - [CLI Documentation](/docs/cli/)
   - [Rich Integration Guide](/docs/cli/rich_integration.md)
   - [Command Groups Structure](/docs/cli/command_groups.md)
+  - [CLI Architecture](/docs/architecture/cli_architecture.md)
 
 ## 🤝 Contributing
 
