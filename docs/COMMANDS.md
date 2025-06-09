@@ -10,6 +10,8 @@ Vaahai commands follow this general structure:
 vaahai [command] [subcommand] [options] [arguments]
 ```
 
+Commands are organized into logical groups for better organization and maintainability. For a detailed explanation of the CLI architecture, command groups, and extension points, see the [CLI Architecture Documentation](/docs/architecture/cli_architecture.md).
+
 ## Global Options
 
 These options can be used with any command:

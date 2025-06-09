@@ -34,14 +34,16 @@ graph TD
 
 ### 1. CLI Interface
 
-The CLI interface is built using Typer and InquirerPy, providing a user-friendly command-line experience with interactive prompts when needed.
+The CLI interface is built using Typer and InquirerPy, providing a user-friendly command-line experience with interactive prompts when needed. The CLI follows a modular architecture with command groups for better organization and maintainability. Detailed documentation is available in [CLI Architecture](/docs/architecture/cli_architecture.md).
 
 **Key Features:**
-- Command registration and routing
-- Help documentation generation
-- Interactive configuration prompts
+- Command registration and routing through a consistent command group structure
+- Rich-formatted help documentation with custom formatting
+- Interactive configuration prompts using InquirerPy
 - Progress indicators for long-running operations
-- Rich terminal output formatting
+- Rich terminal output formatting with consistent styling
+- Extensible command system with well-defined extension points
+- Custom help command implementation for improved user experience
 
 ### 2. Configuration Manager
 
