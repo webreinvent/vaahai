@@ -7,6 +7,7 @@ is working correctly for all CLI commands and subcommands.
 
 import pytest
 from typer.testing import CliRunner
+
 from vaahai.cli.main import app
 from vaahai.cli.utils.help import CustomHelpCommand, CustomHelpGroup, create_typer_app
 
@@ -31,12 +32,12 @@ def test_command_group_help_formatting():
     result = runner.invoke(app, ["core", "--help"])
     assert result.exit_code == 0
     assert "Subcommands" in result.stdout
-    
+
     # Test project command group
     result = runner.invoke(app, ["project", "--help"])
     assert result.exit_code == 0
     assert "Subcommands" in result.stdout
-    
+
     # Test dev command group
     result = runner.invoke(app, ["dev", "--help"])
     assert result.exit_code == 0
@@ -49,17 +50,17 @@ def test_command_help_formatting():
     result = runner.invoke(app, ["config", "--help"])
     assert result.exit_code == 0
     assert "Subcommands" in result.stdout
-    
+
     # Test review command
     result = runner.invoke(app, ["review", "--help"])
     assert result.exit_code == 0
     assert "Subcommands" in result.stdout
-    
+
     # Test audit command
     result = runner.invoke(app, ["audit", "--help"])
     assert result.exit_code == 0
     assert "Subcommands" in result.stdout
-    
+
     # Test version command
     result = runner.invoke(app, ["version", "--help"])
     assert result.exit_code == 0
@@ -72,11 +73,11 @@ def test_subcommand_help_formatting():
     result = runner.invoke(app, ["config", "init", "--help"])
     assert result.exit_code == 0
     assert "Options" in result.stdout
-    
+
     # Test helloworld run command
     result = runner.invoke(app, ["helloworld", "run", "--help"])
     assert result.exit_code == 0
-    
+
     # Test review run command
     result = runner.invoke(app, ["review", "run", "--help"])
     assert result.exit_code == 0

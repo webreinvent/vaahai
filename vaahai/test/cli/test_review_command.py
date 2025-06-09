@@ -5,10 +5,12 @@ This module contains tests to verify that the review command and its subcommands
 function correctly.
 """
 
-import pytest
 import tempfile
 from pathlib import Path
+
+import pytest
 from typer.testing import CliRunner
+
 from vaahai.cli.main import app
 
 runner = CliRunner()
@@ -28,16 +30,8 @@ def test_review_run_command_with_options():
     """Test that the review run command works with various options."""
     with tempfile.TemporaryDirectory() as temp_dir:
         result = runner.invoke(
-            app, 
-            [
-                "review", 
-                "run", 
-                temp_dir, 
-                "--depth", 
-                "thorough", 
-                "--focus", 
-                "security"
-            ]
+            app,
+            ["review", "run", temp_dir, "--depth", "thorough", "--focus", "security"],
         )
         assert result.exit_code == 0
         assert "Code Review" in result.stdout

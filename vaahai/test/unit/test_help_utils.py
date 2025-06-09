@@ -4,16 +4,12 @@ Unit tests for help utilities.
 This module contains tests for the help utility functions.
 """
 
-import typer
-from unittest.mock import patch, MagicMock, ANY
+from unittest.mock import ANY, MagicMock, patch
 
 import pytest
+import typer
 
-from vaahai.cli.utils.help import (
-    format_command_help,
-    show_custom_help,
-    custom_callback,
-)
+from vaahai.cli.utils.help import custom_callback, format_command_help, show_custom_help
 from vaahai.test.utils.base_test import BaseTest
 
 
@@ -30,10 +26,10 @@ class TestHelpUtils(BaseTest):
         mock_ctx.command.name = "test-command"
         mock_ctx.command.params = []
         mock_ctx.command.commands = {}
-        
+
         # Call the function
         format_command_help(mock_ctx)
-        
+
         # Verify console.print was called at least once
         assert mock_print.call_count > 0
 
@@ -48,10 +44,10 @@ class TestHelpUtils(BaseTest):
             "cmd1": MagicMock(help="Command 1 help", name="cmd1"),
             "cmd2": MagicMock(help="Command 2 help", name="cmd2"),
         }
-        
+
         # Call the function
         show_custom_help(mock_ctx)
-        
+
         # Verify console.print was called at least once
         assert mock_print.call_count > 0
 
@@ -60,25 +56,25 @@ class TestHelpUtils(BaseTest):
         # Create a mock context
         mock_ctx = MagicMock()
         mock_ctx.invoked_subcommand = None
-        
+
         # Patch show_custom_help
         with patch("vaahai.cli.utils.help.show_custom_help") as mock_show_help:
             # Call the function
             custom_callback(mock_ctx)
-            
+
             # Verify show_custom_help was called
             mock_show_help.assert_called_once_with(mock_ctx)
-            
+
     def test_custom_callback_with_subcommand(self):
         """Test that custom_callback doesn't call show_custom_help when a subcommand is invoked."""
         # Create a mock context
         mock_ctx = MagicMock()
         mock_ctx.invoked_subcommand = "test-command"
-        
+
         # Patch show_custom_help
         with patch("vaahai.cli.utils.help.show_custom_help") as mock_show_help:
             # Call the function
             custom_callback(mock_ctx)
-            
+
             # Verify show_custom_help was not called
             mock_show_help.assert_not_called()

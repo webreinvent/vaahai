@@ -6,9 +6,11 @@ and provides appropriate error messages.
 """
 
 import os
-import pytest
 from unittest.mock import patch
+
+import pytest
 from typer.testing import CliRunner
+
 from vaahai.cli.main import app, main
 
 runner = CliRunner()

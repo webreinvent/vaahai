@@ -78,23 +78,23 @@ VaahAI executes static analysis tools in a secure environment:
 ```python
 class StaticAnalysisTool:
     """Base class for static analysis tools."""
-    
+
     def __init__(self, config):
         """Initialize with configuration."""
         self.config = config
-    
+
     def analyze(self, path):
         """Analyze code at the specified path."""
         raise NotImplementedError("Tools must implement analyze")
-    
+
     def parse_results(self, output):
         """Parse tool output into structured results."""
         raise NotImplementedError("Tools must implement parse_results")
-    
+
     def get_command(self, path):
         """Get the command to run the tool."""
         raise NotImplementedError("Tools must implement get_command")
-    
+
     def execute(self, path):
         """Execute the tool and return parsed results."""
         command = self.get_command(path)
@@ -112,7 +112,7 @@ class StaticAnalysisTool:
 ```python
 class PylintTool(StaticAnalysisTool):
     """Pylint integration for Python code analysis."""
-    
+
     def get_command(self, path):
         """Get the pylint command for the specified path."""
         return [
@@ -120,7 +120,7 @@ class PylintTool(StaticAnalysisTool):
             "--output-format=json",
             path
         ]
-    
+
     def parse_results(self, stdout, stderr):
         """Parse pylint JSON output into structured results."""
         try:
@@ -141,7 +141,7 @@ class PylintTool(StaticAnalysisTool):
             ]
         except json.JSONDecodeError:
             return []
-    
+
     def _map_severity(self, issue_type):
         """Map pylint issue type to severity."""
         mapping = {
@@ -166,26 +166,26 @@ VaahAI selects appropriate tools based on:
 ```python
 class ToolSelector:
     """Selects appropriate static analysis tools."""
-    
+
     def __init__(self, config):
         """Initialize with configuration."""
         self.config = config
         self.tools = self._load_tools()
-    
+
     def select_tools(self, path, language, focus=None):
         """Select tools for the specified path and language."""
         focus = focus or "all"
-        
+
         # Get all tools for the language
         language_tools = self.tools.get(language, [])
-        
+
         # Filter by focus if specified
         if focus != "all":
             language_tools = [
                 tool for tool in language_tools
                 if focus in tool.focuses
             ]
-        
+
         # Filter by user preferences
         if self.config.get("static_analysis.use_user_preferences", True):
             enabled_tools = self.config.get(f"static_analysis.{language}.tools", [])
@@ -194,9 +194,9 @@ class ToolSelector:
                     tool for tool in language_tools
                     if tool.name in enabled_tools
                 ]
-        
+
         return language_tools
-    
+
     def _load_tools(self):
         """Load available static analysis tools."""
         # Implementation
@@ -209,36 +209,36 @@ Results from static analysis tools are integrated with AI analysis:
 ```python
 class ResultIntegrator:
     """Integrates static analysis results with AI analysis."""
-    
+
     def __init__(self, config):
         """Initialize with configuration."""
         self.config = config
-    
+
     def integrate(self, static_results, ai_results):
         """Integrate static analysis results with AI results."""
         # Deduplicate issues
         unique_issues = self._deduplicate(static_results, ai_results)
-        
+
         # Enhance AI results with static analysis details
         enhanced_results = self._enhance(unique_issues)
-        
+
         # Sort by severity
         sorted_results = sorted(
             enhanced_results,
             key=lambda x: self._severity_value(x["severity"]),
             reverse=True
         )
-        
+
         return sorted_results
-    
+
     def _deduplicate(self, static_results, ai_results):
         """Deduplicate issues from static and AI results."""
         # Implementation
-    
+
     def _enhance(self, issues):
         """Enhance issues with additional context."""
         # Implementation
-    
+
     def _severity_value(self, severity):
         """Get numeric value for severity for sorting."""
         values = {
@@ -258,15 +258,15 @@ VaahAI enhances static analysis results with AI insights:
 ```python
 class AIEnhancer:
     """Enhances static analysis results with AI insights."""
-    
+
     def __init__(self, llm_provider):
         """Initialize with LLM provider."""
         self.llm_provider = llm_provider
-    
+
     def enhance(self, static_results, code_context):
         """Enhance static analysis results with AI insights."""
         enhanced_results = []
-        
+
         for result in static_results:
             # Get code context for the issue
             context = self._get_code_context(
@@ -274,26 +274,26 @@ class AIEnhancer:
                 result["path"],
                 result["line"]
             )
-            
+
             # Generate AI explanation and fix
             explanation, fix = self._generate_explanation_and_fix(
                 result,
                 context
             )
-            
+
             # Add AI insights to result
             enhanced_result = result.copy()
             enhanced_result["ai_explanation"] = explanation
             enhanced_result["suggested_fix"] = fix
-            
+
             enhanced_results.append(enhanced_result)
-        
+
         return enhanced_results
-    
+
     def _get_code_context(self, code_context, path, line):
         """Get code context around the specified line."""
         # Implementation
-    
+
     def _generate_explanation_and_fix(self, result, context):
         """Generate AI explanation and fix for the issue."""
         # Implementation
@@ -306,12 +306,12 @@ Static analysis tools are executed in Docker containers for isolation and consis
 ```python
 class DockerToolExecutor:
     """Executes static analysis tools in Docker containers."""
-    
+
     def __init__(self, config):
         """Initialize with configuration."""
         self.config = config
         self.docker_client = docker.from_env()
-    
+
     def execute(self, tool, path):
         """Execute tool in Docker container."""
         # Create container
@@ -326,18 +326,18 @@ class DockerToolExecutor:
             },
             working_dir="/code"
         )
-        
+
         try:
             # Execute tool command
             exit_code, output = container.exec_run(
                 tool.get_docker_command(),
                 demux=True
             )
-            
+
             # Parse results
             stdout = output[0].decode("utf-8") if output[0] else ""
             stderr = output[1].decode("utf-8") if output[1] else ""
-            
+
             return tool.parse_results(stdout, stderr)
         finally:
             # Cleanup
@@ -399,12 +399,12 @@ VaahAI optimizes static analysis performance:
 ```python
 class ParallelToolExecutor:
     """Executes static analysis tools in parallel."""
-    
+
     def __init__(self, config):
         """Initialize with configuration."""
         self.config = config
         self.max_workers = config.get("static_analysis.max_parallel_tools", 4)
-    
+
     def execute_tools(self, tools, path):
         """Execute tools in parallel and return combined results."""
         with concurrent.futures.ThreadPoolExecutor(max_workers=self.max_workers) as executor:
@@ -413,7 +413,7 @@ class ParallelToolExecutor:
                 executor.submit(tool.execute, path): tool
                 for tool in tools
             }
-            
+
             # Collect results
             all_results = []
             for future in concurrent.futures.as_completed(future_to_tool):
@@ -423,7 +423,7 @@ class ParallelToolExecutor:
                     all_results.extend(results)
                 except Exception as e:
                     logger.error(f"Error executing {tool.name}: {e}")
-            
+
             return all_results
 ```
 
@@ -464,21 +464,21 @@ VaahAI manages static analysis tools:
 ```python
 class ToolManager:
     """Manages static analysis tools."""
-    
+
     def __init__(self, config):
         """Initialize with configuration."""
         self.config = config
-    
+
     def ensure_tools_available(self, tools):
         """Ensure the specified tools are available."""
         for tool in tools:
             if not self._is_tool_available(tool):
                 self._install_tool(tool)
-    
+
     def _is_tool_available(self, tool):
         """Check if tool is available."""
         # Implementation
-    
+
     def _install_tool(self, tool):
         """Install the specified tool."""
         # Implementation

@@ -5,12 +5,14 @@ This module contains the implementation of the review command,
 which is used to perform code reviews on files or directories.
 """
 
-import typer
 from pathlib import Path
 from typing import Optional
+
+import typer
 from rich.console import Console
 from rich.panel import Panel
-from vaahai.cli.utils.help import create_typer_app, CustomHelpCommand
+
+from vaahai.cli.utils.help import CustomHelpCommand, create_typer_app
 
 # Create a rich console for formatted output
 console = Console()
@@ -53,17 +55,19 @@ def run(
 ):
     """
     Run a code review on the specified file or directory.
-    
+
     This command analyzes the code in the specified path and provides
     feedback on code quality, potential bugs, and suggested improvements.
     """
-    console.print(Panel(
-        f"[bold]Reviewing:[/bold] {path}\n"
-        f"[bold]Depth:[/bold] {depth}\n"
-        f"[bold]Focus:[/bold] {focus or 'All areas'}",
-        title="Code Review",
-        border_style="blue",
-    ))
-    
+    console.print(
+        Panel(
+            f"[bold]Reviewing:[/bold] {path}\n"
+            f"[bold]Depth:[/bold] {depth}\n"
+            f"[bold]Focus:[/bold] {focus or 'All areas'}",
+            title="Code Review",
+            border_style="blue",
+        )
+    )
+
     # Placeholder for actual review implementation
     console.print("[green]Review completed successfully![/green]")

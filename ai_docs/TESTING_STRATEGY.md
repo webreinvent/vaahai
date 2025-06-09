@@ -27,14 +27,14 @@ def test_language_detector_python_file(mocker):
     # Arrange
     mock_config = mocker.Mock()
     detector = LanguageDetectorAgent(config=mock_config)
-    
+
     # Mock file content
     mock_open = mocker.patch("builtins.open", mocker.mock_open(read_data="def hello_world(): print('Hello World')"))
     mocker.patch("os.path.exists", return_value=True)
-    
+
     # Act
     result = detector.detect_file("test.py")
-    
+
     # Assert
     assert result["language"] == "python"
     assert result["confidence"] >= 0.9
@@ -62,20 +62,20 @@ def test_review_command_integration(mocker):
     # Arrange
     config = ConfigManager()
     config.set("llm.provider", "mock")
-    
+
     # Mock LLM responses
     mock_llm = mocker.patch("vaahai.llm.MockProvider")
     mock_llm.return_value.generate.return_value = "This code looks good but could use better error handling."
-    
+
     # Create temporary test file
     with tempfile.NamedTemporaryFile(suffix=".py", mode="w+") as temp:
         temp.write("def test(): return 42")
         temp.flush()
-        
+
         # Act
         cmd = ReviewCommand(config=config)
         result = cmd.execute(path=temp.name, output_format="terminal")
-        
+
     # Assert
     assert result.success
     assert "error handling" in result.data["review"]
@@ -105,15 +105,15 @@ from vaahai.__main__ import app
 def test_review_command_e2e():
     # Arrange
     runner = CliRunner()
-    
+
     # Create temporary test file
     with tempfile.NamedTemporaryFile(suffix=".py", mode="w+") as temp:
         temp.write("def test(): return 42")
         temp.flush()
-        
+
         # Act
         result = runner.invoke(app, ["review", temp.name, "--output", "terminal"])
-        
+
     # Assert
     assert result.exit_code == 0
     assert "Review completed" in result.stdout
@@ -134,7 +134,7 @@ class MockLLMProvider:
             "framework_detection": "This appears to be a Django project",
             "code_review": "The code has 3 issues: 1. Missing error handling...",
         }
-    
+
     def generate(self, prompt, context=None):
         # Return appropriate mock response based on prompt content
         if "language" in prompt.lower():
@@ -160,10 +160,10 @@ def test_markdown_formatter_snapshot(snapshot):
             {"severity": "medium", "description": "Function too complex"}
         ]
     }
-    
+
     # Act
     result = formatter.format(data)
-    
+
     # Assert
     snapshot.assert_match(result, "markdown_output.md")
 ```
@@ -183,10 +183,10 @@ For testing components with multiple configurations or inputs, we use parameteri
 def test_language_detection_by_extension(file_extension, expected_language, mocker):
     # Arrange
     detector = LanguageDetectorAgent(config=mocker.Mock())
-    
+
     # Act
     result = detector.detect_file(f"test{file_extension}")
-    
+
     # Assert
     assert result["language"] == expected_language
 ```
@@ -200,7 +200,7 @@ For testing components with complex input spaces, we use property-based testing.
 def test_file_scanner_properties(path, max_size):
     # Arrange
     scanner = FileScanner(max_size_mb=max_size)
-    
+
     # Act & Assert
     try:
         result = scanner.scan(path)

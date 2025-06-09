@@ -7,6 +7,7 @@ and accessible through the main entry point.
 
 import pytest
 from typer.testing import CliRunner
+
 from vaahai.cli.main import app, main
 
 runner = CliRunner()
@@ -89,6 +90,8 @@ def test_conflicting_options():
 
 def test_invalid_config_file():
     """Test that specifying a non-existent config file raises an error."""
-    result = runner.invoke(app, ["--config", "/path/to/nonexistent/config.toml", "config", "init"])
+    result = runner.invoke(
+        app, ["--config", "/path/to/nonexistent/config.toml", "config", "init"]
+    )
     assert result.exit_code == 1
     assert "Config file not found" in result.stdout

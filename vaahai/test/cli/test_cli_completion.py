@@ -6,6 +6,7 @@ This module contains tests to verify that the CLI properly supports shell comple
 
 import pytest
 from typer.testing import CliRunner
+
 from vaahai.cli.main import app, main
 
 runner = CliRunner()
@@ -16,7 +17,10 @@ def test_completion_command_exists():
     result = runner.invoke(app, ["--help"])
     assert result.exit_code == 0
     # Check if completion is mentioned in help text
-    assert any(term in result.stdout.lower() for term in ["completion", "shell", "autocomplete"])
+    assert any(
+        term in result.stdout.lower()
+        for term in ["completion", "shell", "autocomplete"]
+    )
 
 
 def test_shell_completion_invocation():
@@ -27,7 +31,9 @@ def test_shell_completion_invocation():
     # It might exit with code 0 or 2 depending on Typer version, but it shouldn't crash
     assert result.exit_code in [0, 2]
     # The output should contain some completion-related text
-    assert any(term in result.stdout.lower() for term in ["completion", "shell", "bash", "zsh"])
+    assert any(
+        term in result.stdout.lower() for term in ["completion", "shell", "bash", "zsh"]
+    )
 
 
 def test_completion_help():
@@ -36,4 +42,7 @@ def test_completion_help():
     result = runner.invoke(app, ["--help"])
     assert result.exit_code == 0
     # Check for common completion-related terms
-    assert any(term in result.stdout.lower() for term in ["completion", "shell", "autocomplete"])
+    assert any(
+        term in result.stdout.lower()
+        for term in ["completion", "shell", "autocomplete"]
+    )

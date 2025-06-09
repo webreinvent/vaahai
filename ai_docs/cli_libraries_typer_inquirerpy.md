@@ -192,7 +192,7 @@ def setup(name: str = None):
     elif name is None:
         console.print("[red]Error: Project name is required in non-interactive mode[/red]")
         raise typer.Exit(1)
-    
+
     console.print(f"[green]Setting up project: {name}[/green]")
 ```
 

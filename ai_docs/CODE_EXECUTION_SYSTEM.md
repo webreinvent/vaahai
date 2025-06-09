@@ -15,11 +15,11 @@ graph TD
     SafetyCheck -->|Safe| DockerExec[Docker Execution]
     SafetyCheck -->|Unsafe| Rejection[Execution Rejected]
     DockerExec --> Results[Execution Results]
-    
+
     subgraph "Docker Container"
     DockerExec
     end
-    
+
     subgraph "Host System"
     Code
     Analyzer
@@ -148,20 +148,20 @@ The `ExecutionManager` class coordinates code execution:
 ```python
 class ExecutionManager:
     """Manages secure code execution."""
-    
+
     def __init__(self, config):
         """Initialize with configuration."""
         self.config = config
         self.docker_client = docker.from_env()
-    
+
     def execute(self, code, language, timeout=10):
         """Execute code in the specified language."""
         # Perform safety checks
         self._check_safety(code, language)
-        
+
         # Create and configure container
         container = self._create_container(language)
-        
+
         try:
             # Execute code
             container.start()
@@ -169,7 +169,7 @@ class ExecutionManager:
                 self._get_execution_command(code, language),
                 timeout=timeout
             )
-            
+
             # Process result
             return {
                 "exit_code": result.exit_code,
@@ -179,15 +179,15 @@ class ExecutionManager:
         finally:
             # Cleanup
             container.remove(force=True)
-    
+
     def _check_safety(self, code, language):
         """Check if code is safe to execute."""
         # Implementation
-    
+
     def _create_container(self, language):
         """Create a container for the specified language."""
         # Implementation
-    
+
     def _get_execution_command(self, code, language):
         """Get the command to execute code in the specified language."""
         # Implementation
@@ -200,16 +200,16 @@ The `SafetyAnalyzer` class performs static analysis:
 ```python
 class SafetyAnalyzer:
     """Analyzes code for safety concerns."""
-    
+
     def __init__(self, config):
         """Initialize with configuration."""
         self.config = config
         self._load_patterns()
-    
+
     def analyze(self, code, language):
         """Analyze code for safety concerns."""
         concerns = []
-        
+
         # Check for dangerous patterns
         for pattern, description in self._get_patterns(language):
             if re.search(pattern, code):
@@ -218,27 +218,27 @@ class SafetyAnalyzer:
                     "description": description,
                     "severity": "high"
                 })
-        
+
         # Language-specific analysis
         if language == "python":
             concerns.extend(self._analyze_python(code))
         elif language == "javascript":
             concerns.extend(self._analyze_javascript(code))
-        
+
         return concerns
-    
+
     def _load_patterns(self):
         """Load dangerous patterns from configuration."""
         # Implementation
-    
+
     def _get_patterns(self, language):
         """Get dangerous patterns for the specified language."""
         # Implementation
-    
+
     def _analyze_python(self, code):
         """Perform Python-specific safety analysis."""
         # Implementation
-    
+
     def _analyze_javascript(self, code):
         """Perform JavaScript-specific safety analysis."""
         # Implementation
@@ -251,42 +251,42 @@ VaahAI monitors resource usage during execution:
 ```python
 class ResourceMonitor:
     """Monitors resource usage during execution."""
-    
+
     def __init__(self, container, limits):
         """Initialize with container and limits."""
         self.container = container
         self.limits = limits
         self.stats = []
-    
+
     def start(self):
         """Start monitoring resources."""
         self.monitoring = True
         self.thread = threading.Thread(target=self._monitor)
         self.thread.daemon = True
         self.thread.start()
-    
+
     def stop(self):
         """Stop monitoring resources."""
         self.monitoring = False
         self.thread.join()
         return self.stats
-    
+
     def _monitor(self):
         """Monitor resource usage."""
         while self.monitoring:
             try:
                 stats = self.container.stats(stream=False)
                 self.stats.append(stats)
-                
+
                 # Check if limits are exceeded
                 if self._limits_exceeded(stats):
                     self.container.kill()
                     break
-                
+
                 time.sleep(0.1)
             except:
                 break
-    
+
     def _limits_exceeded(self, stats):
         """Check if resource limits are exceeded."""
         # Implementation

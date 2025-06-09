@@ -92,7 +92,11 @@ def create_mock_llm_response(
             }
         ],
         "usage": usage
-        or {"prompt_tokens": 10, "completion_tokens": len(content) // 4, "total_tokens": len(content) // 4 + 10},
+        or {
+            "prompt_tokens": 10,
+            "completion_tokens": len(content) // 4,
+            "total_tokens": len(content) // 4 + 10,
+        },
     }
 
 

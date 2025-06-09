@@ -6,8 +6,9 @@ which is used to test the proper functioning of the VaahAI CLI.
 """
 
 import typer
-from vaahai.cli.utils.console import print_panel, print_success, console
-from vaahai.cli.utils.help import create_typer_app, CustomHelpCommand
+
+from vaahai.cli.utils.console import console, print_panel, print_success
+from vaahai.cli.utils.help import CustomHelpCommand, create_typer_app
 
 # Create the helloworld command group with custom help formatting
 helloworld_app = create_typer_app(

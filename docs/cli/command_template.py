@@ -5,8 +5,9 @@ This template demonstrates how to implement a command with custom help formattin
 """
 
 import typer
-from vaahai.cli.utils.console import print_panel, print_success, console
-from vaahai.cli.utils.help import create_typer_app, CustomHelpCommand
+
+from vaahai.cli.utils.console import console, print_panel, print_success
+from vaahai.cli.utils.help import CustomHelpCommand, create_typer_app
 
 # Create the command group with custom help formatting
 app = create_typer_app(
@@ -27,7 +28,9 @@ def callback():
 @app.command("subcommand", cls=CustomHelpCommand)
 def subcommand(
     arg1: str = typer.Argument(..., help="Description of argument 1"),
-    option1: bool = typer.Option(False, "--option1", "-o", help="Description of option 1"),
+    option1: bool = typer.Option(
+        False, "--option1", "-o", help="Description of option 1"
+    ),
 ):
     """
     Description of the subcommand.

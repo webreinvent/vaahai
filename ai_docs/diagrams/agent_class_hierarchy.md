@@ -12,7 +12,7 @@ classDiagram
         +AgentMetadata metadata
         +handle_message(message, ctx)
     }
-    
+
     class RoutedAgent {
         <<abstract>>
         +AgentId id
@@ -20,20 +20,20 @@ classDiagram
         +handle_message(message, ctx)
         +register_message_handler(handler)
     }
-    
+
     Agent <|-- RoutedAgent
-    
+
     class CustomCoreAgent {
         +handle_my_message_type(message, ctx)
     }
-    
+
     RoutedAgent <|-- CustomCoreAgent
-    
+
     class MessageHandler {
         <<decorator>>
         +__call__(func)
     }
-    
+
     MessageHandler --> RoutedAgent : decorates
 ```
 
@@ -49,36 +49,36 @@ classDiagram
         +run_stream(task) Iterator
         +handle_message(message)
     }
-    
+
     class AssistantAgent {
         +ModelClient model_client
         +List~Tool~ tools
         +String system_message
         +run(task) TaskResult
     }
-    
+
     BaseAgent <|-- AssistantAgent
-    
+
     class UserProxyAgent {
         +Boolean human_input_mode
         +List~Tool~ tools
         +run(task) TaskResult
     }
-    
+
     BaseAgent <|-- UserProxyAgent
-    
+
     class RetrieveUserProxyAgent {
         +RetrievalClient retrieval_client
         +run(task) TaskResult
     }
-    
+
     UserProxyAgent <|-- RetrieveUserProxyAgent
-    
+
     class TeachableAgent {
         +MemoryClient memory_client
         +run(task) TaskResult
     }
-    
+
     BaseAgent <|-- TeachableAgent
 ```
 
@@ -93,22 +93,22 @@ classDiagram
         +start()
         +stop()
     }
-    
+
     class SingleThreadedAgentRuntime {
         +Dict agents
         +register_agent(agent)
         +send_message(message, recipient)
     }
-    
+
     AgentRuntime <|-- SingleThreadedAgentRuntime
-    
+
     class DistributedAgentRuntime {
         +HostServicer host_servicer
         +List~Worker~ workers
         +register_agent(agent)
         +send_message(message, recipient)
     }
-    
+
     AgentRuntime <|-- DistributedAgentRuntime
 ```
 
@@ -122,35 +122,35 @@ classDiagram
         +Dict metadata
         +get_content()
     }
-    
+
     class TextMessage {
         +String content
     }
-    
+
     BaseChatMessage <|-- TextMessage
-    
+
     class MultiModalMessage {
         +List content
     }
-    
+
     BaseChatMessage <|-- MultiModalMessage
-    
+
     class BaseAgentEvent {
         <<abstract>>
         +String source
         +Dict metadata
     }
-    
+
     class ToolCallRequestEvent {
         +List~FunctionCall~ content
     }
-    
+
     BaseAgentEvent <|-- ToolCallRequestEvent
-    
+
     class ToolCallExecutionEvent {
         +List~FunctionExecutionResult~ content
     }
-    
+
     BaseAgentEvent <|-- ToolCallExecutionEvent
 ```
 
@@ -163,28 +163,28 @@ classDiagram
         +TerminationCondition termination_condition
         +run(task) TaskResult
     }
-    
+
     class SelectorGroupChat {
         +List~BaseAgent~ agents
         +BaseAgent selector
         +String selector_prompt
         +run(task) TaskResult
     }
-    
+
     GroupChat <|-- SelectorGroupChat
-    
+
     class TerminationCondition {
         <<interface>>
         +should_terminate(messages) Boolean
     }
-    
+
     class MaxMessageTermination {
         +Integer max_messages
         +should_terminate(messages) Boolean
     }
-    
+
     TerminationCondition <|-- MaxMessageTermination
-    
+
     GroupChat --> TerminationCondition : uses
 ```
 

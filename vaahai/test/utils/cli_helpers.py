@@ -33,7 +33,9 @@ def invoke_cli(
     return runner.invoke(app, args, env=env, catch_exceptions=catch_exceptions)
 
 
-def assert_command_success(result: Result, expected_output: Optional[str] = None) -> None:
+def assert_command_success(
+    result: Result, expected_output: Optional[str] = None
+) -> None:
     """
     Assert that a command executed successfully and optionally check its output.
 
@@ -43,10 +45,14 @@ def assert_command_success(result: Result, expected_output: Optional[str] = None
     """
     assert result.exit_code == 0, f"Command failed with output: {result.stdout}"
     if expected_output:
-        assert expected_output in result.stdout, f"Expected output not found: {expected_output}"
+        assert (
+            expected_output in result.stdout
+        ), f"Expected output not found: {expected_output}"
 
 
-def assert_command_failure(result: Result, expected_error: Optional[str] = None) -> None:
+def assert_command_failure(
+    result: Result, expected_error: Optional[str] = None
+) -> None:
     """
     Assert that a command failed and optionally check its error message.
 
@@ -56,7 +62,9 @@ def assert_command_failure(result: Result, expected_error: Optional[str] = None)
     """
     assert result.exit_code != 0, "Command succeeded but was expected to fail"
     if expected_error:
-        assert expected_error in result.stdout, f"Expected error not found: {expected_error}"
+        assert (
+            expected_error in result.stdout
+        ), f"Expected error not found: {expected_error}"
 
 
 @contextlib.contextmanager

@@ -104,10 +104,10 @@ app = typer.Typer()
 def example():
     """Example command with Rich formatting."""
     print_header("Example Command", "Demonstrating Rich formatting")
-    
+
     # Show a panel with information
     print_panel("This command demonstrates Rich formatting", title="Info")
-    
+
     # Show a table
     columns = ["Name", "Value"]
     rows = [
@@ -115,7 +115,7 @@ def example():
         ["Option 2", "Value 2"],
     ]
     print_table(columns, rows, title="Options")
-    
+
     # Interactive elements (only in TTY)
     try:
         if confirm("Continue with the operation?"):

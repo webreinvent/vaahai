@@ -25,7 +25,10 @@ class BaseTest:
         cls.test_data_dir = Path(__file__).parent.parent / "data"
 
     def invoke_cli(
-        self, args: List[str], env: Optional[Dict[str, str]] = None, catch_exceptions: bool = True
+        self,
+        args: List[str],
+        env: Optional[Dict[str, str]] = None,
+        catch_exceptions: bool = True,
     ) -> Result:
         """
         Invoke the CLI with the given arguments and environment variables.
@@ -40,7 +43,9 @@ class BaseTest:
         """
         return self.runner.invoke(app, args, env=env, catch_exceptions=catch_exceptions)
 
-    def assert_command_success(self, result: Result, expected_output: Optional[str] = None) -> None:
+    def assert_command_success(
+        self, result: Result, expected_output: Optional[str] = None
+    ) -> None:
         """
         Assert that a command executed successfully and optionally check its output.
 
@@ -50,9 +55,13 @@ class BaseTest:
         """
         assert result.exit_code == 0, f"Command failed with output: {result.stdout}"
         if expected_output:
-            assert expected_output in result.stdout, f"Expected output not found: {expected_output}"
+            assert (
+                expected_output in result.stdout
+            ), f"Expected output not found: {expected_output}"
 
-    def assert_command_failure(self, result: Result, expected_error: Optional[str] = None) -> None:
+    def assert_command_failure(
+        self, result: Result, expected_error: Optional[str] = None
+    ) -> None:
         """
         Assert that a command failed and optionally check its error message.
 
@@ -62,7 +71,9 @@ class BaseTest:
         """
         assert result.exit_code != 0, "Command succeeded but was expected to fail"
         if expected_error:
-            assert expected_error in result.stdout, f"Expected error not found: {expected_error}"
+            assert (
+                expected_error in result.stdout
+            ), f"Expected error not found: {expected_error}"
 
     @staticmethod
     def create_temp_file(content: str = "") -> str:

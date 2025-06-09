@@ -54,12 +54,12 @@ classDiagram
         +get_capabilities() List[str]
         +process_message(message) Dict
     }
-    
+
     class IMessageProcessor {
         <<interface>>
         +process(message) Dict
     }
-    
+
     class IGroupChat {
         <<interface>>
         +add_agent(agent)
@@ -68,7 +68,7 @@ classDiagram
         +start_chat(initial_message)
         +end_chat() Dict
     }
-    
+
     class ITool {
         <<interface>>
         +get_name() str
@@ -76,7 +76,7 @@ classDiagram
         +get_parameters() Dict
         +execute(parameters) Any
     }
-    
+
     class BaseAgent {
         -_id: str
         -_name: str
@@ -87,7 +87,7 @@ classDiagram
         #_validate_config() bool
         #_initialize_capabilities()
     }
-    
+
     class AgentDecorator {
         -_agent: IAgent
         +get_id() str
@@ -95,7 +95,7 @@ classDiagram
         +get_capabilities() List[str]
         +process_message(message) Dict
     }
-    
+
     class BaseGroupChat {
         -_name: str
         -_agents: List[IAgent]
@@ -104,29 +104,29 @@ classDiagram
         +remove_agent(agent)
         +get_agents() List
     }
-    
+
     class IAgentAdapter {
         <<interface>>
         +adapt_agent(agent) Any
         +adapt_message_to_external(message) Any
         +adapt_message_from_external(message) Dict
     }
-    
+
     class AutogenAgentAdapter {
         +adapt_agent(agent) Any
         +adapt_message_to_external(message) Any
         +adapt_message_from_external(message) Dict
     }
-    
+
     class AgentFactory {
         +create_agent(agent_type, config) IAgent
         +register_agent_class(name, agent_class)
     }
-    
+
     class ConfigFactory {
         +create_config(config_type, **kwargs) IConfig
     }
-    
+
     IAgent <|-- BaseAgent
     IAgent <|-- AgentDecorator
     AgentDecorator o-- IAgent

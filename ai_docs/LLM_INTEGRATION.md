@@ -43,19 +43,19 @@ VaahAI implements a provider interface that abstracts the differences between LL
 ```python
 class LLMProvider:
     """Base class for LLM providers."""
-    
+
     def __init__(self, config):
         """Initialize with configuration."""
         self.config = config
-    
+
     def generate(self, prompt, options=None):
         """Generate a response to the prompt."""
         raise NotImplementedError("Providers must implement generate")
-    
+
     def generate_stream(self, prompt, options=None):
         """Generate a streaming response to the prompt."""
         raise NotImplementedError("Providers must implement generate_stream")
-    
+
     def validate_connection(self):
         """Validate the connection to the provider."""
         raise NotImplementedError("Providers must implement validate_connection")
@@ -70,12 +70,12 @@ Each provider implements the LLMProvider interface with provider-specific logic:
 ```python
 class OpenAIProvider(LLMProvider):
     """OpenAI LLM provider implementation."""
-    
+
     def __init__(self, config):
         """Initialize with configuration."""
         super().__init__(config)
         self.client = openai.Client(api_key=self._get_api_key())
-    
+
     def generate(self, prompt, options=None):
         """Generate a response using OpenAI."""
         options = options or {}
@@ -86,7 +86,7 @@ class OpenAIProvider(LLMProvider):
             max_tokens=options.get("max_tokens", self.config.get("llm.max_tokens", 2000)),
         )
         return response.choices[0].message.content
-    
+
     def generate_stream(self, prompt, options=None):
         """Generate a streaming response using OpenAI."""
         options = options or {}
@@ -100,7 +100,7 @@ class OpenAIProvider(LLMProvider):
         for chunk in response:
             if chunk.choices[0].delta.content:
                 yield chunk.choices[0].delta.content
-    
+
     def validate_connection(self):
         """Validate the connection to OpenAI."""
         try:
@@ -108,7 +108,7 @@ class OpenAIProvider(LLMProvider):
             return True
         except Exception as e:
             raise ConnectionError(f"Failed to connect to OpenAI: {e}")
-    
+
     def _get_api_key(self):
         """Get the API key from secure storage."""
         # Implementation
@@ -121,12 +121,12 @@ A factory pattern is used to create the appropriate provider based on configurat
 ```python
 class LLMProviderFactory:
     """Factory for creating LLM providers."""
-    
+
     @staticmethod
     def create_provider(config):
         """Create an LLM provider based on configuration."""
         provider_name = config.get("llm.provider", "openai").lower()
-        
+
         if provider_name == "openai":
             return OpenAIProvider(config)
         elif provider_name == "claude":
@@ -146,12 +146,12 @@ VaahAI manages prompts through a template system:
 ```python
 class PromptTemplate:
     """Template for LLM prompts."""
-    
+
     def __init__(self, template_path):
         """Initialize with template path."""
         with open(template_path, "r") as f:
             self.template = f.read()
-    
+
     def format(self, **kwargs):
         """Format the template with the provided variables."""
         return self.template.format(**kwargs)
@@ -164,7 +164,7 @@ Responses from LLMs are processed and normalized:
 ```python
 class ResponseProcessor:
     """Process and normalize LLM responses."""
-    
+
     def process_json(self, response_text):
         """Extract and parse JSON from response."""
         try:
@@ -174,16 +174,16 @@ class ResponseProcessor:
                 json_str = json_match.group(1)
             else:
                 json_str = response_text
-            
+
             # Parse JSON
             return json.loads(json_str)
         except json.JSONDecodeError as e:
             raise ValueError(f"Failed to parse JSON response: {e}")
-    
+
     def process_markdown(self, response_text):
         """Process markdown response."""
         # Implementation
-    
+
     def process_text(self, response_text):
         """Process plain text response."""
         # Implementation
@@ -230,18 +230,18 @@ def with_retry(func):
     def wrapper(*args, **kwargs):
         max_retries = 3
         retry_delay = 1
-        
+
         for attempt in range(max_retries):
             try:
                 return func(*args, **kwargs)
             except (ConnectionError, TimeoutError) as e:
                 if attempt == max_retries - 1:
                     raise
-                
+
                 logger.warning(f"Attempt {attempt + 1} failed: {e}. Retrying in {retry_delay}s...")
                 time.sleep(retry_delay)
                 retry_delay *= 2
-    
+
     return wrapper
 ```
 
@@ -252,27 +252,27 @@ To respect API rate limits, VaahAI implements rate limiting:
 ```python
 class RateLimiter:
     """Rate limiter for API calls."""
-    
+
     def __init__(self, calls_per_minute):
         """Initialize with calls per minute."""
         self.calls_per_minute = calls_per_minute
         self.call_times = collections.deque()
-    
+
     def wait_if_needed(self):
         """Wait if rate limit would be exceeded."""
         now = time.time()
-        
+
         # Remove old calls
         while self.call_times and now - self.call_times[0] > 60:
             self.call_times.popleft()
-        
+
         # Check if rate limit would be exceeded
         if len(self.call_times) >= self.calls_per_minute:
             # Wait until oldest call is more than 60 seconds ago
             sleep_time = 60 - (now - self.call_times[0])
             if sleep_time > 0:
                 time.sleep(sleep_time)
-        
+
         # Record this call
         self.call_times.append(time.time())
 ```
@@ -284,22 +284,22 @@ To optimize token usage and costs, VaahAI implements token counting:
 ```python
 class TokenCounter:
     """Count tokens for LLM requests."""
-    
+
     def __init__(self, model):
         """Initialize with model."""
         self.model = model
         self.encoding = tiktoken.encoding_for_model(model)
-    
+
     def count_tokens(self, text):
         """Count tokens in text."""
         return len(self.encoding.encode(text))
-    
+
     def truncate_to_tokens(self, text, max_tokens):
         """Truncate text to fit within max_tokens."""
         tokens = self.encoding.encode(text)
         if len(tokens) <= max_tokens:
             return text
-        
+
         truncated_tokens = tokens[:max_tokens]
         return self.encoding.decode(truncated_tokens)
 ```
@@ -312,11 +312,11 @@ For responsive user experience, VaahAI supports streaming responses:
 def process_streaming_response(stream, callback):
     """Process a streaming response with callback."""
     full_response = ""
-    
+
     for chunk in stream:
         full_response += chunk
         callback(chunk, full_response)
-    
+
     return full_response
 ```
 
@@ -327,35 +327,35 @@ To improve performance and reduce API costs, VaahAI implements response caching:
 ```python
 class ResponseCache:
     """Cache for LLM responses."""
-    
+
     def __init__(self, cache_dir=None, ttl=3600):
         """Initialize with cache directory and TTL."""
         self.cache_dir = cache_dir or os.path.join(os.path.expanduser("~"), ".vaahai", "cache")
         self.ttl = ttl
         os.makedirs(self.cache_dir, exist_ok=True)
-    
+
     def get(self, key):
         """Get cached response for key."""
         cache_file = self._get_cache_file(key)
-        
+
         if not os.path.exists(cache_file):
             return None
-        
+
         # Check if cache is expired
         if time.time() - os.path.getmtime(cache_file) > self.ttl:
             os.remove(cache_file)
             return None
-        
+
         with open(cache_file, "r") as f:
             return f.read()
-    
+
     def set(self, key, value):
         """Set cached response for key."""
         cache_file = self._get_cache_file(key)
-        
+
         with open(cache_file, "w") as f:
             f.write(value)
-    
+
     def _get_cache_file(self, key):
         """Get cache file path for key."""
         key_hash = hashlib.md5(key.encode()).hexdigest()

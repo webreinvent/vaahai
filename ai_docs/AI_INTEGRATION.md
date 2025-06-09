@@ -19,7 +19,7 @@ Microsoft's Autogen Framework provides a foundation for building multi-agent sys
 graph TD
     User[User] --> CLI[CLI Interface]
     CLI --> Orchestrator[Agent Orchestrator]
-    
+
     Orchestrator --> LanguageDetector[Language Detector Agent]
     Orchestrator --> FrameworkDetector[Framework Detector Agent]
     Orchestrator --> Reviewer[Reviewer Agent]
@@ -27,19 +27,19 @@ graph TD
     Orchestrator --> Reporter[Reporter Agent]
     Orchestrator --> Applier[Applier Agent]
     Orchestrator --> Commiter[Commiter Agent]
-    
+
     LanguageDetector --> Reviewer
     LanguageDetector --> Auditor
-    
+
     FrameworkDetector --> Reviewer
     FrameworkDetector --> Auditor
-    
+
     Reviewer --> Reporter
     Auditor --> Reporter
-    
+
     Reporter --> Applier
     Applier --> Commiter
-    
+
     subgraph "Autogen Multi-Agent System"
         Orchestrator
         LanguageDetector
@@ -66,16 +66,16 @@ import autogen
 class LanguageDetectorAgent(VaahaiAgent):
     def __init__(self, config, **kwargs):
         super().__init__(config, **kwargs)
-        
+
         # Create Autogen assistant agent
         self.assistant = autogen.AssistantAgent(
             name="language_detector",
-            system_message="""You are a language detection expert. 
-            Your task is to identify programming languages, estimate versions, 
+            system_message="""You are a language detection expert.
+            Your task is to identify programming languages, estimate versions,
             and detect language features in code files.""",
             llm_config=self._get_llm_config()
         )
-        
+
         # Create user proxy for executing code
         self.user_proxy = autogen.UserProxyAgent(
             name="language_detector_proxy",
@@ -83,12 +83,12 @@ class LanguageDetectorAgent(VaahaiAgent):
             max_consecutive_auto_reply=10,
             code_execution_config={"work_dir": "workspace"}
         )
-    
+
     def detect_file(self, file_path):
         """Detect language in a single file"""
         # Implementation using Autogen agents
         pass
-        
+
     def detect_directory(self, dir_path):
         """Detect languages in a directory"""
         # Implementation using Autogen agents
@@ -107,16 +107,16 @@ import autogen
 class FrameworkDetectorAgent(VaahaiAgent):
     def __init__(self, config, **kwargs):
         super().__init__(config, **kwargs)
-        
+
         # Create Autogen assistant agent
         self.assistant = autogen.AssistantAgent(
             name="framework_detector",
-            system_message="""You are a framework detection expert. 
-            Your task is to identify frameworks, libraries, and architectural 
+            system_message="""You are a framework detection expert.
+            Your task is to identify frameworks, libraries, and architectural
             patterns used in code projects.""",
             llm_config=self._get_llm_config()
         )
-        
+
         # Create user proxy for executing code
         self.user_proxy = autogen.UserProxyAgent(
             name="framework_detector_proxy",
@@ -124,7 +124,7 @@ class FrameworkDetectorAgent(VaahaiAgent):
             max_consecutive_auto_reply=10,
             code_execution_config={"work_dir": "workspace"}
         )
-    
+
     def detect(self, path):
         """Detect frameworks in a file or directory"""
         # Implementation using Autogen agents
@@ -143,16 +143,16 @@ import autogen
 class ReviewerAgent(VaahaiAgent):
     def __init__(self, config, **kwargs):
         super().__init__(config, **kwargs)
-        
+
         # Create Autogen assistant agent
         self.assistant = autogen.AssistantAgent(
             name="code_reviewer",
-            system_message="""You are a code review expert. 
-            Your task is to review code for quality issues, adherence to best practices, 
+            system_message="""You are a code review expert.
+            Your task is to review code for quality issues, adherence to best practices,
             potential bugs, and suggest improvements.""",
             llm_config=self._get_llm_config()
         )
-        
+
         # Create user proxy for executing code
         self.user_proxy = autogen.UserProxyAgent(
             name="reviewer_proxy",
@@ -160,7 +160,7 @@ class ReviewerAgent(VaahaiAgent):
             max_consecutive_auto_reply=10,
             code_execution_config={"work_dir": "workspace"}
         )
-    
+
     def review(self, path, focus="all", depth="standard"):
         """Review code in a file or directory"""
         # Implementation using Autogen agents
@@ -179,16 +179,16 @@ import autogen
 class AuditorAgent(VaahaiAgent):
     def __init__(self, config, **kwargs):
         super().__init__(config, **kwargs)
-        
+
         # Create Autogen assistant agent
         self.assistant = autogen.AssistantAgent(
             name="code_auditor",
-            system_message="""You are a code audit expert. 
-            Your task is to audit code for security vulnerabilities, compliance issues, 
+            system_message="""You are a code audit expert.
+            Your task is to audit code for security vulnerabilities, compliance issues,
             performance bottlenecks, and architectural flaws.""",
             llm_config=self._get_llm_config()
         )
-        
+
         # Create user proxy for executing code
         self.user_proxy = autogen.UserProxyAgent(
             name="auditor_proxy",
@@ -196,7 +196,7 @@ class AuditorAgent(VaahaiAgent):
             max_consecutive_auto_reply=10,
             code_execution_config={"work_dir": "workspace"}
         )
-    
+
     def audit(self, path, focus=None, standards=None):
         """Audit code in a file or directory"""
         # Implementation using Autogen agents
@@ -215,16 +215,16 @@ import autogen
 class ReporterAgent(VaahaiAgent):
     def __init__(self, config, **kwargs):
         super().__init__(config, **kwargs)
-        
+
         # Create Autogen assistant agent
         self.assistant = autogen.AssistantAgent(
             name="reporter",
-            system_message="""You are a reporting expert. 
-            Your task is to format and present code analysis findings in a clear, 
+            system_message="""You are a reporting expert.
+            Your task is to format and present code analysis findings in a clear,
             organized, and actionable manner.""",
             llm_config=self._get_llm_config()
         )
-        
+
         # Create user proxy for executing code
         self.user_proxy = autogen.UserProxyAgent(
             name="reporter_proxy",
@@ -232,7 +232,7 @@ class ReporterAgent(VaahaiAgent):
             max_consecutive_auto_reply=10,
             code_execution_config={"work_dir": "workspace"}
         )
-    
+
     def generate(self, data, format="terminal"):
         """Generate a report from analysis data"""
         # Implementation using Autogen agents
@@ -249,13 +249,13 @@ import autogen
 
 def create_review_group_chat(config, path):
     """Create a group chat for code review"""
-    
+
     # Create agents
     language_detector = AgentFactory.create("language_detector", config)
     framework_detector = AgentFactory.create("framework_detector", config)
     reviewer = AgentFactory.create("reviewer", config)
     reporter = AgentFactory.create("reporter", config)
-    
+
     # Create group chat
     group_chat = autogen.GroupChat(
         agents=[
@@ -267,10 +267,10 @@ def create_review_group_chat(config, path):
         messages=[],
         max_round=10
     )
-    
+
     # Create group chat manager
     manager = autogen.GroupChatManager(group_chat=group_chat)
-    
+
     return manager
 ```
 
@@ -294,7 +294,7 @@ A typical conversation flow between agents might look like this:
 def _get_llm_config(self):
     """Get LLM configuration based on user settings"""
     provider = self.config.get("llm.provider", "openai")
-    
+
     if provider == "openai":
         return {
             "config_list": [{
@@ -354,11 +354,11 @@ class DockerExecutor:
     def __init__(self, config):
         self.config = config
         self.client = docker.from_env()
-    
+
     def execute(self, code, language):
         """Execute code in a Docker container"""
         container_image = self._get_container_image(language)
-        
+
         # Create container with resource limits
         container = self.client.containers.run(
             container_image,
@@ -369,7 +369,7 @@ class DockerExecutor:
             network_mode="none",  # No network access
             remove=True
         )
-        
+
         # Get output with timeout
         try:
             output = container.logs(stdout=True, stderr=True, timeout=10)
