@@ -40,11 +40,32 @@ Manage Vaahai configuration.
 | `get` | Get a configuration value |
 | `reset` | Reset configuration to defaults |
 
+#### `config init` Options
+
+| Option | Description | Default |
+|--------|-------------|---------|
+| `--non-interactive` | Run in non-interactive mode | False |
+| `--skip-api-keys` | Skip API key configuration | False |
+| `--skip-docker` | Skip Docker configuration | False |
+| `--force` | Overwrite existing configuration | False |
+| `--config-file PATH` | Specify configuration file path | ~/.vaahai/config.toml |
+
 #### Examples
 
 ```bash
-# Initialize configuration
+# Initialize configuration interactively
 vaahai config init
+
+# Initialize configuration non-interactively with environment variables
+export VAAHAI_OPENAI_API_KEY=sk-...
+export VAAHAI_DEFAULT_PROVIDER=openai
+vaahai config init --non-interactive
+
+# Update only LLM configuration, keeping other settings
+vaahai config init --skip-docker
+
+# Force configuration reset
+vaahai config init --force
 
 # Show current configuration
 vaahai config show
@@ -336,4 +357,3 @@ export VAAHAI_OPENAI_API_KEY=your-api-key-here
 
 # Set model
 export VAAHAI_OPENAI_MODEL=gpt-4
-```
