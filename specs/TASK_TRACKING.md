@@ -33,7 +33,14 @@ This document tracks the tasks for the VaahAI project, organized by priority and
 
 | Task ID | Description | Status | Dependencies | Notes |
 |---------|-------------|--------|--------------|-------|
-| [P1-T16] | Implement configuration management | 🔴 | [P1-T5] | Create configuration system for API keys, models, and preferences |
+| [P1-T16] | Implement configuration management | 🔴 | [P1-T5] | Create configuration file structure and loading/saving mechanisms |
+| [P1-T17] | Define configuration schema | 🔴 | [P1-T16] | Define TOML schema for all configuration options with validation |
+| [P1-T18] | Implement LLM provider configuration | 🔴 | [P1-T17] | Support for OpenAI, Claude, Junie, and Ollama with API keys |
+| [P1-T19] | Implement model selection | 🔴 | [P1-T18] | Allow selection and validation of models for each provider |
+| [P1-T20] | Implement Docker configuration | 🔴 | [P1-T17] | Configure Docker usage, image selection, and resource limits |
+| [P1-T21] | Create interactive config command | 🔴 | [P1-T18], [P1-T19], [P1-T20] | Implement vaahai config init with InquirerPy prompts |
+| [P1-T22] | Implement configuration overrides | 🔴 | [P1-T16] | Support for environment variables and command-line overrides |
+| [P1-T23] | Create configuration utilities | 🔴 | [P1-T16] | Helper functions for accessing and validating configuration |
 
 ## Completed Tasks
 

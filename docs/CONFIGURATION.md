@@ -8,26 +8,55 @@ Vaahai uses a layered configuration system with the following precedence (highes
 
 1. Command line arguments
 2. Environment variables
-3. Project-specific configuration file (`.vaahai.toml` in the current directory)
-4. User configuration file (`.vaahai.toml` in the user's home directory)
+3. Project-specific configuration file (`.vaahai/config.toml` in the current directory)
+4. User configuration file (`~/.vaahai/config.toml` in the user's home directory)
 5. Default values
 
-## Configuration File Format
+## Initial Configuration
 
-Vaahai uses TOML (Tom's Obvious, Minimal Language) for configuration files. The configuration file is typically located at:
-
-- `~/.vaahai.toml` (user-level configuration)
-- `./.vaahai.toml` (project-level configuration)
-
-## Creating or Updating Configuration
-
-The easiest way to create or update your configuration is to use the configuration wizard:
+The easiest way to configure Vaahai is to use the interactive configuration wizard:
 
 ```bash
 vaahai config init
 ```
 
-This interactive wizard will guide you through setting up your configuration.
+This command will guide you through the configuration process, asking for:
+
+1. **LLM Provider Selection**: Choose between OpenAI, Claude, Junie, or local LLMs via Ollama
+2. **API Keys**: Securely store API keys for the selected providers
+3. **Model Selection**: Choose default models for each provider
+4. **Docker Configuration**: Configure Docker usage for code execution
+5. **Output Preferences**: Set default output formats and verbosity
+
+### Non-Interactive Configuration
+
+You can also configure Vaahai non-interactively using environment variables:
+
+```bash
+export VAAHAI_OPENAI_API_KEY=sk-...
+export VAAHAI_DEFAULT_PROVIDER=openai
+export VAAHAI_OPENAI_MODEL=gpt-4
+vaahai config init --non-interactive
+```
+
+### Configuration Options
+
+The `config init` command supports several options:
+
+| Option | Description | Default |
+|--------|-------------|---------|
+| `--non-interactive` | Run in non-interactive mode | False |
+| `--skip-api-keys` | Skip API key configuration | False |
+| `--skip-docker` | Skip Docker configuration | False |
+| `--force` | Overwrite existing configuration | False |
+| `--config-file PATH` | Specify configuration file path | ~/.vaahai/config.toml |
+
+## Configuration File Format
+
+Vaahai uses TOML (Tom's Obvious, Minimal Language) for configuration files. The configuration file is typically located at:
+
+- `~/.vaahai/config.toml` (user-level configuration)
+- `./.vaahai/config.toml` (project-level configuration)
 
 ## Configuration Sections
 
@@ -201,7 +230,7 @@ You can create a project-specific configuration file that will override the user
 vaahai config init --project
 ```
 
-This will create a `.vaahai.toml` file in the current directory.
+This will create a `.vaahai/config.toml` file in the current directory.
 
 ## Configuration Examples
 

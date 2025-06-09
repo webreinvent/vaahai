@@ -57,6 +57,35 @@ The Configuration Manager handles all configuration aspects of VaahAI, using a l
 - Configuration validation and migration
 - Secure API key storage
 
+**Configuration Structure:**
+- `llm`: LLM provider settings
+  - `provider`: Default provider (openai, claude, junie, ollama)
+  - `openai`: OpenAI-specific settings
+  - `claude`: Claude-specific settings
+  - `junie`: Junie-specific settings
+  - `ollama`: Ollama-specific settings
+- `docker`: Docker execution settings
+  - `enabled`: Whether to use Docker for code execution
+  - `image`: Docker image to use
+  - `resource_limits`: CPU/memory constraints
+- `output`: Output formatting preferences
+  - `format`: Default output format (terminal, markdown, html)
+  - `verbosity`: Default verbosity level
+- `agents`: Agent configuration
+  - `enabled`: List of enabled agents
+  - `timeout`: Default timeout for agent operations
+
+**Configuration Commands:**
+- `vaahai config init`: Interactive setup wizard
+  - Guides users through initial configuration
+  - Securely stores API keys
+  - Sets default LLM provider and models
+  - Configures Docker preferences
+  - Creates global configuration file
+- `vaahai config show`: Displays current configuration
+- `vaahai config set`: Updates specific configuration values
+- `vaahai config validate`: Validates configuration integrity
+
 ### 3. Agent Factory
 
 The Agent Factory is responsible for creating and configuring Autogen agents based on the task requirements.
