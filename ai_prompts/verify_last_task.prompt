@@ -39,7 +39,6 @@ Follow this complete workflow for task management and implementation:
 - Add a detailed description of the changes made
 - Reference any related issues or tasks
 - Request appropriate reviewers if applicable
-- Add relevant labels and milestones
 
 ### Step 5. develop contains all changes
 - Ensure the `develop` branch contains all changes from previous tasks

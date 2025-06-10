@@ -22,6 +22,7 @@ from vaahai.cli.commands.dev import dev_app
 
 # Import direct command modules for backward compatibility
 from vaahai.cli.commands.helloworld.command import helloworld_app
+from vaahai.cli.commands.model.command import model_app
 from vaahai.cli.commands.project import project_app
 from vaahai.cli.commands.review.command import review_app
 from vaahai.cli.commands.version.command import version_app
@@ -51,6 +52,7 @@ app.add_typer(config_app, name="config")
 app.add_typer(review_app, name="review")
 app.add_typer(audit_app, name="audit")
 app.add_typer(version_app, name="version")
+app.add_typer(model_app, name="model")
 
 
 @app.callback(invoke_without_command=True)

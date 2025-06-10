@@ -25,6 +25,16 @@ from vaahai.config.llm_utils import (
     validate_api_key,
     get_api_key_from_env,
     get_provider_config_path,
+    get_model_info,
+    get_model_capabilities,
+    get_model_context_length,
+    get_model_description,
+    filter_models_by_capability,
+    filter_models_by_capabilities,
+    filter_models_by_context_length,
+    get_recommended_model,
+    get_all_capabilities,
+    get_providers_with_capability,
 )
 from vaahai.config.utils import (
     get_user_config_dir,
@@ -418,3 +428,192 @@ class ConfigManager:
             
         config_path = f"{get_provider_config_path(provider)}.model"
         self.set(config_path, model)
+    
+    def get_model_info(self, model: Optional[str] = None, provider: Optional[str] = None) -> Dict[str, Any]:
+        """
+        Get detailed information about a model.
+        
+        Args:
+            model (Optional[str]): Model name, or None for current model
+            provider (Optional[str]): Provider name, or None for current provider
+            
+        Returns:
+            Dict[str, Any]: Dictionary with model information
+            
+        Raises:
+            ValueError: If provider or model is not supported
+        """
+        if provider is None:
+            provider = self.get_current_provider()
+            
+        if model is None:
+            model = self.get_model(provider)
+            
+        name, capabilities, context_length, description = get_model_info(provider, model)
+        
+        return {
+            "name": name,
+            "provider": provider,
+            "capabilities": capabilities,
+            "context_length": context_length,
+            "description": description
+        }
+    
+    def get_model_capabilities(self, model: Optional[str] = None, provider: Optional[str] = None) -> List[str]:
+        """
+        Get capabilities of a model.
+        
+        Args:
+            model (Optional[str]): Model name, or None for current model
+            provider (Optional[str]): Provider name, or None for current provider
+            
+        Returns:
+            List[str]: List of capability names
+            
+        Raises:
+            ValueError: If provider or model is not supported
+        """
+        if provider is None:
+            provider = self.get_current_provider()
+            
+        if model is None:
+            model = self.get_model(provider)
+            
+        return get_model_capabilities(provider, model)
+    
+    def get_model_context_length(self, model: Optional[str] = None, provider: Optional[str] = None) -> int:
+        """
+        Get the maximum context length of a model.
+        
+        Args:
+            model (Optional[str]): Model name, or None for current model
+            provider (Optional[str]): Provider name, or None for current provider
+            
+        Returns:
+            int: Maximum context length in tokens
+            
+        Raises:
+            ValueError: If provider or model is not supported
+        """
+        if provider is None:
+            provider = self.get_current_provider()
+            
+        if model is None:
+            model = self.get_model(provider)
+            
+        return get_model_context_length(provider, model)
+    
+    def get_model_description(self, model: Optional[str] = None, provider: Optional[str] = None) -> str:
+        """
+        Get the description of a model.
+        
+        Args:
+            model (Optional[str]): Model name, or None for current model
+            provider (Optional[str]): Provider name, or None for current provider
+            
+        Returns:
+            str: Model description
+            
+        Raises:
+            ValueError: If provider or model is not supported
+        """
+        if provider is None:
+            provider = self.get_current_provider()
+            
+        if model is None:
+            model = self.get_model(provider)
+            
+        return get_model_description(provider, model)
+    
+    def filter_models_by_capability(self, capability: str, provider: Optional[str] = None) -> List[str]:
+        """
+        Filter models by a specific capability.
+        
+        Args:
+            capability (str): Capability to filter by
+            provider (Optional[str]): Provider name, or None for current provider
+            
+        Returns:
+            List[str]: List of model names with the specified capability
+            
+        Raises:
+            ValueError: If provider is not supported
+        """
+        if provider is None:
+            provider = self.get_current_provider()
+            
+        return filter_models_by_capability(provider, capability)
+    
+    def filter_models_by_capabilities(self, capabilities: List[str], provider: Optional[str] = None) -> List[str]:
+        """
+        Filter models by multiple capabilities (model must have ALL capabilities).
+        
+        Args:
+            capabilities (List[str]): List of capabilities to filter by
+            provider (Optional[str]): Provider name, or None for current provider
+            
+        Returns:
+            List[str]: List of model names with all specified capabilities
+            
+        Raises:
+            ValueError: If provider is not supported
+        """
+        if provider is None:
+            provider = self.get_current_provider()
+            
+        return filter_models_by_capabilities(provider, capabilities)
+    
+    def filter_models_by_context_length(self, min_length: int, provider: Optional[str] = None) -> List[str]:
+        """
+        Filter models by minimum context length.
+        
+        Args:
+            min_length (int): Minimum context length in tokens
+            provider (Optional[str]): Provider name, or None for current provider
+            
+        Returns:
+            List[str]: List of model names with at least the specified context length
+            
+        Raises:
+            ValueError: If provider is not supported
+        """
+        if provider is None:
+            provider = self.get_current_provider()
+            
+        return filter_models_by_context_length(provider, min_length)
+    
+    def get_recommended_model(self, capabilities: Optional[List[str]] = None, provider: Optional[str] = None) -> str:
+        """
+        Get the recommended model for a provider based on capabilities.
+        
+        Args:
+            capabilities (Optional[List[str]]): List of required capabilities
+            provider (Optional[str]): Provider name, or None for current provider
+            
+        Returns:
+            str: Recommended model name
+            
+        Raises:
+            ValueError: If provider is not supported or no model with the required capabilities exists
+        """
+        if provider is None:
+            provider = self.get_current_provider()
+            
+        return get_recommended_model(provider, capabilities)
+    
+    def set_recommended_model(self, capabilities: List[str], provider: Optional[str] = None) -> None:
+        """
+        Set the recommended model for a provider based on capabilities.
+        
+        Args:
+            capabilities (List[str]): List of required capabilities
+            provider (Optional[str]): Provider name, or None for current provider
+            
+        Raises:
+            ValueError: If provider is not supported or no model with the required capabilities exists
+        """
+        if provider is None:
+            provider = self.get_current_provider()
+            
+        model = get_recommended_model(provider, capabilities)
+        self.set_model(model, provider)
