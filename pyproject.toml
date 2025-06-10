@@ -48,22 +48,7 @@ disallow_untyped_defs = true
 disallow_incomplete_defs = true
 
 [tool.pytest.ini_options]
-testpaths = ["vaahai/test"]
+testpaths = ["tests"]
 python_files = "test_*.py"
 python_classes = "Test*"
 python_functions = "test_*"
-addopts = "--cov=vaahai --cov-report=term --cov-report=html"
-
-[tool.coverage.run]
-source = ["vaahai"]
-omit = ["vaahai/test/*"]
-
-[tool.coverage.report]
-exclude_lines = [
-    "pragma: no cover",
-    "def __repr__",
-    "raise NotImplementedError",
-    "if __name__ == .__main__.:",
-    "pass",
-    "raise ImportError",
-]

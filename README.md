@@ -13,6 +13,7 @@
 - **Code Audit**: Security vulnerability detection, compliance checking, and architectural assessment
 - **Code Generation**: AI-powered code generation from natural language descriptions
 - **Multiple LLM Support**: OpenAI, Claude, Junie, and local models via Ollama
+- **Intelligent Model Selection**: Filter and recommend models based on capabilities (text, code, vision, etc.)
 - **Flexible Configuration**: Layered configuration system with global defaults and project-specific settings
 - **Git Integration**: Commit applied changes, generate meaningful commit messages, and prepare pull requests
 
