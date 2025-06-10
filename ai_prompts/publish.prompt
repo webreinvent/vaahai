@@ -9,6 +9,9 @@ This document is to implement and track the following steps for the VaahAI proje
 - 🟡 In Progress
 - 🟢 Completed
 
+
+Note: Poetry is the package manager used in this project.
+
 ### Step 1. Tests
 - Run all unit tests
 - Install VaahAI locally
@@ -25,7 +28,10 @@ This document is to implement and track the following steps for the VaahAI proje
 - Build the package
 - Publish the package to PyPI
 
-### Step 4. Apply Git Tag
+### Step 4. Git Commit All Changes
+- Commit all changes, if already committed, skip this step
+
+### Step 5. Apply Git Tag
 - Create a git tag from version in `pyproject.toml`.
 - Push the tag to the remote repository
 
