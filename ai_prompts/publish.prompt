@@ -9,6 +9,9 @@ This document is to implement and track the following steps for the VaahAI proje
 - 🟡 In Progress
 - 🟢 Completed
 
+
+Note: Poetry is the package manager used in this project.
+
 ### Step 1. Tests
 - Run all unit tests
 - Install VaahAI locally
