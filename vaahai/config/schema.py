@@ -6,29 +6,71 @@ and documentation purposes. The schema defines the structure, types, and constra
 for configuration values.
 """
 
-from typing import Dict, Any, List, Union, Optional
+from typing import Dict, Any, List, Union, Optional, Tuple
 from dataclasses import dataclass, field
 
 
-# Model lists for validation
-OPENAI_MODELS = [
-    "gpt-4", "gpt-4-turbo", "gpt-4-32k", "gpt-3.5-turbo", 
-    "gpt-3.5-turbo-16k", "gpt-4o", "gpt-4o-mini"
+# Model capabilities
+MODEL_CAPABILITY_TEXT = "text"
+MODEL_CAPABILITY_CODE = "code"
+MODEL_CAPABILITY_VISION = "vision"
+MODEL_CAPABILITY_AUDIO = "audio"
+MODEL_CAPABILITY_EMBEDDING = "embedding"
+MODEL_CAPABILITY_FUNCTION_CALLING = "function_calling"
+
+# Model lists for validation with capabilities
+# Format: (model_name, [capabilities], max_context_length, description)
+OPENAI_MODELS_INFO: List[Tuple[str, List[str], int, str]] = [
+    ("gpt-4", [MODEL_CAPABILITY_TEXT, MODEL_CAPABILITY_CODE, MODEL_CAPABILITY_FUNCTION_CALLING], 8192, "Powerful model for text and code generation"),
+    ("gpt-4-turbo", [MODEL_CAPABILITY_TEXT, MODEL_CAPABILITY_CODE, MODEL_CAPABILITY_FUNCTION_CALLING], 128000, "Enhanced GPT-4 with larger context window"),
+    ("gpt-4-32k", [MODEL_CAPABILITY_TEXT, MODEL_CAPABILITY_CODE, MODEL_CAPABILITY_FUNCTION_CALLING], 32768, "GPT-4 with extended context window"),
+    ("gpt-3.5-turbo", [MODEL_CAPABILITY_TEXT, MODEL_CAPABILITY_CODE, MODEL_CAPABILITY_FUNCTION_CALLING], 16385, "Fast and cost-effective model for most tasks"),
+    ("gpt-3.5-turbo-16k", [MODEL_CAPABILITY_TEXT, MODEL_CAPABILITY_CODE, MODEL_CAPABILITY_FUNCTION_CALLING], 16385, "GPT-3.5 with extended context window"),
+    ("gpt-4o", [MODEL_CAPABILITY_TEXT, MODEL_CAPABILITY_CODE, MODEL_CAPABILITY_VISION, MODEL_CAPABILITY_FUNCTION_CALLING], 128000, "Latest multimodal model with vision capabilities"),
+    ("gpt-4o-mini", [MODEL_CAPABILITY_TEXT, MODEL_CAPABILITY_CODE, MODEL_CAPABILITY_FUNCTION_CALLING], 128000, "Smaller version of GPT-4o for faster responses")
 ]
 
-CLAUDE_MODELS = [
-    "claude-3-opus-20240229", "claude-3-sonnet-20240229", "claude-3-haiku-20240307",
-    "claude-2.1", "claude-2.0", "claude-instant-1.2"
+CLAUDE_MODELS_INFO: List[Tuple[str, List[str], int, str]] = [
+    ("claude-3-opus-20240229", [MODEL_CAPABILITY_TEXT, MODEL_CAPABILITY_CODE, MODEL_CAPABILITY_VISION, MODEL_CAPABILITY_FUNCTION_CALLING], 200000, "Most powerful Claude model with vision capabilities"),
+    ("claude-3-sonnet-20240229", [MODEL_CAPABILITY_TEXT, MODEL_CAPABILITY_CODE, MODEL_CAPABILITY_VISION, MODEL_CAPABILITY_FUNCTION_CALLING], 200000, "Balanced Claude model for most tasks"),
+    ("claude-3-haiku-20240307", [MODEL_CAPABILITY_TEXT, MODEL_CAPABILITY_CODE, MODEL_CAPABILITY_VISION], 200000, "Fast and efficient Claude model"),
+    ("claude-2.1", [MODEL_CAPABILITY_TEXT, MODEL_CAPABILITY_CODE], 100000, "Previous generation Claude model"),
+    ("claude-2.0", [MODEL_CAPABILITY_TEXT, MODEL_CAPABILITY_CODE], 100000, "Previous generation Claude model"),
+    ("claude-instant-1.2", [MODEL_CAPABILITY_TEXT, MODEL_CAPABILITY_CODE], 100000, "Fast previous generation Claude model")
 ]
 
-JUNIE_MODELS = [
-    "junie-8b", "junie-20b", "junie-large"
+JUNIE_MODELS_INFO: List[Tuple[str, List[str], int, str]] = [
+    ("junie-8b", [MODEL_CAPABILITY_TEXT, MODEL_CAPABILITY_CODE], 8192, "Compact 8B parameter model for text and code"),
+    ("junie-20b", [MODEL_CAPABILITY_TEXT, MODEL_CAPABILITY_CODE], 16384, "Mid-sized 20B parameter model with extended capabilities"),
+    ("junie-large", [MODEL_CAPABILITY_TEXT, MODEL_CAPABILITY_CODE, MODEL_CAPABILITY_FUNCTION_CALLING], 32768, "Largest Junie model with function calling support")
 ]
 
-OLLAMA_MODELS = [
-    "llama3", "llama2", "mistral", "mixtral", "phi3", "gemma", 
-    "codellama", "qwen", "vicuna", "orca-mini"
+OLLAMA_MODELS_INFO: List[Tuple[str, List[str], int, str]] = [
+    ("llama3", [MODEL_CAPABILITY_TEXT, MODEL_CAPABILITY_CODE], 8192, "Meta's Llama 3 model for local deployment"),
+    ("llama2", [MODEL_CAPABILITY_TEXT, MODEL_CAPABILITY_CODE], 4096, "Meta's Llama 2 model for local deployment"),
+    ("mistral", [MODEL_CAPABILITY_TEXT, MODEL_CAPABILITY_CODE], 8192, "Mistral AI's efficient open model"),
+    ("mixtral", [MODEL_CAPABILITY_TEXT, MODEL_CAPABILITY_CODE], 32768, "Mixture of experts model with extended capabilities"),
+    ("phi3", [MODEL_CAPABILITY_TEXT, MODEL_CAPABILITY_CODE], 4096, "Microsoft's Phi-3 model for local deployment"),
+    ("gemma", [MODEL_CAPABILITY_TEXT, MODEL_CAPABILITY_CODE], 8192, "Google's Gemma model for local deployment"),
+    ("codellama", [MODEL_CAPABILITY_TEXT, MODEL_CAPABILITY_CODE], 16384, "Code-specialized Llama model"),
+    ("qwen", [MODEL_CAPABILITY_TEXT, MODEL_CAPABILITY_CODE], 8192, "Alibaba's Qwen model for local deployment"),
+    ("vicuna", [MODEL_CAPABILITY_TEXT, MODEL_CAPABILITY_CODE], 4096, "Fine-tuned Llama model for dialogue"),
+    ("orca-mini", [MODEL_CAPABILITY_TEXT], 4096, "Lightweight model for basic text tasks")
 ]
+
+# Extract just the model names for backward compatibility
+OPENAI_MODELS = [model[0] for model in OPENAI_MODELS_INFO]
+CLAUDE_MODELS = [model[0] for model in CLAUDE_MODELS_INFO]
+JUNIE_MODELS = [model[0] for model in JUNIE_MODELS_INFO]
+OLLAMA_MODELS = [model[0] for model in OLLAMA_MODELS_INFO]
+
+# Dictionary mapping provider to model info
+PROVIDER_MODEL_INFO = {
+    "openai": OPENAI_MODELS_INFO,
+    "claude": CLAUDE_MODELS_INFO,
+    "junie": JUNIE_MODELS_INFO,
+    "ollama": OLLAMA_MODELS_INFO
+}
 
 
 @dataclass

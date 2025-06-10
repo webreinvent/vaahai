@@ -36,7 +36,6 @@ This document tracks the tasks for the VaahAI project, organized by priority and
 | [P1-T16] | Implement configuration management | 🟡 | [P1-T5] | Create configuration file structure and loading/saving mechanisms |
 | [P1-T17] | Define configuration schema | 🟢 | [P1-T16] | Implemented schema using dataclasses with validation and conversion functions |
 | [P1-T18] | Implement LLM provider configuration | 🟡 | [P1-T17] | Support for OpenAI, Claude, Junie, and Ollama with API keys |
-| [P1-T19] | Implement model selection | 🔴 | [P1-T18] | Allow selection and validation of models for each provider |
 | [P1-T20] | Implement Docker configuration | 🔴 | [P1-T17] | Configure Docker usage, image selection, and resource limits |
 | [P1-T21] | Create interactive config command | 🔴 | [P1-T18], [P1-T19], [P1-T20] | Implement vaahai config init with InquirerPy prompts |
 | [P1-T22] | Implement configuration overrides | 🔴 | [P1-T16] | Support for environment variables and command-line overrides |
@@ -63,6 +62,7 @@ This document tracks the tasks for the VaahAI project, organized by priority and
 | [P1-T15] | Document CLI architecture | 2025-06-09 | Created CLI architecture documentation with command structure, extension points, and best practices |
 | [P1-T16.1] | Fix failing tests in configuration management | 2025-06-10 | Removed pre-commit related tests to ensure all tests pass while configuration management implementation continues |
 | [P1-T17] | Define configuration schema | 2025-06-11 | Implemented schema using dataclasses with validation and conversion functions |
+| [P1-T19] | Implement model selection | 2025-06-10 | Implemented model selection with capabilities filtering, CLI commands, and comprehensive documentation |
 
 ## Current Blockers
 
