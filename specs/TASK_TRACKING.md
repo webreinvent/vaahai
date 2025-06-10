@@ -36,7 +36,7 @@ This document tracks the tasks for the VaahAI project, organized by priority and
 | [P2-T1] | Implement base agent classes | 🟢 | [P1-T23] | Create abstract base classes and interfaces for all agents |
 | [P2-T2] | Implement agent factory | 🟢 | [P2-T1] | Implemented agent factory with configuration validation, loading, and robust error handling |
 | [P2-T3] | Implement group chat manager | 🔴 | [P2-T1] | Create wrapper for AutoGen's GroupChat functionality |
-| [P2-T4] | Set up prompt management | 🔴 | [P2-T1] | Create system for loading and rendering prompt templates |
+| [P2-T4] | Set up prompt management | 🟡 | [P2-T1] | Create system for loading and rendering prompt templates |
 | [P2-T5] | Create tool registry | 🔴 | [P2-T1] | Implement tool registration and validation system |
 | [P2-T6] | Set up agent testing framework | 🔴 | [P2-T1] | Create base test classes and mock LLM for testing agents |
 | [P2-T7] | Implement hello world agent | 🔴 | [P2-T1], [P2-T2], [P2-T4] | Create simple demonstration agent with humorous responses |
@@ -53,7 +53,7 @@ This document tracks the tasks for the VaahAI project, organized by priority and
 
 | Task ID | Description | Status | Dependencies | Notes |
 |---------|-------------|--------|--------------|-------|
-| [P2-T4] | Set up prompt management | 🔴 | [P2-T1] | Create system for loading and rendering prompt templates |
+| [P2-T4] | Set up prompt management | 🟡 | [P2-T1] | Create system for loading and rendering prompt templates |
 | [P2-T7] | Implement hello world agent | 🔴 | [P2-T1], [P2-T2], [P2-T4] | Create simple demonstration agent with humorous responses |
 
 ## Completed Tasks
