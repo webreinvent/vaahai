@@ -2,45 +2,8 @@
 
 You are an AI assistant helping with the VaahAI project, a multi-agent AI CLI tool built with Microsoft's Autogen Framework.
 
-## PREVIOUS TASK VERIFICATION
-Follow this complete workflow for task management and implementation:
 
-### Step 1. Verify Previous Task Completion
-- Review the code changes for the previous task
-- Run appropriate tests to verify functionality
-- Check that all acceptance criteria have been met
-- Confirm that the implementation aligns with the project architecture
-- If the task is incomplete, identify what remains to be done before proceeding
-
-### Step 2. Update Documentation
-- Update relevant documents in `/specs`, `/docs`, and `/ai_docs`
-- Ensure implementation details are documented
-- Update API documentation if applicable
-- Add usage examples where appropriate
-- Ensure the documentation reflects the current implementation
-
-### Step 3. Git Commit is done for all files
-- Commit all changes to Git if applicable
-- Summarize the changes made for the previous task
-- Include relevant task IDs in the commit message
-- Describe the functionality that was implemented
-- Note any architectural decisions made
-- Create a commit with a clear, descriptive message
-
-### Step 4. Merge/Pull Request
-- Create a merge/pull request from the current branch to the `develop` branch if not exist`
-- Include a descriptive title that references the task ID
-- Add a detailed description of the changes made
-- Reference any related issues or tasks
-- Request appropriate reviewers if applicable
-- Add relevant labels and milestones
-
-### Step 5. develop contains all changes
-- Ensure the `develop` branch contains all changes from previous tasks
-
-BEFORE PICKING THE NEXT TASK, CLEARLY MENTION THE STATUS OF ALL ABOVE STEPS FOR PREVIOUS TASK
-
-## NEW TASK WORKFLOW
+## WORKFLOW
 Follow this complete workflow for task management and implementation:
 
 ### Step 0. Project Scope
@@ -53,24 +16,7 @@ Read and learn from `./project_scope.prompt` file our the project scope again so
 - Consider the logical flow of implementation
 - Update the task status in `TASK_TRACKING.md` to "In Progress"
 
-
-
-### Step 2. Understand Task Scope
-- Read the task description thoroughly
-- Review related documentation and requirements
-- Understand how this task fits into the overall project
-- Identify the specific deliverables for this task
-- Define clear acceptance criteria
-
-### Step 3. Create Implementation Plan
-- Break down the task into smaller steps
-- Identify the files that need to be created or modified
-- Determine the classes, functions, and interfaces required
-- Consider edge cases and error handling
-- Plan for testing and validation
-- Present the plan for confirmation before proceeding
-
-### Step 4. Create New Branch
+### Step 2. Create New Branch
 - PREFERRED APPROACH: Create a branch from the previous task branch if it contains necessary code for the next task
   - First ensure you're on the previous task branch
   - Pull any recent changes from the develop branch: `git pull origin develop`
@@ -81,6 +27,21 @@ Read and learn from `./project_scope.prompt` file our the project scope again so
   - Create a new branch: `git checkout -b feature/P<phase>-task-<id>-<description>`
 - Always follow the project's branch naming conventions
 - Push the branch to the remote repository
+
+### Step 3. Understand Task Scope
+- Read the task description thoroughly
+- Review related documentation and requirements
+- Understand how this task fits into the overall project
+- Identify the specific deliverables for this task
+- Define clear acceptance criteria
+
+### Step 4. Create Implementation Plan
+- Break down the task into smaller steps
+- Identify the files that need to be created or modified
+- Determine the classes, functions, and interfaces required
+- Consider edge cases and error handling
+- Plan for testing and validation
+- Present the plan for confirmation before proceeding
 
 ### Step 5. Implement the Task
 - Follow the confirmed implementation plan
@@ -109,131 +70,11 @@ Read and learn from `./project_scope.prompt` file our the project scope again so
 - Update the task status in `TASK_TRACKING.md` to "Completed"
 - Add any relevant notes or updates
 
+### Step 8. Update memory
+- Update your memory
+
 CLEARLY DEFINE YOUR NEXT STEPS AND ASK FOR CONFIRMATION BEFORE PROCEEDING.
 
 
 ## OUTPUT FORMAT
-
-
-### PREVIOUS TASK VERIFICATION
-
-Provide status of following points in green and red color icon, green icon for completed and red icon for incomplete:
-
-1. **Verify Previous Task Completion**:
-   - Test results summary
-   - Verification details
-   - Outstanding issues (if any)
-
-2. **Update Documentation**:
-   - Files updated
-   - Summary of changes
-
-3. **Git Commit**:
-   - Commit message
-   - Files included
-   - Branch information
-
-4. **Merge/Pull Request**:
-   - Title and description
-   - References to related tasks
-   - Reviewers and labels
-
-5. **Develop Branch Status**:
-   - Confirmation that develop contains all changes
-
-### NEW TASK WORKFLOW
-
-Provide status of following points in green and red color icon, green icon for completed and red icon for incomplete:
-
-1. **Next Task Selection**:
-   - Recommended task(s)
-   - Justification
-   - Task tracking updates
-
-2. **Task Scope Analysis**:
-   - Task understanding
-   - Deliverables
-   - Acceptance criteria
-
-3. **Implementation Plan**:
-   - Step-by-step approach
-   - Files to modify
-   - Testing strategy
-
-4. **New Branch Creation**:
-   - Branch name
-   - Base branch
-   - Creation confirmation
-
-5. **Implementation Execution**:
-    - Code implementation details
-    - Testing results
-    - Integration notes
-
-6. **Commit and Create Merge/Pull Request**:
-    - Commit message
-    - Files included
-
-ASK FOR CONFIRMATION BEFORE PROCEEDING.
-
-## IMPORTANT NOTES
-- Focus on incremental development with small, achievable tasks
-- Prioritize Autogen framework integration as a foundational component
-- Maintain clear dependencies between tasks
-- Enable frequent small releases
-- Ensure thorough documentation at each step
-- Follow test-driven development practices where appropriate
-- Commit early and often with clear messages
-
-## CODING GUIDELINES
-Follow these coding guidelines for all implementations:
-
-### 1. File Organization
-- Keep files small and focused on a single responsibility
-- Split large modules into multiple files with clear separation of concerns
-- Aim for files under 300-400 lines of code
-- Use appropriate directory structure to organize related files
-- Create separate files for interfaces, implementations, and utilities
-
-### 2. Method and Function Design
-- Keep methods short and focused on a single task
-- Aim for methods under 30-50 lines of code
-- Feel files short or create multiple file for large code
-- Follow the Single Responsibility Principle
-- Use descriptive method names that clearly indicate their purpose
-- Limit the number of parameters (preferably 5 or fewer)
-- Use type hints consistently for better code readability
-
-### 3. Class Design
-- Follow the SOLID principles
-- Keep classes focused on a single responsibility
-- Prefer composition over inheritance
-- Use abstract base classes and interfaces to define contracts
-- Implement design patterns appropriately:
-  - Singleton for classes that should have only one instance
-  - Factory for object creation
-  - Adapter for interfacing with external libraries
-  - Strategy for interchangeable algorithms
-  - Observer for event handling
-
-### 4. Code Organization
-- Separate configuration from implementation
-- Use dependency injection to improve testability
-- Implement proper error handling with custom exceptions
-- Add appropriate logging at different levels
-- Include comprehensive docstrings for all public APIs
-- Use constants instead of magic numbers or strings
-
-### 5. Testing
-- Write unit tests for all functionality
-- Aim for high test coverage (at least 80%)
-- Use test fixtures and mocks appropriately
-- Test edge cases and error conditions
-- Implement integration tests for component interactions
-
-### 6. Performance Considerations
-- Be mindful of memory usage
-- Avoid unnecessary computations
-- Consider asynchronous operations for I/O-bound tasks
-- Use appropriate data structures for the task at hand
-- Profile code when necessary to identify bottlenecks
+List all the steps from WORKFLOW and provide status against each steps in green and red color icon, green icon for completed and red icon for incomplete

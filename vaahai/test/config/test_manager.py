@@ -14,6 +14,7 @@ from vaahai.config.defaults import DEFAULT_CONFIG
 from vaahai.config.utils import get_user_config_dir, get_project_config_dir
 from vaahai.config.loader import save_toml
 from vaahai.config.schema import VaahAIConfig
+from vaahai.config.llm_utils import list_providers, list_models
 
 
 class TestConfigManager(unittest.TestCase):
@@ -321,6 +322,186 @@ class TestConfigManager(unittest.TestCase):
         self.assertEqual(full_config["llm"]["claude"]["model"], "claude-3-opus")  # From CLI
         self.assertEqual(full_config["docker"]["enabled"], False)  # From project config
         self.assertEqual(full_config["output"]["format"], "json")  # From env var
+    
+    # Tests for LLM provider-specific methods
+    
+    def test_get_current_provider(self):
+        """Test getting the current LLM provider."""
+        # Create a new ConfigManager instance
+        config_manager = ConfigManager()
+        
+        # Default provider should be openai
+        self.assertEqual(config_manager.get_current_provider(), "openai")
+        
+        # Set provider to claude
+        config_manager.set("llm.provider", "claude")
+        self.assertEqual(config_manager.get_current_provider(), "claude")
+        
+        # Set environment variable
+        os.environ["VAAHAI_LLM_PROVIDER"] = "junie"
+        self.assertEqual(config_manager.get_current_provider(), "junie")
+        
+        # CLI override should take precedence
+        config_manager.apply_cli_overrides({"llm.provider": "ollama"})
+        self.assertEqual(config_manager.get_current_provider(), "ollama")
+    
+    def test_set_provider(self):
+        """Test setting the active LLM provider."""
+        # Create a new ConfigManager instance
+        config_manager = ConfigManager()
+        
+        # Set valid provider
+        config_manager.set_provider("claude")
+        self.assertEqual(config_manager.get("llm.provider"), "claude")
+        
+        # Set another valid provider
+        config_manager.set_provider("junie")
+        self.assertEqual(config_manager.get("llm.provider"), "junie")
+        
+        # Try to set invalid provider
+        with self.assertRaises(ValueError):
+            config_manager.set_provider("invalid-provider")
+    
+    def test_get_provider_config(self):
+        """Test getting configuration for a specific provider."""
+        # Create a new ConfigManager instance
+        config_manager = ConfigManager()
+        
+        # Set some provider-specific configurations
+        config_manager.set("llm.openai.model", "gpt-4")
+        config_manager.set("llm.claude.model", "claude-3-opus")
+        
+        # Get OpenAI config
+        openai_config = config_manager.get_provider_config("openai")
+        self.assertIsInstance(openai_config, dict)
+        self.assertEqual(openai_config.get("model"), "gpt-4")
+        
+        # Get Claude config
+        claude_config = config_manager.get_provider_config("claude")
+        self.assertIsInstance(claude_config, dict)
+        self.assertEqual(claude_config.get("model"), "claude-3-opus")
+        
+        # Get current provider config (default is openai)
+        current_config = config_manager.get_provider_config()
+        self.assertEqual(current_config.get("model"), "gpt-4")
+        
+        # Set current provider to claude
+        config_manager.set_provider("claude")
+        current_config = config_manager.get_provider_config()
+        self.assertEqual(current_config.get("model"), "claude-3-opus")
+        
+        # Try to get config for invalid provider
+        with self.assertRaises(ValueError):
+            config_manager.get_provider_config("invalid-provider")
+    
+    @patch('vaahai.config.llm_utils.validate_api_key', return_value=True)
+    def test_set_api_key(self, mock_validate):
+        """Test setting API key for a provider."""
+        # Create a new ConfigManager instance
+        config_manager = ConfigManager()
+        
+        # Set API key for OpenAI
+        config_manager.set_api_key("test-openai-key", "openai")
+        self.assertEqual(config_manager.get("llm.openai.api_key"), "test-openai-key")
+        
+        # Set API key for current provider
+        config_manager.set_provider("claude")
+        config_manager.set_api_key("test-claude-key")
+        self.assertEqual(config_manager.get("llm.claude.api_key"), "test-claude-key")
+        
+        # Try to set API key for invalid provider
+        with self.assertRaises(ValueError):
+            config_manager.set_api_key("test-key", "invalid-provider")
+        
+        # Try to set invalid API key
+        mock_validate.return_value = False
+        with self.assertRaises(ValueError):
+            config_manager.set_api_key("", "openai")
+    
+    @patch.dict(os.environ, {
+        "VAAHAI_OPENAI_API_KEY": "vaahai-openai-key",
+        "OPENAI_API_KEY": "openai-key",
+    })
+    def test_get_api_key(self):
+        """Test getting API key for a provider."""
+        # Create a new ConfigManager instance
+        config_manager = ConfigManager()
+        
+        # Set API key in config
+        config_manager.set("llm.claude.api_key", "config-claude-key")
+        
+        # Get API key from environment variable
+        self.assertEqual(config_manager.get_api_key("openai"), "vaahai-openai-key")
+        
+        # Get API key from config
+        self.assertEqual(config_manager.get_api_key("claude"), "config-claude-key")
+        
+        # Get API key for current provider
+        self.assertEqual(config_manager.get_api_key(), "vaahai-openai-key")
+        
+        # Try to get API key for invalid provider
+        with self.assertRaises(ValueError):
+            config_manager.get_api_key("invalid-provider")
+        
+        # CLI override should take precedence
+        config_manager.apply_cli_overrides({"llm.openai.api_key": "cli-openai-key"})
+        # Clear environment variable cache to ensure CLI override is used
+        config_manager._env_vars = {}  # Reset cached environment variables
+        self.assertEqual(config_manager.get_api_key("openai"), "cli-openai-key")
+    
+    def test_get_model(self):
+        """Test getting model for a provider."""
+        # Create a new ConfigManager instance
+        config_manager = ConfigManager()
+        
+        # Get default models
+        self.assertEqual(config_manager.get_model("openai"), "gpt-4")
+        self.assertEqual(config_manager.get_model("claude"), "claude-3-sonnet-20240229")
+        
+        # Set models in config
+        config_manager.set("llm.openai.model", "gpt-3.5-turbo")
+        config_manager.set("llm.claude.model", "claude-3-opus-20240229")
+        
+        # Get models from config
+        self.assertEqual(config_manager.get_model("openai"), "gpt-3.5-turbo")
+        self.assertEqual(config_manager.get_model("claude"), "claude-3-opus-20240229")
+        
+        # Get model for current provider
+        self.assertEqual(config_manager.get_model(), "gpt-3.5-turbo")
+        
+        # Try to get model for invalid provider
+        with self.assertRaises(ValueError):
+            config_manager.get_model("invalid-provider")
+    
+    @patch('vaahai.config.manager.list_models')
+    def test_set_model(self, mock_list_models):
+        """Test setting model for a provider."""
+        # Mock list_models to return valid models
+        mock_list_models.side_effect = lambda provider: {
+            "openai": ["gpt-4", "gpt-3.5-turbo"],
+            "claude": ["claude-3-opus-20240229", "claude-3-sonnet-20240229"],
+            "junie": ["junie-8b", "junie-20b"],
+            "ollama": ["llama3", "llama2"],
+        }[provider]
+        
+        # Create a new ConfigManager instance
+        config_manager = ConfigManager()
+        
+        # Set valid models
+        config_manager.set_model("gpt-3.5-turbo", "openai")
+        self.assertEqual(config_manager.get("llm.openai.model"), "gpt-3.5-turbo")
+        
+        config_manager.set_provider("claude")
+        config_manager.set_model("claude-3-opus-20240229")
+        self.assertEqual(config_manager.get("llm.claude.model"), "claude-3-opus-20240229")
+        
+        # Try to set invalid model
+        with self.assertRaises(ValueError):
+            config_manager.set_model("invalid-model", "openai")
+        
+        # Try to set model for invalid provider
+        with self.assertRaises(ValueError):
+            config_manager.set_model("gpt-4", "invalid-provider")
 
 
 if __name__ == "__main__":
