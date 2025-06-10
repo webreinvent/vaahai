@@ -8,17 +8,25 @@ import os
 from typing import Any, Dict, Optional, List
 import logging
 
-# Import with try/except to provide helpful error messages
+# Try to import the required packages for the new autogen structure
 try:
-    # Import from autogen_agentchat and autogen_ext (new package structure)
     from autogen_agentchat.agents import Agent
     from autogen_ext.models import ModelClient
     from autogen_ext.models.openai import OpenAIChatCompletionClient
+    AUTOGEN_PACKAGES_AVAILABLE = True
 except ImportError:
-    raise ImportError(
-        "Neither autogen-agentchat/autogen-ext packages found. "
-        "Please install one of these combinations:\n"
-        "1. pip install autogen-agentchat autogen-ext"
+    # Set flag to indicate packages are not available
+    AUTOGEN_PACKAGES_AVAILABLE = False
+    # Define dummy classes for type hints
+    class Agent: pass
+    class ModelClient: pass
+    class OpenAIChatCompletionClient: pass
+    
+    # Only raise error if not in test mode
+    logging.warning(
+        "autogen-agentchat/autogen-ext packages not found. "
+        "Running in test mode only. To use full functionality, install: "
+        "pip install autogen-agentchat autogen-ext"
     )
 
 # Import internal modules
@@ -75,16 +83,26 @@ class AutoGenAgentBase(AgentBase):
         Args:
             config: Configuration dictionary for the agent.
         """
+        # Check if we're in test mode
+        test_mode = config.get("_test_mode", False)
+        
+        # If packages are not available and not in test mode, raise error
+        if not AUTOGEN_PACKAGES_AVAILABLE and not test_mode:
+            raise ImportError(
+                "The autogen-agentchat and autogen-ext packages are required for AutoGenAgentBase. "
+                "Install them with: pip install autogen-agentchat autogen-ext"
+            )
+            
         super().__init__(config)
         
         # Don't prepare LLM config in test mode
-        if not self.config.get("_test_mode", False):
+        if not test_mode:
             self.llm_config = self._prepare_llm_config()
         else:
             self.llm_config = {"model": "gpt-3.5-turbo"}
         
-        # Create the agent
-        self.agent = self._create_autogen_agent()
+        # Initialize agent to None - subclasses will create it when ready
+        self.agent = None
     
     def _prepare_llm_config(self) -> Dict[str, Any]:
         """
@@ -159,6 +177,10 @@ class AutoGenAgentBase(AgentBase):
         """
         # Skip in test mode
         if self.config.get("_test_mode", False):
+            return None
+            
+        # Skip if packages are not available
+        if not AUTOGEN_PACKAGES_AVAILABLE:
             return None
             
         # Create OpenAI client

@@ -2,18 +2,21 @@
 VaahAI helloworld command implementation.
 
 This module contains the implementation of the helloworld command,
-which is used to test the proper functioning of the VaahAI CLI.
+which demonstrates the Hello World agent functionality using the new
+autogen-agentchat and autogen-ext packages.
 """
 
 import typer
+from typing import Optional
 
-from vaahai.cli.utils.console import console, print_panel, print_success
+from vaahai.cli.utils.console import console, print_panel, print_success, print_error
 from vaahai.cli.utils.help import CustomHelpCommand, create_typer_app
+from vaahai.agents.base.agent_factory import AgentFactory
 
 # Create the helloworld command group with custom help formatting
 helloworld_app = create_typer_app(
     name="helloworld",
-    help="Test command to verify proper functioning of VaahAI",
+    help="Demonstrate the Hello World agent functionality",
     add_completion=False,
 )
 
@@ -21,21 +24,50 @@ helloworld_app = create_typer_app(
 @helloworld_app.callback()
 def callback():
     """
-    Test command to verify proper functioning of VaahAI.
+    Run the Hello World agent to demonstrate VaahAI agent functionality.
+    
+    This command creates and runs a Hello World agent that generates
+    a friendly and humorous greeting using the AutoGen framework.
     """
     pass
 
 
 @helloworld_app.command("run", cls=CustomHelpCommand)
-def run():
+def run(
+    test_mode: bool = typer.Option(
+        False, "--test", "-t", help="Run in test mode without using the OpenAI API"
+    ),
+    temperature: float = typer.Option(
+        0.7, "--temperature", "-T", help="Temperature for response generation"
+    ),
+):
     """
-    Run the helloworld command to test VaahAI functionality.
+    Run the Hello World agent to generate a greeting.
     """
-    print_panel(
-        "[bold green]Hello from VaahAI![/bold green]\n\n"
-        "VaahAI CLI is working correctly.\n"
-        "This is a placeholder for the actual helloworld command.",
-        title="VaahAI Helloworld",
-        style="green",
-    )
-    print_success("VaahAI CLI is ready to use!")
+    try:
+        # Create the Hello World agent
+        config = {
+            "name": "HelloWorldAgent",
+            "provider": "openai",
+            "temperature": temperature,
+            "_test_mode": test_mode
+        }
+        
+        agent = AgentFactory.create_agent("hello_world", config)
+        
+        # Run the agent
+        result = agent.run()
+        
+        if result.get("status") == "success":
+            # Display the agent's response
+            print_panel(
+                f"[bold blue]Response:[/bold blue] {result.get('response')}",
+                title="VaahAI Hello World Agent",
+                style="green",
+            )
+            print_success("Hello World agent response generated successfully!")
+        else:
+            # Display error message
+            print_error(f"Error: {result.get('error', 'Unknown error')}")
+    except Exception as e:
+        print_error(f"Failed to run Hello World agent: {str(e)}")
