@@ -29,17 +29,34 @@ This document tracks the tasks for the VaahAI project, organized by priority and
 | [P1-T14] | Set up development tools | 🟢 | [P1-T2] | Implemented code formatting (black, isort), and linting (flake8) with comprehensive documentation and phased improvement plan (2025-06-09) |
 | [P1-T15] | Document CLI architecture | 🟢 | [P1-T6] | Created CLI architecture documentation with command structure, extension points, and best practices (2025-06-09) |
 
+### Phase 2: AutoGen Agent Architecture
+
+| Task ID | Description | Status | Dependencies | Notes |
+|---------|-------------|--------|--------------|-------|
+| [P2-T1] | Implement base agent classes | 🟡 | [P1-T23] | Create abstract base classes and interfaces for all agents |
+| [P2-T2] | Implement agent factory | 🔴 | [P2-T1] | Create factory pattern for agent creation and registration |
+| [P2-T3] | Implement group chat manager | 🔴 | [P2-T1] | Create wrapper for AutoGen's GroupChat functionality |
+| [P2-T4] | Set up prompt management | 🔴 | [P2-T1] | Create system for loading and rendering prompt templates |
+| [P2-T5] | Create tool registry | 🔴 | [P2-T1] | Implement tool registration and validation system |
+| [P2-T6] | Set up agent testing framework | 🔴 | [P2-T1] | Create base test classes and mock LLM for testing agents |
+| [P2-T7] | Implement hello world agent | 🔴 | [P2-T1], [P2-T2], [P2-T4] | Create simple demonstration agent with humorous responses |
+| [P2-T8] | Implement code executor agent | 🔴 | [P2-T1], [P2-T2], [P2-T5] | Create Docker-based code execution agent |
+| [P2-T9] | Implement code formatter agent | 🔴 | [P2-T1], [P2-T2], [P2-T5] | Create agent for formatting code in multiple languages |
+| [P2-T10] | Implement code analyzer agent | 🔴 | [P2-T1], [P2-T2], [P2-T5] | Create agent for static analysis and pattern recognition |
+| [P2-T11] | Implement prompt generator agent | 🔴 | [P2-T1], [P2-T2], [P2-T4] | Create agent for generating and refining prompts |
+| [P2-T12] | Create agent composition utilities | 🔴 | [P2-T1], [P2-T3] | Implement sequential and parallel execution patterns |
+| [P2-T13] | Implement code review agent | 🔴 | [P2-T8], [P2-T9], [P2-T10], [P2-T12] | Create application agent for code review workflows |
+| [P2-T14] | Implement security audit agent | 🔴 | [P2-T8], [P2-T10], [P2-T12] | Create application agent for security audit workflows |
+| [P2-T15] | Integrate agents with CLI commands | 🔴 | [P2-T7], [P2-T13], [P2-T14] | Connect agents to CLI entry points |
+
 ## Current Tasks
 
 | Task ID | Description | Status | Dependencies | Notes |
 |---------|-------------|--------|--------------|-------|
-| [P1-T16] | Implement configuration management | 🟢 | [P1-T5] | Created configuration file structure and loading/saving mechanisms with comprehensive CLI commands |
-| [P1-T17] | Define configuration schema | 🟢 | [P1-T16] | Implemented schema using dataclasses with validation and conversion functions |
-| [P1-T18] | Implement LLM provider configuration | 🟢 | [P1-T17] | Support for OpenAI, Claude, Junie, and Ollama with API keys |
-| [P1-T20] | Implement Docker configuration | 🟢 | [P1-T17] | Configured Docker usage, image selection, and resource limits |
-| [P1-T21] | Create interactive config command | 🟢 | [P1-T18], [P1-T19], [P1-T20] | Implemented vaahai config init with InquirerPy prompts |
-| [P1-T22] | Implement configuration overrides | 🟢 | [P1-T16] | Support for environment variables and command-line overrides |
-| [P1-T23] | Create configuration utilities | 🟢 | [P1-T16] | Helper functions for accessing and validating configuration |
+| [P2-T1] | Implement base agent classes | 🟡 | [P1-T23] | Create abstract base classes and interfaces for all agents |
+| [P2-T2] | Implement agent factory | 🔴 | [P2-T1] | Create factory pattern for agent creation and registration |
+| [P2-T4] | Set up prompt management | 🔴 | [P2-T1] | Create system for loading and rendering prompt templates |
+| [P2-T7] | Implement hello world agent | 🔴 | [P2-T1], [P2-T2], [P2-T4] | Create simple demonstration agent with humorous responses |
 
 ## Completed Tasks
 
@@ -76,9 +93,11 @@ None at this time.
 
 ## Next Steps
 
-1. Begin [P1-T24] Implement AutoGen integration
-2. Implement [P1-T25] Create agent interface hierarchy
-3. Implement [P1-T26] Set up Docker execution environment
+1. Complete [P2-T1] Implement base agent classes
+2. Complete [P2-T2] Implement agent factory
+3. Complete [P2-T4] Set up prompt management
+4. Complete [P2-T7] Implement hello world agent
+5. Continue with remaining Phase 2 tasks
 
 ## Notes
 
@@ -92,21 +111,18 @@ None at this time.
 ## Project Metrics
 
 ### Overall Progress
-- Phase 1 tasks completed: 23 out of 58 (39.7%)
-- CLI structure tasks completed: 15 out of 15 (100%)
-- Configuration management tasks completed: 8 out of 8 (100%)
-- MVP tasks completed: 23 out of 27 (85.2%)
+- Phase 1 tasks completed: 23 out of 23 (100%)
+- Phase 2 tasks started: 1 out of 15 (6.7%)
+- MVP tasks completed: 23 out of 42 (54.8%)
 
 ### Next Milestone
-- AutoGen Integration (14 tasks)
-- Current focus: [P1-T24] Implement AutoGen integration
-- Estimated completion: 2025-06-30
+- AutoGen Agent Implementation (15 tasks)
+- Current focus: [P2-T1] Implement base agent classes
+- Estimated completion: 2025-07-15
 
 ### Recent Achievements
 - Completed all configuration management tasks
-- Implemented interactive config CLI commands with InquirerPy
-- Added comprehensive tests for configuration commands
-- Created detailed documentation for configuration system
-- Integrated Docker configuration with interactive setup
-- Implemented environment variable and command-line overrides
-- Added API key validation and secure handling
+- Designed comprehensive AutoGen agent architecture
+- Created detailed implementation plan for agent system
+- Developed example implementation for agent classes
+- Started implementation of base agent classes
