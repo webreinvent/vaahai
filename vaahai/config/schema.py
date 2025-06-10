@@ -10,9 +10,44 @@ from typing import Dict, Any, List, Union, Optional
 from dataclasses import dataclass, field
 
 
+# Model lists for validation
+OPENAI_MODELS = [
+    "gpt-4", "gpt-4-turbo", "gpt-4-32k", "gpt-3.5-turbo", 
+    "gpt-3.5-turbo-16k", "gpt-4o", "gpt-4o-mini"
+]
+
+CLAUDE_MODELS = [
+    "claude-3-opus-20240229", "claude-3-sonnet-20240229", "claude-3-haiku-20240307",
+    "claude-2.1", "claude-2.0", "claude-instant-1.2"
+]
+
+JUNIE_MODELS = [
+    "junie-8b", "junie-20b", "junie-large"
+]
+
+OLLAMA_MODELS = [
+    "llama3", "llama2", "mistral", "mixtral", "phi3", "gemma", 
+    "codellama", "qwen", "vicuna", "orca-mini"
+]
+
+
 @dataclass
 class OpenAIConfig:
-    """Configuration for OpenAI provider."""
+    """
+    Configuration for OpenAI provider.
+    
+    Attributes:
+        api_key: API key for OpenAI
+        api_base: Base URL for API requests (for Azure OpenAI or proxies)
+        organization: Organization ID for OpenAI
+        model: Model to use (e.g., gpt-4, gpt-3.5-turbo)
+        temperature: Temperature for sampling (0.0 to 1.0)
+        max_tokens: Maximum number of tokens to generate
+        top_p: Nucleus sampling parameter
+        frequency_penalty: Penalty for token frequency
+        presence_penalty: Penalty for token presence
+        timeout: Request timeout in seconds
+    """
     
     api_key: str = ""
     api_base: str = ""
@@ -20,41 +55,100 @@ class OpenAIConfig:
     model: str = "gpt-4"
     temperature: float = 0.7
     max_tokens: int = 4000
+    top_p: float = 1.0
+    frequency_penalty: float = 0.0
+    presence_penalty: float = 0.0
+    timeout: int = 120
 
 
 @dataclass
 class ClaudeConfig:
-    """Configuration for Anthropic Claude provider."""
+    """
+    Configuration for Anthropic Claude provider.
+    
+    Attributes:
+        api_key: API key for Anthropic
+        api_base: Base URL for API requests (for proxies)
+        model: Model to use (e.g., claude-3-opus-20240229)
+        temperature: Temperature for sampling (0.0 to 1.0)
+        max_tokens: Maximum number of tokens to generate
+        top_p: Nucleus sampling parameter
+        top_k: Top-k sampling parameter
+        timeout: Request timeout in seconds
+    """
     
     api_key: str = ""
+    api_base: str = ""
     model: str = "claude-3-sonnet-20240229"
     temperature: float = 0.7
     max_tokens: int = 4000
+    top_p: float = 1.0
+    top_k: int = 40
+    timeout: int = 120
 
 
 @dataclass
 class JunieConfig:
-    """Configuration for Junie provider."""
+    """
+    Configuration for Junie provider.
+    
+    Attributes:
+        api_key: API key for Junie
+        api_base: Base URL for API requests
+        model: Model to use (e.g., junie-8b)
+        temperature: Temperature for sampling (0.0 to 1.0)
+        max_tokens: Maximum number of tokens to generate
+        top_p: Nucleus sampling parameter
+        timeout: Request timeout in seconds
+    """
     
     api_key: str = ""
+    api_base: str = ""
     model: str = "junie-8b"
     temperature: float = 0.7
     max_tokens: int = 4000
+    top_p: float = 1.0
+    timeout: int = 120
 
 
 @dataclass
 class OllamaConfig:
-    """Configuration for Ollama provider."""
+    """
+    Configuration for Ollama provider.
+    
+    Attributes:
+        api_base: Base URL for Ollama API (default: http://localhost:11434)
+        model: Model to use (e.g., llama3)
+        temperature: Temperature for sampling (0.0 to 1.0)
+        max_tokens: Maximum number of tokens to generate
+        top_p: Nucleus sampling parameter
+        top_k: Top-k sampling parameter
+        repeat_penalty: Penalty for repeated tokens
+        timeout: Request timeout in seconds
+    """
     
     api_base: str = "http://localhost:11434"
     model: str = "llama3"
     temperature: float = 0.7
     max_tokens: int = 4000
+    top_p: float = 1.0
+    top_k: int = 40
+    repeat_penalty: float = 1.1
+    timeout: int = 120
 
 
 @dataclass
 class LLMConfig:
-    """Configuration for LLM providers."""
+    """
+    Configuration for LLM providers.
+    
+    Attributes:
+        provider: LLM provider to use (openai, claude, junie, ollama)
+        openai: OpenAI-specific configuration
+        claude: Claude-specific configuration
+        junie: Junie-specific configuration
+        ollama: Ollama-specific configuration
+    """
     
     provider: str = "openai"
     openai: OpenAIConfig = field(default_factory=OpenAIConfig)
@@ -125,6 +219,30 @@ def validate_config(config: Dict[str, Any]) -> List[str]:
     provider = config.get("llm", {}).get("provider", "")
     if provider not in ["openai", "claude", "junie", "ollama"]:
         errors.append(f"Invalid LLM provider: {provider}")
+    
+    # Validate OpenAI model
+    if provider == "openai":
+        model = config.get("llm", {}).get("openai", {}).get("model", "")
+        if model not in OPENAI_MODELS:
+            errors.append(f"Invalid OpenAI model: {model}")
+    
+    # Validate Claude model
+    if provider == "claude":
+        model = config.get("llm", {}).get("claude", {}).get("model", "")
+        if model not in CLAUDE_MODELS:
+            errors.append(f"Invalid Claude model: {model}")
+    
+    # Validate Junie model
+    if provider == "junie":
+        model = config.get("llm", {}).get("junie", {}).get("model", "")
+        if model not in JUNIE_MODELS:
+            errors.append(f"Invalid Junie model: {model}")
+    
+    # Validate Ollama model
+    if provider == "ollama":
+        model = config.get("llm", {}).get("ollama", {}).get("model", "")
+        if model not in OLLAMA_MODELS:
+            errors.append(f"Invalid Ollama model: {model}")
     
     # Validate output format
     output_format = config.get("output", {}).get("format", "")
@@ -244,25 +362,40 @@ def schema_to_config(schema: VaahAIConfig) -> Dict[str, Any]:
                 "organization": schema.llm.openai.organization,
                 "model": schema.llm.openai.model,
                 "temperature": schema.llm.openai.temperature,
-                "max_tokens": schema.llm.openai.max_tokens
+                "max_tokens": schema.llm.openai.max_tokens,
+                "top_p": schema.llm.openai.top_p,
+                "frequency_penalty": schema.llm.openai.frequency_penalty,
+                "presence_penalty": schema.llm.openai.presence_penalty,
+                "timeout": schema.llm.openai.timeout
             },
             "claude": {
                 "api_key": schema.llm.claude.api_key,
+                "api_base": schema.llm.claude.api_base,
                 "model": schema.llm.claude.model,
                 "temperature": schema.llm.claude.temperature,
-                "max_tokens": schema.llm.claude.max_tokens
+                "max_tokens": schema.llm.claude.max_tokens,
+                "top_p": schema.llm.claude.top_p,
+                "top_k": schema.llm.claude.top_k,
+                "timeout": schema.llm.claude.timeout
             },
             "junie": {
                 "api_key": schema.llm.junie.api_key,
+                "api_base": schema.llm.junie.api_base,
                 "model": schema.llm.junie.model,
                 "temperature": schema.llm.junie.temperature,
-                "max_tokens": schema.llm.junie.max_tokens
+                "max_tokens": schema.llm.junie.max_tokens,
+                "top_p": schema.llm.junie.top_p,
+                "timeout": schema.llm.junie.timeout
             },
             "ollama": {
                 "api_base": schema.llm.ollama.api_base,
                 "model": schema.llm.ollama.model,
                 "temperature": schema.llm.ollama.temperature,
-                "max_tokens": schema.llm.ollama.max_tokens
+                "max_tokens": schema.llm.ollama.max_tokens,
+                "top_p": schema.llm.ollama.top_p,
+                "top_k": schema.llm.ollama.top_k,
+                "repeat_penalty": schema.llm.ollama.repeat_penalty,
+                "timeout": schema.llm.ollama.timeout
             }
         },
         "docker": {

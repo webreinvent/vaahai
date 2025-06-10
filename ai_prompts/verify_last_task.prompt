@@ -1,0 +1,50 @@
+# LAST TASK VERIFICATION
+
+
+## WORKFLOW
+Follow this complete workflow for task management and implementation:
+
+### Step 1. Pick the last task
+- Review /specs/TASK_TRACKING.md to identify the last completed task
+- Understand the scope of the last task
+
+### Step 2. Last task implementation
+- Review the code changes for the last task
+- Run appropriate tests to verify functionality
+- Review the code changes for the previous task
+- Run appropriate tests to verify functionality
+- Check that all acceptance criteria have been met
+- Confirm that the implementation aligns with the project architecture
+- If the task is incomplete, identify what remains to be done before proceeding
+
+### Step 3. Update Documentation
+- Update important information to /README.md file
+- Update relevant documents in `/specs`, `/docs`, and `/ai_docs`
+- Ensure implementation details are documented
+- Update API documentation if applicable
+- Add usage examples where appropriate
+- Ensure the documentation reflects the current implementation
+
+### Step 3. Git Commit is done for all files
+- Commit all changes to Git if applicable
+- Summarize the changes made for the previous task
+- Include relevant task IDs in the commit message
+- Describe the functionality that was implemented
+- Note any architectural decisions made
+- Create a commit with a clear, descriptive message
+
+### Step 4. Merge/Pull Request
+- Create a merge/pull request from the current branch to the `develop` branch if not exist`
+- Include a descriptive title that references the task ID
+- Add a detailed description of the changes made
+- Reference any related issues or tasks
+- Request appropriate reviewers if applicable
+- Add relevant labels and milestones
+
+### Step 5. develop contains all changes
+- Ensure the `develop` branch contains all changes from previous tasks
+
+
+## OUTPUT FORMAT
+
+List all the steps from WORKFLOW and provide status against each steps in green and red color icon, green icon for completed and red icon for incomplete

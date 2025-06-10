@@ -18,6 +18,14 @@ from typing import Dict, Any, Optional, List, Union
 from vaahai.config.defaults import DEFAULT_CONFIG
 from vaahai.config.loader import load_toml, save_toml
 from vaahai.config.schema import validate_config, config_to_schema, schema_to_config, VaahAIConfig
+from vaahai.config.llm_utils import (
+    list_providers,
+    list_models,
+    get_default_model,
+    validate_api_key,
+    get_api_key_from_env,
+    get_provider_config_path,
+)
 from vaahai.config.utils import (
     get_user_config_dir,
     get_project_config_dir,
@@ -257,3 +265,156 @@ class ConfigManager:
             List[str]: List of validation errors, empty if valid
         """
         return validate_config(self.get_full_config())
+
+    # LLM Provider specific methods
+    
+    def get_current_provider(self) -> str:
+        """
+        Get the currently configured LLM provider.
+        
+        Returns:
+            str: Provider name
+        """
+        return self.get("llm.provider", "openai")
+    
+    def set_provider(self, provider: str) -> None:
+        """
+        Set the active LLM provider.
+        
+        Args:
+            provider (str): Provider name
+            
+        Raises:
+            ValueError: If provider is not supported
+        """
+        if provider not in list_providers():
+            raise ValueError(f"Unsupported provider: {provider}")
+        
+        self.set("llm.provider", provider)
+    
+    def get_provider_config(self, provider: Optional[str] = None) -> Dict[str, Any]:
+        """
+        Get configuration for a specific provider.
+        
+        Args:
+            provider (Optional[str]): Provider name, or None for current provider
+            
+        Returns:
+            Dict[str, Any]: Provider configuration
+            
+        Raises:
+            ValueError: If provider is not supported
+        """
+        if provider is None:
+            provider = self.get_current_provider()
+            
+        if provider not in list_providers():
+            raise ValueError(f"Unsupported provider: {provider}")
+            
+        config_path = get_provider_config_path(provider)
+        return self.get(config_path, {})
+    
+    def set_api_key(self, api_key: str, provider: Optional[str] = None) -> None:
+        """
+        Set API key for a provider.
+        
+        Args:
+            api_key (str): API key
+            provider (Optional[str]): Provider name, or None for current provider
+            
+        Raises:
+            ValueError: If provider is not supported or API key is invalid
+        """
+        if provider is None:
+            provider = self.get_current_provider()
+            
+        if provider not in list_providers():
+            raise ValueError(f"Unsupported provider: {provider}")
+            
+        if not validate_api_key(provider, api_key):
+            raise ValueError(f"Invalid API key for provider: {provider}")
+            
+        config_path = f"{get_provider_config_path(provider)}.api_key"
+        self.set(config_path, api_key)
+    
+    def get_api_key(self, provider: Optional[str] = None) -> str:
+        """
+        Get API key for a provider.
+        
+        This method checks in the following order:
+        1. CLI overrides
+        2. Environment variables
+        3. Configuration file
+        
+        Args:
+            provider (Optional[str]): Provider name, or None for current provider
+            
+        Returns:
+            str: API key
+            
+        Raises:
+            ValueError: If provider is not supported
+        """
+        if provider is None:
+            provider = self.get_current_provider()
+            
+        if provider not in list_providers():
+            raise ValueError(f"Unsupported provider: {provider}")
+            
+        # Check CLI overrides first
+        config_path = f"{get_provider_config_path(provider)}.api_key"
+        if config_path in self.cli_overrides:
+            return self.cli_overrides[config_path]
+            
+        # Check environment variables
+        env_api_key = get_api_key_from_env(provider)
+        if env_api_key:
+            return env_api_key
+            
+        # Check configuration
+        return self.get(config_path, "")
+
+    def get_model(self, provider: Optional[str] = None) -> str:
+        """
+        Get model for a provider.
+        
+        Args:
+            provider (Optional[str]): Provider name, or None for current provider
+            
+        Returns:
+            str: Model name
+            
+        Raises:
+            ValueError: If provider is not supported
+        """
+        if provider is None:
+            provider = self.get_current_provider()
+            
+        if provider not in list_providers():
+            raise ValueError(f"Unsupported provider: {provider}")
+            
+        config_path = f"{get_provider_config_path(provider)}.model"
+        return self.get(config_path, get_default_model(provider))
+    
+    def set_model(self, model: str, provider: Optional[str] = None) -> None:
+        """
+        Set model for a provider.
+        
+        Args:
+            model (str): Model name
+            provider (Optional[str]): Provider name, or None for current provider
+            
+        Raises:
+            ValueError: If provider is not supported or model is not valid
+        """
+        if provider is None:
+            provider = self.get_current_provider()
+            
+        if provider not in list_providers():
+            raise ValueError(f"Unsupported provider: {provider}")
+            
+        if model not in list_models(provider):
+            raise ValueError(f"Invalid model for provider {provider}: {model}")
+            
+        config_path = f"{get_provider_config_path(provider)}.model"
+        self.set(config_path, model)
