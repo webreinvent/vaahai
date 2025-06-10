@@ -43,6 +43,12 @@ Core commands handle fundamental functionality like configuration and version in
   - `vaahai config init`: Set up initial configuration
   - `vaahai config show`: Display current configuration
 - `vaahai version`: Display version information
+- `vaahai model`: Model selection and management
+  - `vaahai model list`: List available models with filtering options
+  - `vaahai model info`: Show detailed information about a specific model
+  - `vaahai model set`: Set the current model for a provider
+  - `vaahai model recommend`: Get recommended model based on capabilities
+  - `vaahai model capabilities`: List available model capabilities
 
 ### Project Commands
 

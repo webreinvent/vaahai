@@ -9,7 +9,7 @@ Follow this complete workflow for task management and implementation:
 ### Step 0. Project Scope
 Read and learn from `./project_scope.prompt` file our the project scope again so that you still understand the project scope
 
-### Step 1. Select Next Task
+### Step 1. Select Next Task if current task is completed
 - Review the current project status in `/specs/TASK_TRACKING.md`
 - Identify tasks marked as "Not Started" that have no incomplete dependencies
 - Prioritize MVP tasks and those that unblock multiple other tasks
@@ -57,20 +57,19 @@ Read and learn from `./project_scope.prompt` file our the project scope again so
 - Update documents in `/specs`, `/docs`, and `/ai_docs` as needed
 - Update root level README.md if applicable for the new feature, only consider important information only
 
-### Step 6. Commit and Create Merge/Pull Request
+### Step 6. Git Commit
 - Commit all changes to Git if applicable
-- Create a merge/pull request from the current branch to the `develop` branch
 - Include a descriptive title that references the task ID
 - Add a detailed description of the changes made
-- Reference any related issues or tasks
-- Request appropriate reviewers if applicable
-- Add relevant labels and milestones
 
-### Step 7. Update TASK_TRACKING.md
+### Step 7. Git Push
+- Push all changes to the remote repository
+
+### Step 8. Update TASK_TRACKING.md
 - Update the task status in `TASK_TRACKING.md` to "Completed"
 - Add any relevant notes or updates
 
-### Step 8. Update memory
+### Step 9. Update memory
 - Update your memory
 
 CLEARLY DEFINE YOUR NEXT STEPS AND ASK FOR CONFIRMATION BEFORE PROCEEDING.
