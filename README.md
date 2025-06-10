@@ -29,7 +29,10 @@
 ### Installation
 
 ```bash
-# Clone the repository
+# Install from PyPI
+pip install vaahai
+
+# Or clone the repository
 git clone https://github.com/webreinvent/vaahai.git
 cd vaahai
 
@@ -38,6 +41,22 @@ poetry install
 
 # Activate the Poetry virtual environment
 poetry shell
+```
+
+### Quick Start
+
+```bash
+# Initialize configuration
+vaahai config init
+
+# Show current configuration
+vaahai config show
+
+# List available models
+vaahai model list
+
+# Run a simple test to verify installation
+vaahai helloworld run
 ```
 
 ### Development Setup
@@ -302,6 +321,8 @@ For more detailed documentation, please refer to:
   - [Rich Integration Guide](/docs/cli/rich_integration.md)
   - [Command Groups Structure](/docs/cli/command_groups.md)
   - [CLI Architecture](/docs/architecture/cli_architecture.md)
+  - [Configuration Management](/docs/cli/config_command.md)
+  - [Model Selection](/docs/cli/model_command.md)
 
 ## 🤝 Contributing
 
