@@ -28,7 +28,10 @@ Note: Poetry is the package manager used in this project.
 - Build the package
 - Publish the package to PyPI
 
-### Step 4. Apply Git Tag
+### Step 4. Git Commit All Changes
+- Commit all changes, if already committed, skip this step
+
+### Step 5. Apply Git Tag
 - Create a git tag from version in `pyproject.toml`.
 - Push the tag to the remote repository
 
