@@ -241,6 +241,7 @@ def show(
     # Create a table for provider settings
     table = Table(title="Provider Settings", show_header=True, header_style="bold")
     table.add_column("Provider", style="cyan")
+    table.add_column("Default", style="magenta")
     table.add_column("API Key", style="green")
     table.add_column("Model", style="yellow")
     
@@ -253,15 +254,21 @@ def show(
             masked_key = "********" if api_key else "[not set]"
             model_display = model if model else "[not set]"
             
+            # Add default indicator for the active provider
+            is_default = p == provider
+            default_indicator = "✓" if is_default else ""
+            
             table.add_row(
                 p,
+                default_indicator,
                 masked_key,
                 model_display,
             )
         except Exception:
-            table.add_row(p, "[error]", "[error]")
+            table.add_row(p, "", "[error]", "[error]")
     
     console.print(table)
+    print_info("[dim]✓ indicates the active provider[/dim]")
     
     # Display Docker settings
     docker_enabled = config_manager.get("docker.enabled", False)
