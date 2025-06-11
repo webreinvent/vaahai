@@ -32,11 +32,17 @@ class MockUserMessage:
         self.content = content
         self.source = source
 
+class MockTextMessage:
+    """Mock implementation of TextMessage for test mode."""
+    def __init__(self, content: str, source: str):
+        self.content = content
+        self.source = source
+
 # Set flag to assume packages are not available initially
 AUTOGEN_PACKAGES_AVAILABLE = False
 AssistantAgent = MockAssistantAgent
 UserMessage = MockUserMessage
-Message = dict  # Use dict as a simple placeholder for Message class
+TextMessage = MockTextMessage
 
 # Check if packages are available without trying specific imports first
 try:
@@ -46,8 +52,8 @@ try:
     # Now try to import the specific classes we need - don't error if they don't exist
     try:
         # Check if these modules and classes exist
-        from autogen_agentchat.agents import ConversableAgent, AssistantAgent
-        from autogen_agentchat.messages import Message, UserMessage
+        from autogen_agentchat.agents import AssistantAgent, BaseChatAgent
+        from autogen_agentchat.messages import TextMessage, UserMessage
         from autogen_ext.models.openai import OpenAIChatCompletionClient
         
         # If we got here, all required classes are available
