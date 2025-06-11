@@ -5,7 +5,7 @@
 Follow this complete workflow for task management and implementation:
 
 ### Step 1. Pick the last task
-- Review /specs/TASK_TRACKING.md to identify the last completed task
+- Review /specs/task_tracking.md to identify the last completed task
 - Understand the scope of the last task
 
 ### Step 2. Last task implementation

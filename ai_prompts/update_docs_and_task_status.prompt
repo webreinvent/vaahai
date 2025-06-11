@@ -14,8 +14,8 @@ Update project documentation and task status based on recent implementations, co
 - Verify that the implementation meets the task requirements
 - Document any deviations from the original plan or scope
 
-### 2. Update Task Status in TASK_TRACKING.md
-- Locate the specific task ID in `/specs/TASK_TRACKING.md`
+### 2. Update Task Status in /specs/task_tracking.md
+- Locate the specific task ID in `/specs/task_tracking.md`
 - Update the status from "In Progress" (🟡) to "Completed" (🟢)
 - Add completion date to the task entry
 - Document any implementation notes or decisions in the Notes column
@@ -71,7 +71,7 @@ Provide a comprehensive report of all updates made, including:
    - Screenshots or code snippets added (if applicable)
 
 3. **Task Status Changes**:
-   - Updated task statuses in TASK_TRACKING.md
+   - Updated task statuses in /specs/task_tracking.md
    - New tasks that can now be started (dependencies satisfied)
    - Current project phase completion percentage
 
