@@ -12,17 +12,58 @@ import asyncio
 from typing import Any, Dict, List, Optional, Union
 from pathlib import Path
 
+# Define dummy classes for type hints in case imports fail
+class MockAssistantAgent:
+    """Mock implementation of AssistantAgent for test mode."""
+    def __init__(self, name: str, system_message: str):
+        self.name = name
+        self.system_message = system_message
+        
+    async def on_messages(self, messages: List[Any]) -> Any:
+        # Create a mock response object
+        class MockResponse:
+            def __init__(self, content):
+                self.content = content
+        return MockResponse(f"Hello there! This is a test response from {self.name}.")
+
+class MockUserMessage:
+    """Mock implementation of UserMessage for test mode."""
+    def __init__(self, content: str, source: str):
+        self.content = content
+        self.source = source
+
+# Set flag to assume packages are not available initially
+AUTOGEN_PACKAGES_AVAILABLE = False
+AssistantAgent = MockAssistantAgent
+UserMessage = MockUserMessage
+Message = dict  # Use dict as a simple placeholder for Message class
+
+# Check if packages are available without trying specific imports first
 try:
-    from autogen_agentchat.agents import AssistantAgent
-    from autogen_agentchat.messages import UserMessage, Message
-    from autogen_ext.models.openai import OpenAIChatCompletionClient
-    AUTOGEN_PACKAGES_AVAILABLE = True
-except ImportError:
-    AUTOGEN_PACKAGES_AVAILABLE = False
-    # Define dummy classes for type hints
-    class AssistantAgent: pass
-    class UserMessage: pass
-    class Message: pass
+    import autogen_agentchat
+    import autogen_ext
+    
+    # Now try to import the specific classes we need - don't error if they don't exist
+    try:
+        # Check if these modules and classes exist
+        from autogen_agentchat.agents import ConversableAgent, AssistantAgent
+        from autogen_agentchat.messages import Message, UserMessage
+        from autogen_ext.models.openai import OpenAIChatCompletionClient
+        
+        # If we got here, all required classes are available
+        AUTOGEN_PACKAGES_AVAILABLE = True
+    except (ImportError, AttributeError) as class_err:
+        # Specific classes not found, log the issue
+        logging.warning(
+            f"Some autogen classes not available: {str(class_err)}. "
+            "Running in test mode only."
+        )
+except ImportError as e:
+    # Base packages not found
+    logging.warning(
+        f"autogen-agentchat/autogen-ext packages not found: {str(e)}. "
+        "Running in test mode only."
+    )
 
 from vaahai.agents.base.autogen_agent_base import AutoGenAgentBase
 from vaahai.agents.base.agent_registry import AgentRegistry
@@ -49,6 +90,11 @@ class HelloWorldAgent(AutoGenAgentBase):
         Args:
             config: Configuration dictionary for the agent
         """
+        # Set test mode if autogen packages are not available
+        if not AUTOGEN_PACKAGES_AVAILABLE and not config.get("_test_mode", False):
+            config["_test_mode"] = True
+            logger.warning("AutoGen packages not available. Running in test mode.")
+            
         # Call parent's init first to set up self.config
         super().__init__(config)
         
@@ -177,40 +223,3 @@ class HelloWorldAgent(AutoGenAgentBase):
                 "status": "error",
                 "error": str(e)
             }
-
-
-class MockAssistantAgent:
-    """
-    A mock implementation of AssistantAgent for test mode.
-    """
-    
-    def __init__(self, name: str, system_message: str):
-        """
-        Initialize the mock agent.
-        
-        Args:
-            name: Name of the agent
-            system_message: System message for the agent
-        """
-        self.name = name
-        self.system_message = system_message
-        
-    async def on_messages(self, messages: List[Any]) -> Any:
-        """
-        Mock implementation of on_messages.
-        
-        Args:
-            messages: List of messages
-            
-        Returns:
-            A mock response
-        """
-        # Extract the last message content
-        message_content = messages[-1].content if messages else "Hello"
-        
-        # Create a mock response object
-        class MockResponse:
-            def __init__(self, content):
-                self.content = content
-                
-        return MockResponse(f"Hello there! This is a test response from {self.name}.")

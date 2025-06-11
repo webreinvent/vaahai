@@ -1,42 +1,48 @@
-[tool.poetry]
+[project]
 name = "vaahai"
 version = "0.2.20"
 description = "A multi AI agent CLI tool using Microsoft Autogen Framework"
-authors = ["VaahAI Team <info@example.com>"]
+authors = [
+    {name = "VaahAI Team", email = "info@example.com"}
+]
 readme = "README.md"
 license = "MIT"
-packages = [{include = "vaahai"}]
+requires-python = ">=3.10,<4.0"
+dependencies = [
+    "typer (==0.4.2)",
+    "inquirerpy (>=0.3.4,<0.4.0)",
+    "rich (>=13.4.2,<14.0.0)",
+    "python-dotenv (>=1.0.0,<2.0.0)",
+    "packaging (>=22.0,<25.0)",
+    "click (==8.0.4)",
+    "autogen-agentchat (>=0.5.7,<0.6.0)",
+    "autogen-ext[docker,openai] (>=0.5.7,<0.6.0)",
+    "setuptools (>=80.9.0,<81.0.0)",
+    "docker (>=7.1.0,<8.0.0)",
+    "tiktoken (>=0.9.0,<0.10.0)",
+    "jsonschema (>=4.24.0,<5.0.0)"
+]
 
-[tool.poetry.dependencies]
-python = ">=3.10,<4.0"
-typer = "0.4.2"
-inquirerpy = "^0.3.4"
-rich = "^13.4.2"
-python-dotenv = "^1.0.0"
-packaging = ">=22.0,<25.0"
-click = "8.0.4"
-autogen-agentchat = ">=0.5.7,<0.6.0"
-autogen-ext = {version = ">=0.5.7,<0.6.0", extras = ["docker"]}
-setuptools = ">=80.9.0,<81.0.0"
-docker = ">=7.1.0,<8.0.0"
-tiktoken = "^0.9.0"
-jsonschema = "^4.24.0"
+[project.optional-dependencies]
+dev = [
+    "pytest (>=7.3.1,<8.0.0)",
+    "black (>=23.3.0,<24.0.0)",
+    "isort (>=5.12.0,<6.0.0)",
+    "flake8 (>=6.0.0,<7.0.0)",
+    "mypy (>=1.3.0,<2.0.0)",
+    "toml (>=0.10.2,<0.11.0)",
+    "pre-commit (>=4.2.0,<5.0.0)"
+]
 
-[tool.poetry.group.dev.dependencies]
-pytest = "^7.3.1"
-black = "^23.3.0"
-isort = "^5.12.0"
-flake8 = "^6.0.0"
-mypy = "^1.3.0"
-toml = "^0.10.2"
-pre-commit = "^4.2.0"
+[project.scripts]
+vaahai = "vaahai.cli.main:main"
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.poetry.scripts]
-vaahai = "vaahai.cli.main:main"
+[tool.poetry]
+package-mode = false
 
 [tool.black]
 line-length = 88
