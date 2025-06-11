@@ -36,11 +36,12 @@ pip install vaahai
 git clone https://github.com/webreinvent/vaahai.git
 cd vaahai
 
+# Create a virtual environment in any of your favorite environment managers:
+conda create -n vaahai python=3.10
+conda activate vaahai
+
 # Install dependencies with Poetry
 poetry install
-
-# Activate the Poetry virtual environment
-poetry shell
 ```
 
 ### Quick Start
