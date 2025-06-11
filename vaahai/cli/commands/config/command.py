@@ -114,7 +114,20 @@ def init(
         default=config_manager.get_current_provider(),
     ).execute()
     
+    # Set the selected provider as the default provider
     config_manager.set_provider(provider)
+    print_success(f"Set {provider} as the default LLM provider")
+    
+    # Save the provider to both user-level and project-level configurations
+    # This ensures the provider is consistent across both configuration levels
+    config_manager.save(user_level=True)
+    
+    # Also save to project level if we're in a project
+    if config_manager.exists(level="project"):
+        project_config = ConfigManager(config_manager.project_config_dir / "config.toml")
+        project_config.set_provider(provider)
+        project_config.save(user_level=False)
+        print_success(f"Updated project-level configuration with {provider} as default provider")
     
     # Set API key
     current_api_key = config_manager.get_api_key(provider)
