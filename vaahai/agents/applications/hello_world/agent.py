@@ -60,49 +60,34 @@ class MockTextMessage:
 
 # Set flag to assume packages are not available initially
 AUTOGEN_PACKAGES_AVAILABLE = False
-AssistantAgent = MockAssistantAgent
-UserMessage = MockUserMessage
-TextMessage = MockTextMessage
-CancellationToken = None
 
-# Check if packages are available without trying specific imports first
+# Simplified imports for AutoGen components - don't over-complicate
 try:
+    # First check if base packages exist
     import autogen_agentchat
-    import autogen_ext
     import autogen_core
     
-    # Now try to import the specific classes we need - don't error if they don't exist
+    # Import specific components we need
     try:
-        # Check if these modules and classes exist
-        from autogen_agentchat.agents import AssistantAgent, BaseChatAgent
-        # Import message types from the correct location
-        from autogen_agentchat.messages import UserMessage, TextMessage
+        from autogen_agentchat.agents import AssistantAgent
+        from autogen_agentchat.messages import TextMessage, MultiModalMessage
+        from autogen_core import _cancellation_token
         from autogen_ext.models.openai import OpenAIChatCompletionClient
-        from autogen_core._cancellation_token import CancellationToken
         
-        # If we got here, all required classes are available
+        # If we got here without exceptions, packages are available
         AUTOGEN_PACKAGES_AVAILABLE = True
         logging.info("AutoGen packages available, running with real LLM capabilities.")
-    except (ImportError, AttributeError) as class_err:
-        # Specific classes not found, log the issue
-        logging.warning(
-            f"Some autogen classes not available: {str(class_err)}. "
-            "Running in test mode only."
-        )
+    except (ImportError, AttributeError) as e:
+        logging.warning(f"Failed to import AutoGen components: {e}. Running in test mode.")
 except ImportError as e:
-    # Base packages not found
-    logging.warning(
-        f"autogen-agentchat/autogen-ext packages not found: {str(e)}. "
-        "Running in test mode only."
-    )
-
-from vaahai.agents.base.autogen_agent_base import AutoGenAgentBase
-from vaahai.agents.base.agent_registry import AgentRegistry
-from vaahai.agents.utils.prompt_manager import PromptManager
+    logging.warning(f"AutoGen packages not available: {e}. Running in test mode.")
 
 # Set up logging
 logger = logging.getLogger(__name__)
 
+from vaahai.agents.base.autogen_agent_base import AutoGenAgentBase
+from vaahai.agents.base.agent_registry import AgentRegistry
+from vaahai.agents.utils.prompt_manager import PromptManager
 
 @AgentRegistry.register("hello_world")
 class HelloWorldAgent(AutoGenAgentBase):
@@ -255,49 +240,55 @@ class HelloWorldAgent(AutoGenAgentBase):
         Returns:
             Greeting message string
         """
-        # If we're in test mode or AutoGen isn't available, use the mock agent
-        if self.config.get("_test_mode", False) or not AUTOGEN_PACKAGES_AVAILABLE:
-            logger.info("Running in test mode with mock agent")
-            mock_agent = MockAssistantAgent(
-                name=self.name,
-                system_message=self.greeting_prompt.format(agent_name=self.name)
-            )
-            response = await mock_agent.on_messages([])
-            return response.content
-            
-        # If we have a real agent, use it
         if self.agent:
             try:
-                logger.info("Using real AutoGen agent for greeting generation")
+                # Check if we're in test mode first
+                if self.config.get("_test_mode", False):
+                    logger.info("Running in test mode with mock agent")
+                    # For test mode, we can use simple mock message
+                    mock_message = MockUserMessage(
+                        content="Hello! Please introduce yourself with a funny greeting.",
+                        source="user"
+                    )
+                    response = await self.agent.on_messages([mock_message])
+                    return response.content
                 
-                # Try to use the agent with the current AutoGen API
                 try:
-                    # Import required message classes directly
+                    logger.info("Preparing to call real AutoGen agent")
+                    
+                    # Create a cancellation token (if available)
+                    cancellation_token = None
+                    if hasattr(_cancellation_token, "CancellationToken"):
+                        cancellation_token = _cancellation_token.CancellationToken()
+                        logger.info("Created cancellation token")
+                    
+                    # Create a message using TextMessage from autogen_agentchat.messages
+                    greeting_message = TextMessage(
+                        content="Hello! Please introduce yourself with a funny greeting.",
+                        source="user"
+                    )
+                    
+                    logger.info(f"Created TextMessage: {greeting_message}")
+                    
+                    # Call the agent with the message and token
+                    logger.info("Calling agent with TextMessage object")
+                    response = await self.agent.on_messages([greeting_message], cancellation_token)
+                    logger.info(f"Received response from agent: {response}")
+                    
+                    return response.content
+                    
+                except Exception as e:
+                    logger.error(f"Error with TextMessage approach: {e}")
+                    # Try one more approach with just a string if TextMessage failed
                     try:
-                        # Use dict format for messages which should be more compatible
-                        message = {
-                            "type": "user_message", 
-                            "content": "Hello! Please introduce yourself with a funny greeting.",
-                            "source": self.name
-                        }
-                        logger.info("Created message as dictionary")
-                        
-                        # Create a cancellation token (required by AssistantAgent.on_messages)
-                        cancellation_token = CancellationToken()
-                        
-                        # Get response from the agent
-                        response = await self.agent.on_messages([message], cancellation_token)
-                        return response.content
-                        
-                    except Exception as msg_err:
-                        # If dictionary approach fails, try with UserMessage
-                        logger.warning(f"Dictionary message approach failed: {str(msg_err)}")
-                        logger.warning("Falling back to test mode due to AutoGen API compatibility issues")
-                        raise Exception("AutoGen API compatibility issue")
-                        
-                except Exception as inner_e:
-                    logger.error(f"Error with message handling: {str(inner_e)}")
-                    raise
+                        logger.info("Trying with simple string message")
+                        message = "Hello! Please introduce yourself with a funny greeting."
+                        response = await self.agent.generate_reply([message], cancellation_token)
+                        logger.info(f"Received response from string message: {response}")
+                        return response
+                    except Exception as e2:
+                        logger.error(f"Error with string approach: {e2}")
+                        raise e  # Re-raise the original error
                     
             except Exception as e:
                 logger.warning(f"Falling back to test mode due to error: {str(e)}")
