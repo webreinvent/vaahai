@@ -10,11 +10,11 @@ Follow this complete workflow for task management and implementation:
 Read and learn from `./project_scope.prompt` file our the project scope again so that you still understand the project scope
 
 ### Step 1. Select Next Task if current task is completed
-- Review the current project status in `/specs/TASK_TRACKING.md`
+- Review the current project status in `/specs/task_tracking.md`
 - Identify tasks marked as "Not Started" that have no incomplete dependencies
 - Prioritize MVP tasks and those that unblock multiple other tasks
 - Consider the logical flow of implementation
-- Update the task status in `TASK_TRACKING.md` to "In Progress"
+- Update the task status in `task_tracking.md` to "In Progress"
 
 ### Step 2. Create New Branch
 - PREFERRED APPROACH: Create a branch from the previous task branch if it contains necessary code for the next task
@@ -65,8 +65,8 @@ Read and learn from `./project_scope.prompt` file our the project scope again so
 ### Step 7. Git Push
 - Push all changes to the remote repository
 
-### Step 8. Update TASK_TRACKING.md
-- Update the task status in `TASK_TRACKING.md` to "Completed"
+### Step 8. Update /specs/task_tracking.md
+- Update the task status in `/specs/task_tracking.md` to "Completed"
 - Add any relevant notes or updates
 
 ### Step 9. Update memory
