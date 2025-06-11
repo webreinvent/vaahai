@@ -53,6 +53,9 @@ This document tracks the tasks for the VaahAI project, organized by priority and
 
 | Task ID | Description | Status | Dependencies | Notes |
 |---------|-------------|--------|--------------|-------|
+| [P1-T24] | Show default tag/label for LLM in config show | 🔴 | [P1-T16], [P1-T18] | Enhance `vaahai config show` to display default tag or label for the configured LLM provider |
+| [P2-T16] | Add loading animation for helloworld command | 🔴 | [P2-T7] | Implement spinner/loader while waiting for API response in the helloworld command |
+| [P2-T17] | Add location-based personalization to helloworld | 🔴 | [P2-T7], [P2-T16] | Detect user's timezone/country and personalize jokes in the helloworld command |
 | [P2-T3] | Implement group chat manager | 🔴 | [P2-T1] | Create wrapper for AutoGen's GroupChat functionality |
 
 ## Completed Tasks
