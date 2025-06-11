@@ -163,6 +163,12 @@ vaahai [command_group] [command] [action] --help
 #### Development Commands
 - `vaahai dev helloworld`: Test command to verify proper functioning
   - `vaahai dev helloworld run`: Execute the hello world test
+  - `vaahai dev helloworld --help`: Show help for the hello world command
+  - Shows detailed debug information including provider, prompt template, and rendered prompt
+- `vaahai helloworld`: Simplified version of the hello world command
+  - Features location-based personalization with culturally relevant greetings
+  - Detects user's location/timezone automatically
+  - Use `--dev` flag to see detailed information
 - `vaahai dev showcase`: Demonstrate Rich formatting capabilities
 - `vaahai dev prompts`: Demonstrate InquirerPy prompt capabilities
 
