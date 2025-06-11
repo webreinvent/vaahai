@@ -130,25 +130,52 @@ class AutoGenAgentBase(AgentBase):
             
         try:
             vaahai_config = load_config()
-            provider = self.config.get("provider", "openai")
-            model = self.config.get("model")
             
+            # Always default to OpenAI if provider is not specified
+            provider = self.config.get("provider") or get_config_value("llm.provider", vaahai_config) or "openai"
+            
+            # Get model from config or use default for the provider
+            model = self.config.get("model")
             if not model:
-                model = get_config_value("llm.model", vaahai_config) or "gpt-4"
+                provider_model_key = f"llm.{provider}.model"
+                model = get_config_value(provider_model_key, vaahai_config)
+                
+                # If provider-specific model is not found, use default model for OpenAI
+                if not model:
+                    if provider == "openai":
+                        model = "gpt-4"
+                    else:
+                        # Try to get the default model for the provider
+                        model = get_config_value(f"llm.{provider}.model", vaahai_config) or "gpt-4"
                 
             # Get API key from config or environment variables
-            api_key = get_config_value("llm.api_key", vaahai_config)
+            api_key = self.config.get("api_key")
             if not api_key:
-                # Check environment variables in order of precedence
-                env_var_name = f"VAAHAI_PROVIDERS_{provider.upper()}_API_KEY"
-                api_key = os.environ.get(env_var_name)
+                provider_api_key = f"llm.{provider}.api_key"
+                api_key = get_config_value(provider_api_key, vaahai_config)
                 
-                # For OpenAI, also check standard environment variable
-                if not api_key and provider.lower() == "openai":
-                    api_key = os.environ.get("OPENAI_API_KEY")
-                    
                 if not api_key:
-                    raise ValueError(f"No API key found for provider '{provider}'")
+                    # Check environment variables in order of precedence
+                    env_var_name = f"VAAHAI_PROVIDERS_{provider.upper()}_API_KEY"
+                    api_key = os.environ.get(env_var_name)
+                    
+                    # For OpenAI, also check standard environment variable
+                    if not api_key and provider.lower() == "openai":
+                        api_key = os.environ.get("OPENAI_API_KEY")
+                        
+                    if not api_key:
+                        # If no API key is found for the specified provider, try OpenAI as fallback
+                        if provider.lower() != "openai":
+                            logger.warning(
+                                f"No API key found for provider '{provider}'. Trying OpenAI as fallback."
+                            )
+                            provider = "openai"
+                            model = "gpt-4"
+                            api_key = os.environ.get("OPENAI_API_KEY")
+                            
+                        # If still no API key, raise error
+                        if not api_key:
+                            raise ValueError(f"No API key found for provider '{provider}'")
             
             # Prepare base LLM config
             llm_config = {
@@ -158,9 +185,18 @@ class AutoGenAgentBase(AgentBase):
             }
             
             # Handle API base URL
-            api_base = os.environ.get(f"VAAHAI_PROVIDERS_{provider.upper()}_API_BASE")
-            if not api_base and provider.lower() == "openai":
-                api_base = os.environ.get("OPENAI_API_BASE")
+            api_base = self.config.get("api_base")
+            if not api_base:
+                provider_api_base = f"llm.{provider}.api_base"
+                api_base = get_config_value(provider_api_base, vaahai_config)
+                
+                if not api_base:
+                    env_var_name = f"VAAHAI_PROVIDERS_{provider.upper()}_API_BASE"
+                    api_base = os.environ.get(env_var_name)
+                    
+                    # For OpenAI, also check standard environment variable
+                    if not api_base and provider.lower() == "openai":
+                        api_base = os.environ.get("OPENAI_API_BASE")
                 
             if api_base:
                 llm_config["api_base"] = api_base
@@ -206,17 +242,21 @@ class AutoGenAgentBase(AgentBase):
                 
             return client
             
+        # TODO: Add support for other providers
+        
+        # Default to None if provider not supported
         return None
     
     @abstractmethod
     def _create_autogen_agent(self) -> Any:
         """
-        Create an instance of an AutoGen agent.
+        Create an Autogen agent based on the configuration.
+        
+        This method should be implemented by subclasses to create the specific
+        type of Autogen agent needed for their use case.
         
         Returns:
-            An AutoGen agent instance
-        
-        This method must be implemented by subclasses.
+            An Autogen agent instance
         """
         pass
 

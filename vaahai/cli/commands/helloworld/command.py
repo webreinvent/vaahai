@@ -8,6 +8,7 @@ autogen-agentchat and autogen-ext packages.
 
 import typer
 from typing import Optional
+import asyncio
 
 from vaahai.cli.utils.console import console, print_panel, print_success, print_error
 from vaahai.cli.utils.help import CustomHelpCommand, create_typer_app
@@ -55,8 +56,16 @@ def run(
         
         agent = AgentFactory.create_agent("hello_world", config)
         
-        # Run the agent
-        result = agent.run()
+        # Run the agent asynchronously
+        try:
+            # Try to get existing event loop
+            loop = asyncio.get_event_loop()
+        except RuntimeError:
+            # Create new event loop if one doesn't exist
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            
+        result = loop.run_until_complete(agent.run())
         
         if result.get("status") == "success":
             # Display the agent's response
