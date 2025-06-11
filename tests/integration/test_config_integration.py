@@ -13,8 +13,8 @@ import pytest
 import toml
 import typer
 
-from vaahai.test.utils.base_test import BaseTest
-from vaahai.test.utils.cli_helpers import assert_command_success
+from tests.utils.base_test import BaseTest
+from tests.utils.cli_helpers import assert_command_success
 
 
 class TestConfigIntegration(BaseTest):
