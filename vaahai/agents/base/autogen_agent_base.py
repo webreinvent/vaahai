@@ -12,12 +12,8 @@ import os
 import logging
 
 # Define dummy classes for type hints in case imports fail
-class Agent:
-    """Mock implementation of Agent for test mode."""
-    pass
-
-class ModelClient:
-    """Mock implementation of ModelClient for test mode."""
+class BaseChatAgent:
+    """Mock implementation of BaseChatAgent for test mode."""
     pass
 
 class OpenAIChatCompletionClient:
@@ -38,8 +34,7 @@ try:
     # Now try to import the specific classes we need - don't error if they don't exist
     try:
         # Check if these modules and classes exist
-        from autogen_agentchat.agents import Agent
-        from autogen_ext.models import ModelClient
+        from autogen_agentchat.agents import BaseChatAgent
         from autogen_ext.models.openai import OpenAIChatCompletionClient
         
         # If we got here, all required classes are available
@@ -183,7 +178,7 @@ class AutoGenAgentBase(AgentBase):
         except Exception as e:
             raise ValueError(f"Error preparing LLM configuration: {str(e)}")
 
-    def _create_model_client(self) -> Optional[ModelClient]:
+    def _create_model_client(self) -> Optional[OpenAIChatCompletionClient]:
         """
         Create a model client based on the LLM configuration.
         
