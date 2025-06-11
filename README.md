@@ -312,11 +312,11 @@ vaahai/
 
 For more detailed documentation, please refer to:
 
-- [Project Plan](/specs/PROJECT_PLAN.md)
-- [Features Specification](/specs/FEATURES.md)
-- [Technical Architecture](/specs/TECHNICAL_ARCHITECTURE.md)
-- [User Guide](/docs/USER_GUIDE.md)
-- [API Reference](/docs/API_REFERENCE.md)
+- [Project Plan](/specs/project_plan.md)
+- [Features Specification](/specs/features.md)
+- [Technical Architecture](/specs/technical_architecture.md)
+- [User Guide](/docs/user_guide.md)
+- [API Reference](/docs/api_reference.md)
 - [CLI Documentation](/docs/cli/)
   - [Rich Integration Guide](/docs/cli/rich_integration.md)
   - [Command Groups Structure](/docs/cli/command_groups.md)

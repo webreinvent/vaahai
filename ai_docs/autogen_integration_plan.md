@@ -226,7 +226,7 @@ Each task in this integration plan will be implemented following VaahAI's develo
 1. **Task Verification**: Verify the previous task is completed and tested
 2. **Documentation Update**: Update relevant documentation in /specs, /docs, and /ai_docs
 3. **Git Workflow**: Create detailed git commits and pull requests
-4. **Task Selection**: Select the next task and update TASK_TRACKING.md
+4. **Task Selection**: Select the next task and update task_tracking.md
 5. **Branch Creation**: Create a new branch following the project's branching strategy
 6. **Task Analysis**: Analyze the scope of the task
 7. **Implementation Planning**: Create a detailed implementation plan
@@ -282,7 +282,7 @@ Based on our research and analysis, we recommend the following approach for impl
 1. **Task Verification**: Verify the previous task is completed and tested
 2. **Documentation Update**: Update relevant documentation in /specs, /docs, and /ai_docs
 3. **Git Workflow**: Create detailed git commits and pull requests
-4. **Task Selection**: Select the next task and update TASK_TRACKING.md
+4. **Task Selection**: Select the next task and update task_tracking.md
 5. **Branch Creation**: Create a new branch following the project's branching strategy
 6. **Task Analysis**: Analyze the scope of the task
 7. **Implementation Planning**: Create a detailed implementation plan

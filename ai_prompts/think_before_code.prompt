@@ -9,7 +9,7 @@ Before writing any code for the VaahAI project, thoroughly analyze the project s
 1. Understand the full context by reviewing:
    - Project requirements and specifications in `/specs`
    - Technical architecture documentation in `/ai_docs`
-   - Current implementation status in `/specs/TASK_TRACKING.md`
+   - Current implementation status in `/specs/task_tracking.md`
    - Understand current codebase in `/vaahai`
    - Related existing code and components
 
