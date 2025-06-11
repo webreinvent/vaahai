@@ -7,7 +7,7 @@ name = "vaahai"
 version = "0.2.20"
 description = "A multi AI agent CLI tool using Microsoft Autogen Framework"
 authors = ["VaahAI Team <info@example.com>"]
-readme = "README.md"
+readme = "readme.md"
 license = "MIT"
 packages = [{include = "vaahai"}]
 

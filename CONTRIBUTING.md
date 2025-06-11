@@ -49,7 +49,7 @@ We follow an incremental development approach with small, achievable tasks to en
 2. Update relevant documentation in `/specs`, `/docs`, and `/ai_docs`
 3. Create a git commit with a clear message including task IDs
 4. Create a merge/pull request to the `develop` branch
-5. Select the next task from `TASK_TRACKING.md`
+5. Select the next task from `task_tracking.md`
 6. Create a new branch for the task
 7. Implement the task with proper testing
 8. Submit your changes for review

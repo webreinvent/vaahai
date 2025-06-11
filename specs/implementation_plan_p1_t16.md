@@ -427,7 +427,7 @@ def main(
 
 ## Documentation Updates
 
-- Update `CONFIGURATION.md` with the new configuration structure
+- Update `configuration.md` with the new configuration structure
 - Document environment variable overrides (placeholder for P1-T22)
 - Document configuration file format and schema
 - Add examples of common configuration scenarios
