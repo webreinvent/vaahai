@@ -22,7 +22,7 @@ from vaahai.cli.utils.console import (
     print_success,
     print_warning,
 )
-from vaahai.test.utils.base_test import BaseTest
+from tests.utils.base_test import BaseTest
 
 
 class TestConsoleUtils(BaseTest):

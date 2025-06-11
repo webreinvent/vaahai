@@ -10,7 +10,7 @@ import pytest
 import typer
 
 from vaahai.cli.utils.help import custom_callback, format_command_help, show_custom_help
-from vaahai.test.utils.base_test import BaseTest
+from tests.utils.base_test import BaseTest
 
 
 class TestHelpUtils(BaseTest):

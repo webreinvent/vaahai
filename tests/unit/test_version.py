@@ -11,7 +11,7 @@ import pytest
 from typer.testing import CliRunner
 
 from vaahai.cli.main import app
-from vaahai.test.utils.base_test import BaseTest
+from tests.utils.base_test import BaseTest
 
 
 class TestVersion(BaseTest):
