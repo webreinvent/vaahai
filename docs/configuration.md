@@ -166,7 +166,7 @@ include_references = true  # Include reference links for issues
 severity_threshold = "low"  # Minimum severity to report: "critical", "high", "medium", or "low"
 ```
 
-For detailed information on agent configuration and JSON schema validation requirements, see [AGENT_CONFIGURATION.md](AGENT_CONFIGURATION.md).
+For detailed information on agent configuration and JSON schema validation requirements, see [agent_configuration.md](agent_configuration.md).
 
 ## Managing Configuration
 

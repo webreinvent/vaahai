@@ -150,8 +150,8 @@ The `vaahai config init` command is a critical component of the VaahAI CLI that 
 
 ## Documentation
 
-- Update CONFIGURATION.md with detailed configuration options
-- Update COMMANDS.md with command usage
+- Update configuration.md with detailed configuration options
+- Update commands.md with command usage
 - Create examples for common configuration scenarios
 - Document environment variables for configuration overrides
 - Document configuration file format and schema
