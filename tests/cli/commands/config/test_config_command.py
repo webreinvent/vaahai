@@ -233,21 +233,21 @@ def test_config_reset_cancelled(runner, mock_config_manager):
         mock_config_manager.save.assert_not_called()
 
 
-@patch("vaahai.cli.commands.config.command.inquirer.select")
-@patch("vaahai.cli.commands.config.command.inquirer.secret")
-@patch("vaahai.cli.commands.config.command.inquirer.confirm")
 @patch("vaahai.cli.commands.config.command.inquirer.text")
+@patch("vaahai.cli.commands.config.command.inquirer.confirm")
+@patch("vaahai.cli.commands.config.command.inquirer.secret")
+@patch("vaahai.cli.commands.config.command.inquirer.select")
+@patch("vaahai.cli.commands.config.command.ConfigManager")
 @patch("vaahai.cli.commands.config.command.list_providers")
 @patch("vaahai.cli.commands.config.command.list_models")
 def test_config_init(
     mock_list_models, 
     mock_list_providers, 
-    mock_text, 
-    mock_confirm, 
-    mock_secret, 
+    mock_config_manager_class,
     mock_select, 
-    runner, 
-    mock_config_manager
+    mock_secret, 
+    mock_confirm, 
+    mock_text
 ):
     """Test the config init command."""
     # Configure mock behaviors
@@ -271,36 +271,58 @@ def test_config_init(
     mock_text_instance.execute.side_effect = ["custom-image", "16g"]
     mock_text.return_value = mock_text_instance
     
+    # Set up the ConfigManager mock
+    mock_config_manager = MagicMock()
+    mock_config_manager.get_current_provider.return_value = "claude"
+    mock_config_manager.project_config_dir = Path("/mock/project/.vaahai")
+    mock_config_manager.exists.return_value = True
+    
+    # Set up the project-level ConfigManager mock
+    mock_project_config = MagicMock()
+    
+    # Configure the ConfigManager class mock to return our mock instances
+    mock_config_manager_class.side_effect = [mock_config_manager, mock_project_config]
+    
     # Run the command
+    runner = CliRunner()
     result = runner.invoke(app, ["config", "init"])
     
     # Check the result
     assert result.exit_code == 0
+    assert "Set openai as the default LLM provider" in result.stdout
+    assert "Updated project-level configuration with openai as default provider" in result.stdout
     assert "Configuration saved successfully" in result.stdout
     
-    # Verify mock calls
-    mock_config_manager.set_provider.assert_called_once_with("openai")
-    mock_config_manager.set_api_key.assert_called_once_with("new-api-key", "openai")
-    mock_config_manager.set_model.assert_called_once_with("gpt-4", "openai")
+    # Verify user-level config was updated
+    mock_config_manager.set_provider.assert_called_with("openai")
+    mock_config_manager.set_api_key.assert_called_with("new-api-key", "openai")
+    mock_config_manager.set_model.assert_called_with("gpt-4", "openai")
     mock_config_manager.set.assert_any_call("docker.enabled", True)
     mock_config_manager.set.assert_any_call("docker.image", "custom-image")
     mock_config_manager.set.assert_any_call("docker.memory", "16g")
-    mock_config_manager.save.assert_called_once_with(user_level=True)
+    mock_config_manager.save.assert_called_with(user_level=True)
+    
+    # Verify project-level config was updated
+    mock_config_manager.exists.assert_called_with(level="project")
+    mock_project_config.set_provider.assert_called_once_with("openai")
+    mock_project_config.save.assert_called_once_with(user_level=False)
 
 
-@patch("vaahai.cli.commands.config.command.inquirer.select")
-@patch("vaahai.cli.commands.config.command.inquirer.secret")
+@patch("vaahai.cli.commands.config.command.inquirer.text")
 @patch("vaahai.cli.commands.config.command.inquirer.confirm")
+@patch("vaahai.cli.commands.config.command.inquirer.secret")
+@patch("vaahai.cli.commands.config.command.inquirer.select")
+@patch("vaahai.cli.commands.config.command.ConfigManager")
 @patch("vaahai.cli.commands.config.command.list_providers")
 @patch("vaahai.cli.commands.config.command.list_models")
 def test_config_init_api_key_validation_error(
-    mock_list_models, 
-    mock_list_providers, 
-    mock_confirm, 
-    mock_secret, 
-    mock_select, 
-    runner, 
-    mock_config_manager
+    mock_list_models,
+    mock_list_providers,
+    mock_config_manager_class,
+    mock_select,
+    mock_secret,
+    mock_confirm,
+    mock_text
 ):
     """Test the config init command with API key validation error."""
     # Configure mock behaviors
@@ -320,19 +342,31 @@ def test_config_init_api_key_validation_error(
     mock_confirm_instance.execute.return_value = False
     mock_confirm.return_value = mock_confirm_instance
     
+    # Set up text mock for Docker settings (not used in this test)
+    mock_text_instance = MagicMock()
+    mock_text.return_value = mock_text_instance
+
+    # Set up the ConfigManager mock
+    mock_config_manager = MagicMock()
+    mock_config_manager.get_current_provider.return_value = "claude"
+    mock_config_manager.project_config_dir = Path("/mock/project/.vaahai")
+    
     # Make set_api_key raise ValueError
     mock_config_manager.set_api_key.side_effect = ValueError("Invalid API key")
     
+    # Configure the ConfigManager class mock to return our mock instance
+    mock_config_manager_class.return_value = mock_config_manager
+
     # Run the command
+    runner = CliRunner()
     result = runner.invoke(app, ["config", "init"])
     
     # Check the result
     assert result.exit_code == 0
-    assert "Could not validate API key" in result.stdout
-    assert "The key will be saved but might not work correctly" in result.stdout
+    assert "Invalid API key" in result.stdout
     
     # Verify mock calls
-    mock_config_manager.set_provider.assert_called_once_with("openai")
-    mock_config_manager.set_api_key.assert_called_once_with("invalid-key", "openai")
+    mock_config_manager.set_provider.assert_called_with("openai")
+    mock_config_manager.set_api_key.assert_called_with("invalid-key", "openai")
     mock_config_manager.set.assert_any_call("providers.openai.api_key", "invalid-key")
-    mock_config_manager.save.assert_called_once_with(user_level=True)
+    mock_config_manager.save.assert_called_with(user_level=True)
