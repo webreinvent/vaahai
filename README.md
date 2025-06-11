@@ -30,7 +30,7 @@
 
 ```bash
 # Install from PyPI
-pip install vaahai
+pip3 install vaahai
 
 # Or clone the repository
 git clone https://github.com/webreinvent/vaahai.git
