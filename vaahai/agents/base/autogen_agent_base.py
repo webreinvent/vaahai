@@ -137,22 +137,34 @@ class AutoGenAgentBase(AgentBase):
             # Get model from config or use default for the provider
             model = self.config.get("model")
             if not model:
-                provider_model_key = f"llm.{provider}.model"
+                # Try config path with providers prefix
+                provider_model_key = f"llm.providers.{provider}.model"
                 model = get_config_value(provider_model_key, vaahai_config)
+                
+                # Try older config path without providers prefix as fallback
+                if not model:
+                    provider_model_key = f"llm.{provider}.model"
+                    model = get_config_value(provider_model_key, vaahai_config)
                 
                 # If provider-specific model is not found, use default model for OpenAI
                 if not model:
                     if provider == "openai":
-                        model = "gpt-4"
+                        model = "gpt-3.5-turbo"
                     else:
                         # Try to get the default model for the provider
-                        model = get_config_value(f"llm.{provider}.model", vaahai_config) or "gpt-4"
+                        model = get_config_value(f"llm.providers.{provider}.model", vaahai_config) or "gpt-3.5-turbo"
                 
             # Get API key from config or environment variables
             api_key = self.config.get("api_key")
             if not api_key:
-                provider_api_key = f"llm.{provider}.api_key"
+                # Try config path with providers prefix
+                provider_api_key = f"llm.providers.{provider}.api_key"
                 api_key = get_config_value(provider_api_key, vaahai_config)
+                
+                # Try older config path without providers prefix as fallback
+                if not api_key:
+                    provider_api_key = f"llm.{provider}.api_key"
+                    api_key = get_config_value(provider_api_key, vaahai_config)
                 
                 if not api_key:
                     # Check environment variables in order of precedence
@@ -170,7 +182,7 @@ class AutoGenAgentBase(AgentBase):
                                 f"No API key found for provider '{provider}'. Trying OpenAI as fallback."
                             )
                             provider = "openai"
-                            model = "gpt-4"
+                            model = "gpt-3.5-turbo"
                             api_key = os.environ.get("OPENAI_API_KEY")
                             
                         # If still no API key, raise error
@@ -187,8 +199,14 @@ class AutoGenAgentBase(AgentBase):
             # Handle API base URL
             api_base = self.config.get("api_base")
             if not api_base:
-                provider_api_base = f"llm.{provider}.api_base"
+                # Try config path with providers prefix
+                provider_api_base = f"llm.providers.{provider}.api_base"
                 api_base = get_config_value(provider_api_base, vaahai_config)
+                
+                # Try older config path without providers prefix as fallback
+                if not api_base:
+                    provider_api_base = f"llm.{provider}.api_base"
+                    api_base = get_config_value(provider_api_base, vaahai_config)
                 
                 if not api_base:
                     env_var_name = f"VAAHAI_PROVIDERS_{provider.upper()}_API_BASE"
