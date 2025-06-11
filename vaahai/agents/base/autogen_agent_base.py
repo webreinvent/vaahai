@@ -1,32 +1,60 @@
 """
-AutoGen-specific base agent class for VaahAI.
+Base class for Autogen agents.
 
-This module defines the base class for agents that use Microsoft's AutoGen framework.
+This module provides the base classes for implementing agents using the
+Autogen framework, handling common tasks like configuration, LLM setup,
+and agent initialization.
 """
 
-import os
+from abc import ABC, abstractmethod
 from typing import Any, Dict, Optional, List
+import os
 import logging
 
-# Try to import the required packages for the new autogen structure
+# Define dummy classes for type hints in case imports fail
+class Agent:
+    """Mock implementation of Agent for test mode."""
+    pass
+
+class ModelClient:
+    """Mock implementation of ModelClient for test mode."""
+    pass
+
+class OpenAIChatCompletionClient:
+    """Mock implementation of OpenAIChatCompletionClient for test mode."""
+    def __init__(self, model: str = None, api_key: str = None):
+        self.model = model
+        self.api_key = api_key
+        self.api_base = None
+
+# Set flag to assume packages are not available initially
+AUTOGEN_PACKAGES_AVAILABLE = False
+
+# Check if packages are available without trying specific imports first
 try:
-    from autogen_agentchat.agents import Agent
-    from autogen_ext.models import ModelClient
-    from autogen_ext.models.openai import OpenAIChatCompletionClient
-    AUTOGEN_PACKAGES_AVAILABLE = True
-except ImportError:
-    # Set flag to indicate packages are not available
-    AUTOGEN_PACKAGES_AVAILABLE = False
-    # Define dummy classes for type hints
-    class Agent: pass
-    class ModelClient: pass
-    class OpenAIChatCompletionClient: pass
+    import autogen_agentchat
+    import autogen_ext
     
-    # Only raise error if not in test mode
+    # Now try to import the specific classes we need - don't error if they don't exist
+    try:
+        # Check if these modules and classes exist
+        from autogen_agentchat.agents import Agent
+        from autogen_ext.models import ModelClient
+        from autogen_ext.models.openai import OpenAIChatCompletionClient
+        
+        # If we got here, all required classes are available
+        AUTOGEN_PACKAGES_AVAILABLE = True
+    except (ImportError, AttributeError) as class_err:
+        # Specific classes not found, log the issue
+        logging.warning(
+            f"Some autogen classes not available: {str(class_err)}. "
+            "Running in test mode only."
+        )
+except ImportError as e:
+    # Base packages not found
     logging.warning(
-        "autogen-agentchat/autogen-ext packages not found. "
-        "Running in test mode only. To use full functionality, install: "
-        "pip install autogen-agentchat autogen-ext"
+        f"autogen-agentchat/autogen-ext packages not found: {str(e)}. "
+        "Running in test mode only."
     )
 
 # Import internal modules
@@ -36,7 +64,7 @@ from vaahai.cli.utils.config import load_config, get_config_value
 logger = logging.getLogger(__name__)
 
 
-class AgentBase:
+class AgentBase(ABC):
     """Abstract base class for all agents in the system."""
     
     def __init__(self, config: Dict[str, Any]):
@@ -48,6 +76,7 @@ class AgentBase:
         """
         self.config = config
     
+    @abstractmethod
     def run(self, *args, **kwargs) -> Any:
         """
         Run the agent with the provided inputs.
@@ -59,41 +88,30 @@ class AgentBase:
         Returns:
             The result of running the agent
         """
-        raise NotImplementedError("Subclasses must implement run()")
+        pass
 
 
 class AutoGenAgentBase(AgentBase):
-    """
-    Base class for AutoGen-based agents.
-    
-    This class extends the AgentBase class with AutoGen-specific functionality,
-    including LLM configuration and agent creation.
-    
-    Attributes:
-        config (Dict[str, Any]): Configuration dictionary for the agent.
-        name (str): Name of the agent.
-        llm_config (Dict[str, Any]): LLM configuration for the AutoGen agent.
-        agent: The underlying AutoGen agent instance.
-    """
+    """Base class for agents using the Autogen framework."""
     
     def __init__(self, config: Dict[str, Any]):
         """
-        Initialize the AutoGen agent with the given configuration.
+        Initialize the agent with a configuration and set up the LLM.
         
         Args:
-            config: Configuration dictionary for the agent.
+            config: Dictionary containing agent configuration
         """
-        # Check if we're in test mode
-        test_mode = config.get("_test_mode", False)
-        
-        # If packages are not available and not in test mode, raise error
-        if not AUTOGEN_PACKAGES_AVAILABLE and not test_mode:
-            raise ImportError(
-                "The autogen-agentchat and autogen-ext packages are required for AutoGenAgentBase. "
-                "Install them with: pip install autogen-agentchat autogen-ext"
-            )
-            
+        # Call parent's init first to set up self.config
         super().__init__(config)
+        
+        # Check if we're in test mode
+        test_mode = self.config.get("_test_mode", False)
+        
+        # If packages are not available and not in test mode, set test mode
+        if not AUTOGEN_PACKAGES_AVAILABLE and not test_mode:
+            self.config["_test_mode"] = True
+            test_mode = True
+            logger.warning("AutoGen packages not available. Running in test mode.")
         
         # Don't prepare LLM config in test mode
         if not test_mode:
@@ -108,11 +126,8 @@ class AutoGenAgentBase(AgentBase):
         """
         Prepare the LLM configuration for the agent.
         
-        This method retrieves the LLM configuration from the VaahAI configuration
-        system and merges it with any agent-specific configuration.
-        
         Returns:
-            Dict[str, Any]: LLM configuration dictionary.
+            Dictionary containing LLM configuration
         """
         # Skip LLM config in test mode
         if self.config.get("_test_mode", False):
@@ -198,28 +213,41 @@ class AutoGenAgentBase(AgentBase):
             
         return None
     
+    @abstractmethod
     def _create_autogen_agent(self) -> Any:
         """
-        Create the underlying AutoGen agent.
-        
-        This method must be implemented by subclasses to create the specific
-        type of AutoGen agent needed.
+        Create an instance of an AutoGen agent.
         
         Returns:
-            Any: An AutoGen agent instance.
+            An AutoGen agent instance
+        
+        This method must be implemented by subclasses.
         """
-        raise NotImplementedError("Subclasses must implement _create_autogen_agent()")
-    
+        pass
+
+    @abstractmethod
+    def run(self, *args, **kwargs) -> Any:
+        """
+        Run the agent with the provided inputs.
+        
+        Args:
+            *args: Variable length argument list
+            **kwargs: Arbitrary keyword arguments
+            
+        Returns:
+            The result of running the agent
+            
+        This method must be implemented by subclasses.
+        """
+        pass
+
     def update_system_message(self, system_message: str) -> None:
         """
         Update the system message for the agent.
         
         Args:
-            system_message: New system message for the agent.
+            system_message: New system message
         """
-        if self.config.get("_test_mode", False):
-            return
-            
         if hasattr(self.agent, "update_system_message"):
             self.agent.update_system_message(system_message)
         else:
@@ -230,14 +258,12 @@ class AutoGenAgentBase(AgentBase):
         Get the conversation history for the agent.
         
         Returns:
-            List[Dict[str, Any]]: List of messages in the conversation history.
+            List of messages in the conversation history.
         """
         if self.config.get("_test_mode", False):
             return []
             
-        if hasattr(self.agent, "chat_history"):
-            return self.agent.chat_history
-        elif hasattr(self.agent, "messages"):
-            return self.agent.messages
+        if hasattr(self.agent, "get_conversation_history"):
+            return self.agent.get_conversation_history()
         else:
             return []
