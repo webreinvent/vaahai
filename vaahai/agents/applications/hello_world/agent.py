@@ -275,20 +275,21 @@ class HelloWorldAgent(AutoGenAgentBase):
                     response = await self.agent.on_messages([greeting_message], cancellation_token)
                     logger.info(f"Received response from agent: {response}")
                     
-                    return response.content
+                    # Access content via chat_message attribute in AutoGen 0.6.1
+                    if hasattr(response, "chat_message") and response.chat_message:
+                        logger.info(f"Extracting content from chat_message: {response.chat_message}")
+                        return response.chat_message.content
+                    else:
+                        logger.warning("Response object has no chat_message attribute")
+                        # Try to handle it as a mock response
+                        if hasattr(response, "content"):
+                            return response.content
+                        else:
+                            raise AttributeError("Cannot extract content from response")
                     
                 except Exception as e:
-                    logger.error(f"Error with TextMessage approach: {e}")
-                    # Try one more approach with just a string if TextMessage failed
-                    try:
-                        logger.info("Trying with simple string message")
-                        message = "Hello! Please introduce yourself with a funny greeting."
-                        response = await self.agent.generate_reply([message], cancellation_token)
-                        logger.info(f"Received response from string message: {response}")
-                        return response
-                    except Exception as e2:
-                        logger.error(f"Error with string approach: {e2}")
-                        raise e  # Re-raise the original error
+                    logger.error(f"Error when interacting with agent: {e}")
+                    raise  # Re-raise to trigger fallback
                     
             except Exception as e:
                 logger.warning(f"Falling back to test mode due to error: {str(e)}")
