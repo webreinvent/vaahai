@@ -10,7 +10,7 @@ import typer
 from typing import Optional
 import asyncio
 
-from vaahai.cli.utils.console import console, print_panel, print_success, print_error
+from vaahai.cli.utils.console import console, print_panel, print_success, print_error, progress_spinner
 from vaahai.cli.utils.help import CustomHelpCommand, create_typer_app
 from vaahai.agents.base.agent_factory import AgentFactory
 
@@ -61,7 +61,9 @@ def callback(
                 loop = asyncio.new_event_loop()
                 asyncio.set_event_loop(loop)
                 
-            result = loop.run_until_complete(agent.run())
+            # Show spinner while waiting for agent response
+            with progress_spinner("Waiting for agent response..."):
+                result = loop.run_until_complete(agent.run())
             
             if result.get("status") == "success":
                 # Display the agent's response
