@@ -48,14 +48,15 @@ This document tracks the tasks for the VaahAI project, organized by priority and
 | [P2-T13] | Implement code review agent | 🔴 | [P2-T8], [P2-T9], [P2-T10], [P2-T12] | Create application agent for code review workflows |
 | [P2-T14] | Implement security audit agent | 🔴 | [P2-T8], [P2-T10], [P2-T12] | Create application agent for security audit workflows |
 | [P2-T15] | Integrate agents with CLI commands | 🔴 | [P2-T7], [P2-T13], [P2-T14] | Connect agents to CLI entry points |
+| [P2-T16] | Add loading animation for helloworld command | 🟢 | [P2-T7] | Implement spinner/loader while waiting for API response in the helloworld command |
+| [P2-T17] | Add location-based personalization to helloworld | 🔴 | [P2-T7], [P2-T16] | Detect user's timezone/country and personalize jokes in the helloworld command |
 
 ## Current Tasks
 
 | Task ID | Description | Status | Dependencies | Notes |
 |---------|-------------|--------|--------------|-------|
-| [P2-T16] | Add loading animation for helloworld command | 🔴 | [P2-T7] | Implement spinner/loader while waiting for API response in the helloworld command |
-| [P2-T17] | Add location-based personalization to helloworld | 🔴 | [P2-T7], [P2-T16] | Detect user's timezone/country and personalize jokes in the helloworld command |
 | [P2-T3] | Implement group chat manager | 🔴 | [P2-T1] | Create wrapper for AutoGen's GroupChat functionality |
+| [P2-T17] | Add location-based personalization to helloworld | 🔴 | [P2-T7], [P2-T16] | Detect user's timezone/country and personalize jokes in the helloworld command |
 
 ## Completed Tasks
 
@@ -90,6 +91,7 @@ This document tracks the tasks for the VaahAI project, organized by priority and
 | [P2-T2] | Implement agent factory | 2025-06-15 | Implemented agent factory with configuration validation, loading, and robust error handling |
 | [P2-T4] | Set up prompt management | 2025-06-11 | Created PromptManager class for loading and rendering prompt templates using Jinja2 |
 | [P2-T7] | Implement hello world agent | 2025-06-18 | Fixed compatibility with AutoGen 0.6.1 by updating message handling and response extraction; simplified CLI command by removing run subcommand |
+| [P2-T16] | Add loading animation for helloworld command |  | Implement spinner/loader while waiting for API response in the helloworld command |
 
 ## Current Blockers
 
@@ -113,11 +115,11 @@ None at this time.
 
 ### Overall Progress
 - Phase 1 tasks completed: 23 out of 23 (100%)
-- Phase 2 tasks completed: 4 out of 15 (26.7%)
-- MVP tasks completed: 27 out of 42 (64.3%)
+- Phase 2 tasks completed: 5 out of 15 (33.3%)
+- MVP tasks completed: 28 out of 42 (66.7%)
 
 ### Next Milestone
-- AutoGen Agent Implementation (11 remaining tasks)
+- AutoGen Agent Implementation (10 remaining tasks)
 - Current focus: [P2-T3] Implement group chat manager
 - Estimated completion: 2025-07-15
 
