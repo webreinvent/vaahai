@@ -233,10 +233,12 @@ class HelloWorldAgent(AutoGenAgentBase):
             logger.error(f"Error creating model client: {str(e)}")
             return None
 
-    async def _generate_greeting(self) -> str:
+    async def _generate_greeting(self, location=None) -> str:
         """
         Generate a greeting message using the agent.
         
+        Args:
+            location: Optional location/country string to personalize the greeting
         Returns:
             Greeting message string
         """
@@ -247,74 +249,46 @@ class HelloWorldAgent(AutoGenAgentBase):
                     logger.info("Running in test mode with mock agent")
                     # For test mode, we can use simple mock message
                     mock_message = MockUserMessage(
-                        content="Hello! Please introduce yourself with a funny greeting.",
-                        source="user"
+                        content=f"Test mode greeting for {location or 'the world'}!",
+                        source="test"
                     )
-                    response = await self.agent.on_messages([mock_message])
+                    return mock_message.content
+                # Render the prompt with location
+                prompt_vars = {"location": location or "the world"}
+                system_message = self.prompt_manager.render_prompt("greeting", prompt_vars)
+                # Use the system message in the agent
+                # Use the real TextMessage class for the real agent
+                from autogen_agentchat.messages import TextMessage
+                response = await self.agent.on_messages([
+                    TextMessage(content=system_message, source="system")
+                ], cancellation_token=None)
+                
+                # Extract content from response (handle different response formats)
+                if hasattr(response, "chat_message") and response.chat_message:
+                    logger.info(f"Extracting content from chat_message: {response.chat_message}")
+                    return response.chat_message.content
+                elif hasattr(response, "content"):
                     return response.content
-                
-                try:
-                    logger.info("Preparing to call real AutoGen agent")
-                    
-                    # Create a cancellation token (if available)
-                    cancellation_token = None
-                    if hasattr(_cancellation_token, "CancellationToken"):
-                        cancellation_token = _cancellation_token.CancellationToken()
-                        logger.info("Created cancellation token")
-                    
-                    # Create a message using TextMessage from autogen_agentchat.messages
-                    greeting_message = TextMessage(
-                        content="Hello! Please introduce yourself with a funny greeting.",
-                        source="user"
-                    )
-                    
-                    logger.info(f"Created TextMessage: {greeting_message}")
-                    
-                    # Call the agent with the message and token
-                    logger.info("Calling agent with TextMessage object")
-                    response = await self.agent.on_messages([greeting_message], cancellation_token)
-                    logger.info(f"Received response from agent: {response}")
-                    
-                    # Access content via chat_message attribute in AutoGen 0.6.1
-                    if hasattr(response, "chat_message") and response.chat_message:
-                        logger.info(f"Extracting content from chat_message: {response.chat_message}")
-                        return response.chat_message.content
-                    else:
-                        logger.warning("Response object has no chat_message attribute")
-                        # Try to handle it as a mock response
-                        if hasattr(response, "content"):
-                            return response.content
-                        else:
-                            raise AttributeError("Cannot extract content from response")
-                    
-                except Exception as e:
-                    logger.error(f"Error when interacting with agent: {e}")
-                    raise  # Re-raise to trigger fallback
-                    
+                else:
+                    logger.warning(f"Unknown response format: {response}")
+                    return str(response)
             except Exception as e:
-                logger.warning(f"Falling back to test mode due to error: {str(e)}")
-                
-                # Fall back to mock agent
-                mock_agent = MockAssistantAgent(
-                    name=self.name,
-                    system_message=self.greeting_prompt.format(agent_name=self.name)
-                )
-                response = await mock_agent.on_messages([])
-                return response.content
-                
+                logger.error(f"Error generating greeting: {str(e)}")
+                return f"[Error] {str(e)}"
         # Fallback to a default greeting if there's no agent
         logger.warning("No agent available, using fallback greeting")
         return f"Hello from {self.name}! (Fallback greeting)"
 
-    async def run(self) -> dict:
+    async def run(self, location=None) -> dict:
         """
         Run the agent to generate a greeting.
-        
+        Args:
+            location: Optional location/country string to personalize the greeting
         Returns:
             Dict containing the greeting response and status
         """
         try:
-            greeting = await self._generate_greeting()
+            greeting = await self._generate_greeting(location=location)
             # Return a properly structured result dictionary
             return {
                 "status": "success",
