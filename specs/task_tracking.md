@@ -39,25 +39,28 @@ This document tracks the tasks for the VaahAI project, organized by priority and
 | [P2-T7] | Implement hello world agent | 🟢 | [P2-T1], [P2-T2], [P2-T4] | Create simple demonstration agent with humorous responses |
 | [P2-T16] | Add loading animation for helloworld command | 🟢 | [P2-T7] | Implement spinner/loader while waiting for API response in the helloworld command |
 
-### Phase 3: Code Analysis and Review Agents
+### Phase 3: Code Review Agent (MVP)
 
 | Task ID | Description | Status | Dependencies | Notes |
 |---------|-------------|--------|--------------|-------|
-| [P3-T1] | Implement group chat manager | 🔴 | [P2-T1] | Create wrapper for AutoGen's GroupChat functionality |
-| [P3-T2] | Create tool registry | 🔴 | [P2-T1] | Implement tool registration and validation system |
-| [P3-T3] | Set up agent testing framework | 🔴 | [P2-T1] | Create base test classes and mock LLM for testing agents |
-| [P3-T4] | Implement code executor agent | 🔴 | [P2-T1], [P3-T2] | Create Docker-based code execution agent |
-| [P3-T5] | Implement code formatter agent | 🔴 | [P2-T1], [P3-T2] | Create agent for formatting code in multiple languages |
-| [P3-T6] | Implement code analyzer agent | 🔴 | [P2-T1], [P3-T2] | Create agent for static analysis and pattern recognition |
-| [P3-T7] | Create agent composition utilities | 🔴 | [P2-T1], [P3-T1] | Implement sequential and parallel execution patterns |
-| [P3-T8] | Implement code review agent | 🔴 | [P3-T4], [P3-T5], [P3-T6], [P3-T7] | Create application agent for code review workflows |
-| [P3-T9] | Implement security audit agent | 🔴 | [P3-T4], [P3-T6], [P3-T7] | Create application agent for security audit workflows |
-| [P3-T10] | Integrate agents with CLI commands | 🔴 | [P2-T7], [P3-T8], [P3-T9] | Connect agents to CLI entry points |
-| [P3-T11] | Add location-based personalization to helloworld | 🔴 | [P2-T7], [P2-T16] | Detect user's timezone/country and personalize jokes in the helloworld command |
-| [P3-T12] | Implement review command | 🔴 | [P3-T8], [P3-T10] | Create CLI command for code review |
-| [P3-T13] | Implement audit command | 🔴 | [P3-T9], [P3-T10] | Create CLI command for security audit |
-| [P3-T14] | Add report generation | 🔴 | [P3-T12], [P3-T13] | Create formatted reports for review and audit results |
-| [P3-T15] | Implement interactive code fixes | 🔴 | [P3-T12], [P3-T14] | Allow users to apply suggested code changes interactively |
+| [P3-T1] | Implement group chat manager | 🔴 | [P2-T1] | Create wrapper for AutoGen's GroupChat functionality with proper message routing |
+| [P3-T2] | Create tool registry | 🔴 | [P2-T1] | Implement tool registration and validation system for code analysis tools |
+| [P3-T3] | Implement language detection agent | 🔴 | [P2-T1], [P2-T2] | Create specialized agent that can identify programming languages from code samples |
+| [P3-T4] | Implement framework/CMS detection agent | 🔴 | [P2-T1], [P2-T2], [P3-T3] | Create agent that can identify frameworks and CMS from code patterns |
+| [P3-T5] | Create review steps registry | 🔴 | [P2-T1] | Implement system to define, store, and track code review steps (coding standards, naming conventions, etc.) |
+| [P3-T6] | Implement review progress tracking | 🔴 | [P3-T5] | Create mechanism to track and update progress status (Pending, In-progress, Completed) for each review step |
+| [P3-T7] | Create review statistics collector | 🔴 | [P3-T6] | Implement system to collect and aggregate statistics during code review (issues found, severity levels, etc.) |
+| [P3-T8] | Implement key findings reporter | 🔴 | [P3-T7] | Create component to extract and display important findings during the review process |
+| [P3-T9] | Add output format selection | 🔴 | [P1-T9], [P1-T10] | Implement InquirerPy prompt to select output format (markdown, HTML, interactive) |
+| [P3-T10] | Create markdown report generator | 🔴 | [P3-T8], [P3-T9] | Implement markdown formatting for code review reports |
+| [P3-T11] | Create HTML report generator | 🔴 | [P3-T8], [P3-T9] | Implement HTML formatting for code review reports with syntax highlighting |
+| [P3-T12] | Implement interactive code diff display | 🔴 | [P3-T9] | Create Rich-based display showing original and suggested code with differences highlighted |
+| [P3-T13] | Add code change acceptance mechanism | 🔴 | [P3-T12] | Implement interactive prompt for accepting or rejecting suggested code changes |
+| [P3-T14] | Implement file modification system | 🔴 | [P3-T13] | Create system to safely apply accepted changes to original files |
+| [P3-T15] | Create basic review command | 🔴 | [P3-T1], [P3-T3], [P3-T4], [P3-T5] | Implement initial `vaahai review [PATH]` command with minimal functionality |
+| [P3-T16] | Enhance review command with progress display | 🔴 | [P3-T6], [P3-T15] | Add Rich progress bars and status indicators to review command |
+| [P3-T17] | Integrate statistics and findings display | 🔴 | [P3-T7], [P3-T8], [P3-T16] | Add real-time statistics and key findings display during review process |
+| [P3-T18] | Complete review command with all output options | 🔴 | [P3-T10], [P3-T11], [P3-T12], [P3-T13], [P3-T14], [P3-T17] | Finalize review command with all output formats and interactive features |
 
 ## Current Tasks
 
@@ -107,9 +110,20 @@ None at this time.
 
 ## Next Steps
 
-1. Begin Phase 3 implementation with focus on code analysis and review agents
+1. Begin Phase 3 implementation with focus on the Code Review Agent
 2. Focus on [P3-T1] Implement group chat manager and [P3-T2] Create tool registry
-3. Plan for code review and security audit commands
+3. Implement language and framework detection agents [P3-T3] and [P3-T4]
+4. Create review steps registry and progress tracking [P3-T5] and [P3-T6]
+
+## MVP Development Strategy
+
+Phase 3 follows an MVP approach with these key principles:
+
+1. **Incremental Testing**: Each task produces a testable component that can be verified independently
+2. **Progressive Enhancement**: Start with basic functionality and enhance with additional features
+3. **Early User Feedback**: Create working components that can be demonstrated early
+4. **Modular Design**: Each component is designed to work independently and integrate seamlessly
+5. **Visible Progress**: Focus on features that demonstrate tangible progress to users
 
 ## Notes
 
@@ -125,13 +139,13 @@ None at this time.
 ### Overall Progress
 - Phase 1 tasks completed: 23 out of 23 (100%)
 - Phase 2 tasks completed: 5 out of 5 (100%)
-- Phase 3 tasks completed: 0 out of 15 (0%)
-- Total project completion: 28 out of 43 (65.1%)
+- Phase 3 tasks completed: 0 out of 18 (0%)
+- Total project completion: 28 out of 46 (60.9%)
 
 ### Next Milestone
-- Code Analysis and Review Agents (15 tasks)
+- Code Review Agent MVP (18 tasks)
 - Current focus: [P3-T1] Implement group chat manager and [P3-T2] Create tool registry
-- Estimated completion: 2025-08-30
+- Estimated completion: 2025-09-15
 
 ### Recent Achievements
 - Completed all Phase 2 tasks
