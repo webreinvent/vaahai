@@ -10,6 +10,7 @@ from typing import Any, Dict, List, Optional, Set, Union
 
 from vaahai.review.steps.base import ReviewStep, ReviewStepCategory, ReviewStepSeverity
 from vaahai.review.steps.registry import ReviewStepRegistry
+from vaahai.review.steps.progress import ReviewProgress, ReviewStepStatus
 
 # Setup logging
 logger = logging.getLogger(__name__)
@@ -43,6 +44,10 @@ class ReviewRunner:
             enabled_only: If True, only run enabled steps.
         """
         self.step_instances = []
+        self.progress = ReviewProgress()
+        
+        # Get the registry instance
+        registry = ReviewStepRegistry()
         
         # If specific steps are provided, use those
         if steps:
@@ -50,14 +55,14 @@ class ReviewRunner:
                 if isinstance(step, ReviewStep):
                     self.step_instances.append(step)
                 elif isinstance(step, str):
-                    step_instance = ReviewStepRegistry.create_step_instance(step)
+                    step_instance = registry.create_step_instance(step)
                     if step_instance:
                         self.step_instances.append(step_instance)
                     else:
                         logger.warning(f"Review step '{step}' not found or could not be created")
         else:
             # Otherwise, filter steps based on criteria
-            filtered_steps = ReviewStepRegistry.filter_steps(
+            filtered_steps = registry.filter_steps(
                 category=categories,
                 severity=severities,
                 tags=tags,
@@ -66,9 +71,13 @@ class ReviewRunner:
             
             # Create instances of the filtered steps
             for step_id, step_class in filtered_steps.items():
-                step_instance = ReviewStepRegistry.create_step_instance(step_id)
+                step_instance = registry.create_step_instance(step_id)
                 if step_instance:
                     self.step_instances.append(step_instance)
+        
+        # Register all step instances with the progress tracker
+        for step in self.step_instances:
+            self.progress.register_step(step.id)
     
     def run_on_content(
         self, content: str, file_path: Optional[str] = None
@@ -101,16 +110,30 @@ class ReviewRunner:
         
         for step in self.step_instances:
             try:
+                # Mark step as in progress
+                self.progress.start_step(step.id)
+                
+                # Execute the step
                 step_result = step.execute(context)
                 step_result["step_id"] = step.id
                 step_result["step_name"] = step.name
                 step_result["step_category"] = step.category.name
                 step_result["step_severity"] = step.severity.name
                 
+                # Mark step as completed
+                self.progress.complete_step(step.id)
+                
+                # Add duration to the result
+                step_result["duration"] = self.progress.get_step_duration(step.id)
+                
                 results.append(step_result)
                 total_issues += len(step_result.get("issues", []))
             except Exception as e:
                 logger.error(f"Error running review step '{step.id}': {e}")
+                
+                # Mark step as failed
+                self.progress.fail_step(step.id)
+                
                 results.append({
                     "step_id": step.id,
                     "step_name": step.name,
@@ -119,13 +142,18 @@ class ReviewRunner:
                     "status": "error",
                     "message": f"Error running review step: {str(e)}",
                     "issues": [],
+                    "duration": self.progress.get_step_duration(step.id),
                 })
+        
+        # Get progress summary
+        progress_summary = self.progress.get_progress_summary()
         
         return {
             "status": "success",
             "message": f"Ran {len(results)} review steps, found {total_issues} issues",
             "results": results,
             "total_issues": total_issues,
+            "progress": progress_summary,
         }
     
     def run_on_file(self, file_path: str) -> Dict[str, Any]:
@@ -192,6 +220,13 @@ class ReviewRunner:
         file_results = []
         total_issues = 0
         
+        # Reset progress tracker for directory review
+        self.progress.reset()
+        
+        # Register all step instances with the progress tracker
+        for step in self.step_instances:
+            self.progress.register_step(step.id)
+        
         for root, dirs, files in os.walk(directory_path):
             # Skip excluded directories
             dirs[:] = [d for d in dirs if d not in exclude_dirs]
@@ -217,9 +252,22 @@ class ReviewRunner:
             if not recursive:
                 break
         
+        # Get progress summary
+        progress_summary = self.progress.get_progress_summary()
+        
         return {
             "status": "success",
             "message": f"Reviewed {len(file_results)} files, found {total_issues} issues",
             "file_results": file_results,
             "total_issues": total_issues,
+            "progress": progress_summary,
         }
+    
+    def get_progress(self) -> ReviewProgress:
+        """
+        Get the progress tracker.
+        
+        Returns:
+            The progress tracker instance.
+        """
+        return self.progress
