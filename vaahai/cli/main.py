@@ -14,6 +14,7 @@ import typer
 from rich.console import Console
 
 from vaahai.cli.commands.audit.command import audit_app
+from vaahai.cli.commands.chat.command import chat_app
 from vaahai.cli.commands.config.command import config_app
 
 # Import command groups
@@ -48,11 +49,12 @@ app.add_typer(dev_app, name="dev")
 
 # Add direct commands for backward compatibility
 app.add_typer(helloworld_app, name="helloworld")
-app.add_typer(config_app, name="config")
-app.add_typer(review_app, name="review")
 app.add_typer(audit_app, name="audit")
-app.add_typer(version_app, name="version")
+app.add_typer(review_app, name="review")
+app.add_typer(config_app, name="config")
 app.add_typer(model_app, name="model")
+app.add_typer(version_app, name="version")
+app.add_typer(chat_app, name="chat")
 
 
 @app.callback(invoke_without_command=True)
