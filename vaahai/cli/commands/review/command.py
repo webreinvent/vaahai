@@ -407,6 +407,64 @@ def run(
                             
                             console.print(common_issues_table)
                     
+                    # Display key findings
+                    key_findings = result.get("key_findings", [])
+                    if key_findings:
+                        console.print("\n[bold yellow]Key Findings:[/bold yellow]")
+                        findings_table = Table(show_header=True, header_style="bold")
+                        findings_table.add_column("Type", style="cyan")
+                        findings_table.add_column("Finding", style="yellow")
+                        findings_table.add_column("Count", style="green")
+                        
+                        for finding in key_findings:
+                            finding_type = finding.get("type", "")
+                            count = finding.get("count", 0)
+                            message = finding.get("message", "")
+                            
+                            # Determine style based on type and severity
+                            if finding_type == "severity":
+                                severity = finding.get("severity", "").lower()
+                                type_display = f"[bold]{severity.upper()}[/bold]"
+                                type_style = {
+                                    "critical": "bold red",
+                                    "high": "red",
+                                    "medium": "yellow",
+                                    "low": "green",
+                                    "info": "blue",
+                                }.get(severity, "white")
+                                
+                                findings_table.add_row(
+                                    f"[{type_style}]{type_display}[/{type_style}]",
+                                    message,
+                                    str(count)
+                                )
+                            elif finding_type == "category":
+                                category = finding.get("category", "").upper()
+                                findings_table.add_row(
+                                    f"[bold cyan]{category}[/bold cyan]",
+                                    message,
+                                    str(count)
+                                )
+                            elif finding_type == "common_issue":
+                                findings_table.add_row(
+                                    "COMMON",
+                                    message[:100] + ("..." if len(message) > 100 else ""),
+                                    str(count)
+                                )
+                        
+                        console.print(findings_table)
+                    
+                    # Display recommendations
+                    recommendations = result.get("recommendations", [])
+                    if recommendations:
+                        console.print("\n[bold green]Recommendations:[/bold green]")
+                        recommendations_panel = Panel(
+                            "\n".join([f"• {rec}" for rec in recommendations]),
+                            title="Actionable Steps",
+                            border_style="green"
+                        )
+                        console.print(recommendations_panel)
+                    
                     if total_issues > 0:
                         console.print(f"\n[yellow]Found {total_issues} issues[/yellow]\n")
                         
