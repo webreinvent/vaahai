@@ -69,7 +69,7 @@ This document tracks the tasks for the VaahAI project, organized by priority and
 | [P3-T2.10] | Create example script | 🟢 | [P3-T2.9] | Created example script demonstrating tool registry usage |
 | [P3-T3] | Implement language detection agent | 🟢 | [P2-T1], [P2-T2] | Create specialized agent that can identify programming languages from code samples |
 | [P3-T4] | Implement framework/CMS detection agent | 🟢 | [P2-T1], [P2-T2], [P3-T3] | Create agent that can identify frameworks and CMS from code patterns |
-| [P3-T5] | Create review steps registry | 🟡 | [P2-T1] | Implement system to define, store, and track code review steps (coding standards, naming conventions, etc.) |
+| [P3-T5] | Create review steps registry | 🟢 | [P2-T1] | Implement system to define, store, and track code review steps (coding standards, naming conventions, etc.) |
 | [P3-T6] | Implement review progress tracking | 🔴 | [P3-T5] | Create mechanism to track and update progress status (Pending, In-progress, Completed) for each review step |
 | [P3-T7] | Create review statistics collector | 🔴 | [P3-T6] | Implement system to collect and aggregate statistics during code review (issues found, severity levels, etc.) |
 | [P3-T8] | Implement key findings reporter | 🔴 | [P3-T7] | Create component to extract and display important findings during the review process |
@@ -88,12 +88,12 @@ This document tracks the tasks for the VaahAI project, organized by priority and
 
 | Task ID | Description | Status | Dependencies | Notes |
 |---------|-------------|--------|--------------|-------|
-| [P3-T5] | Create review steps registry | 🟡 | [P2-T1] | Implement system to define, store, and track code review steps (coding standards, naming conventions, etc.) |
 
 ## Completed Tasks
 
 | Task ID | Description | Completion Date | Notes |
 |---------|-------------|-----------------|-------|
+| [P3-T5] | Create review steps registry | 2025-06-22 | Implemented ReviewStepRegistry with decorator-based registration, built-in steps for style, security, and performance, schema validation, and ReviewRunner utility |
 | [P3-T3] | Implement language detection agent | 2025-06-12 | Created specialized agent that can identify programming languages from code samples with multiple detection methods |
 | [P3-T2] | Create tool registry | 2025-06-12 | Implemented tool registration and validation system with example tools and pipeline support |
 | [P1-T24] | Show default tag/label for LLM in config show | 2025-06-11 | Enhanced `vaahai config show` to display default tag or label for the configured LLM provider |
@@ -136,7 +136,7 @@ None at this time.
 ## Next Steps
 
 1. Begin Phase 3 implementation with focus on the Code Review Agent
-2. Focus on [P3-T5] Create review steps registry
+2. Focus on [P3-T6] Implement review progress tracking
 3. Implement review steps registry and progress tracking [P3-T5] and [P3-T6]
 
 ## MVP Development Strategy
@@ -163,12 +163,12 @@ Phase 3 follows an MVP approach with these key principles:
 ### Overall Progress
 - Phase 1 tasks completed: 23 out of 23 (100%)
 - Phase 2 tasks completed: 5 out of 5 (100%)
-- Phase 3 tasks completed: 4 out of 18 (22.2%)
-- Total project completion: 32 out of 46 (69.6%)
+- Phase 3 tasks completed: 5 out of 18 (27.8%)
+- Total project completion: 33 out of 46 (71.7%)
 
 ### Next Milestone
 - Code Review Agent MVP (18 tasks)
-- Current focus: [P3-T5] Create review steps registry
+- Current focus: [P3-T6] Implement review progress tracking
 - Estimated completion: 2025-09-15
 
 ### Recent Achievements
