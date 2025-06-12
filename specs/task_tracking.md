@@ -69,7 +69,7 @@ This document tracks the tasks for the VaahAI project, organized by priority and
 | [P3-T2.10] | Create example script | 🟢 | [P3-T2.9] | Created example script demonstrating tool registry usage |
 | [P3-T3] | Implement language detection agent | 🟢 | [P2-T1], [P2-T2] | Create specialized agent that can identify programming languages from code samples |
 | [P3-T4] | Implement framework/CMS detection agent | 🟢 | [P2-T1], [P2-T2], [P3-T3] | Create agent that can identify frameworks and CMS from code patterns |
-| [P3-T5] | Create review steps registry | 🔴 | [P2-T1] | Implement system to define, store, and track code review steps (coding standards, naming conventions, etc.) |
+| [P3-T5] | Create review steps registry | 🟡 | [P2-T1] | Implement system to define, store, and track code review steps (coding standards, naming conventions, etc.) |
 | [P3-T6] | Implement review progress tracking | 🔴 | [P3-T5] | Create mechanism to track and update progress status (Pending, In-progress, Completed) for each review step |
 | [P3-T7] | Create review statistics collector | 🔴 | [P3-T6] | Implement system to collect and aggregate statistics during code review (issues found, severity levels, etc.) |
 | [P3-T8] | Implement key findings reporter | 🔴 | [P3-T7] | Create component to extract and display important findings during the review process |
@@ -88,7 +88,7 @@ This document tracks the tasks for the VaahAI project, organized by priority and
 
 | Task ID | Description | Status | Dependencies | Notes |
 |---------|-------------|--------|--------------|-------|
-| [P3-T5] | Create review steps registry | 🔴 | [P2-T1] | Implement system to define, store, and track code review steps (coding standards, naming conventions, etc.) |
+| [P3-T5] | Create review steps registry | 🟡 | [P2-T1] | Implement system to define, store, and track code review steps (coding standards, naming conventions, etc.) |
 
 ## Completed Tasks
 
