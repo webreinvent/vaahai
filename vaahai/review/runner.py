@@ -12,6 +12,7 @@ from vaahai.review.steps.base import ReviewStep, ReviewStepCategory, ReviewStepS
 from vaahai.review.steps.registry import ReviewStepRegistry
 from vaahai.review.steps.progress import ReviewProgress, ReviewStepStatus
 from vaahai.review.steps.statistics import ReviewStatistics
+from vaahai.review.steps.findings import KeyFindingsReporter
 
 # Setup logging
 logger = logging.getLogger(__name__)
@@ -47,6 +48,7 @@ class ReviewRunner:
         self.step_instances = []
         self.progress = ReviewProgress()
         self.statistics = ReviewStatistics()
+        self.findings_reporter = KeyFindingsReporter(self.statistics)
         
         # Get the registry instance
         registry = ReviewStepRegistry()
@@ -166,6 +168,12 @@ class ReviewRunner:
         # Get statistics summary
         statistics_summary = self.statistics.get_statistics_summary()
         
+        # Generate key findings
+        key_findings = self.findings_reporter.generate_findings()
+        
+        # Generate actionable recommendations
+        recommendations = self.findings_reporter.get_actionable_recommendations()
+        
         return {
             "status": "success",
             "message": f"Ran {len(results)} review steps, found {total_issues} issues",
@@ -173,6 +181,8 @@ class ReviewRunner:
             "total_issues": total_issues,
             "progress": progress_summary,
             "statistics": statistics_summary,
+            "key_findings": key_findings,
+            "recommendations": recommendations,
         }
     
     def run_on_file(self, file_path: str) -> Dict[str, Any]:
@@ -280,6 +290,12 @@ class ReviewRunner:
         # Get statistics summary
         statistics_summary = self.statistics.get_statistics_summary()
         
+        # Generate key findings
+        key_findings = self.findings_reporter.generate_findings()
+        
+        # Generate actionable recommendations
+        recommendations = self.findings_reporter.get_actionable_recommendations()
+        
         return {
             "status": "success",
             "message": f"Reviewed {len(file_results)} files, found {total_issues} issues",
@@ -287,6 +303,8 @@ class ReviewRunner:
             "total_issues": total_issues,
             "progress": progress_summary,
             "statistics": statistics_summary,
+            "key_findings": key_findings,
+            "recommendations": recommendations,
         }
     
     def get_progress(self) -> ReviewProgress:
@@ -306,3 +324,24 @@ class ReviewRunner:
             The statistics collector instance.
         """
         return self.statistics
+    
+    def get_key_findings(self, max_findings: int = 10) -> List[Dict[str, Any]]:
+        """
+        Get key findings from the review.
+        
+        Args:
+            max_findings: Maximum number of findings to return
+            
+        Returns:
+            List of key findings
+        """
+        return self.findings_reporter.generate_findings(max_findings=max_findings)
+    
+    def get_recommendations(self) -> List[str]:
+        """
+        Get actionable recommendations based on the review findings.
+        
+        Returns:
+            List of recommendation strings
+        """
+        return self.findings_reporter.get_actionable_recommendations()
