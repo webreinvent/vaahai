@@ -35,28 +35,36 @@ This document tracks the tasks for the VaahAI project, organized by priority and
 |---------|-------------|--------|--------------|-------|
 | [P2-T1] | Implement base agent classes | 🟢 | [P1-T23] | Create abstract base classes and interfaces for all agents |
 | [P2-T2] | Implement agent factory | 🟢 | [P2-T1] | Implemented agent factory with configuration validation, loading, and robust error handling |
-| [P2-T3] | Implement group chat manager | 🔴 | [P2-T1] | Create wrapper for AutoGen's GroupChat functionality |
 | [P2-T4] | Set up prompt management | 🟢 | [P2-T1] | Create system for loading and rendering prompt templates |
-| [P2-T5] | Create tool registry | 🔴 | [P2-T1] | Implement tool registration and validation system |
-| [P2-T6] | Set up agent testing framework | 🔴 | [P2-T1] | Create base test classes and mock LLM for testing agents |
 | [P2-T7] | Implement hello world agent | 🟢 | [P2-T1], [P2-T2], [P2-T4] | Create simple demonstration agent with humorous responses |
-| [P2-T8] | Implement code executor agent | 🔴 | [P2-T1], [P2-T2], [P2-T5] | Create Docker-based code execution agent |
-| [P2-T9] | Implement code formatter agent | 🔴 | [P2-T1], [P2-T2], [P2-T5] | Create agent for formatting code in multiple languages |
-| [P2-T10] | Implement code analyzer agent | 🔴 | [P2-T1], [P2-T2], [P2-T5] | Create agent for static analysis and pattern recognition |
-| [P2-T11] | Implement prompt generator agent | 🔴 | [P2-T1], [P2-T2], [P2-T4] | Create agent for generating and refining prompts |
-| [P2-T12] | Create agent composition utilities | 🔴 | [P2-T1], [P2-T3] | Implement sequential and parallel execution patterns |
-| [P2-T13] | Implement code review agent | 🔴 | [P2-T8], [P2-T9], [P2-T10], [P2-T12] | Create application agent for code review workflows |
-| [P2-T14] | Implement security audit agent | 🔴 | [P2-T8], [P2-T10], [P2-T12] | Create application agent for security audit workflows |
-| [P2-T15] | Integrate agents with CLI commands | 🔴 | [P2-T7], [P2-T13], [P2-T14] | Connect agents to CLI entry points |
 | [P2-T16] | Add loading animation for helloworld command | 🟢 | [P2-T7] | Implement spinner/loader while waiting for API response in the helloworld command |
-| [P2-T17] | Add location-based personalization to helloworld | 🔴 | [P2-T7], [P2-T16] | Detect user's timezone/country and personalize jokes in the helloworld command |
+
+### Phase 3: Code Analysis and Review Agents
+
+| Task ID | Description | Status | Dependencies | Notes |
+|---------|-------------|--------|--------------|-------|
+| [P3-T1] | Implement group chat manager | 🔴 | [P2-T1] | Create wrapper for AutoGen's GroupChat functionality |
+| [P3-T2] | Create tool registry | 🔴 | [P2-T1] | Implement tool registration and validation system |
+| [P3-T3] | Set up agent testing framework | 🔴 | [P2-T1] | Create base test classes and mock LLM for testing agents |
+| [P3-T4] | Implement code executor agent | 🔴 | [P2-T1], [P3-T2] | Create Docker-based code execution agent |
+| [P3-T5] | Implement code formatter agent | 🔴 | [P2-T1], [P3-T2] | Create agent for formatting code in multiple languages |
+| [P3-T6] | Implement code analyzer agent | 🔴 | [P2-T1], [P3-T2] | Create agent for static analysis and pattern recognition |
+| [P3-T7] | Create agent composition utilities | 🔴 | [P2-T1], [P3-T1] | Implement sequential and parallel execution patterns |
+| [P3-T8] | Implement code review agent | 🔴 | [P3-T4], [P3-T5], [P3-T6], [P3-T7] | Create application agent for code review workflows |
+| [P3-T9] | Implement security audit agent | 🔴 | [P3-T4], [P3-T6], [P3-T7] | Create application agent for security audit workflows |
+| [P3-T10] | Integrate agents with CLI commands | 🔴 | [P2-T7], [P3-T8], [P3-T9] | Connect agents to CLI entry points |
+| [P3-T11] | Add location-based personalization to helloworld | 🔴 | [P2-T7], [P2-T16] | Detect user's timezone/country and personalize jokes in the helloworld command |
+| [P3-T12] | Implement review command | 🔴 | [P3-T8], [P3-T10] | Create CLI command for code review |
+| [P3-T13] | Implement audit command | 🔴 | [P3-T9], [P3-T10] | Create CLI command for security audit |
+| [P3-T14] | Add report generation | 🔴 | [P3-T12], [P3-T13] | Create formatted reports for review and audit results |
+| [P3-T15] | Implement interactive code fixes | 🔴 | [P3-T12], [P3-T14] | Allow users to apply suggested code changes interactively |
 
 ## Current Tasks
 
 | Task ID | Description | Status | Dependencies | Notes |
 |---------|-------------|--------|--------------|-------|
-| [P2-T3] | Implement group chat manager | 🔴 | [P2-T1] | Create wrapper for AutoGen's GroupChat functionality |
-| [P2-T17] | Add location-based personalization to helloworld | 🔴 | [P2-T7], [P2-T16] | Detect user's timezone/country and personalize jokes in the helloworld command |
+| [P3-T1] | Implement group chat manager | 🔴 | [P2-T1] | Create wrapper for AutoGen's GroupChat functionality |
+| [P3-T2] | Create tool registry | 🔴 | [P2-T1] | Implement tool registration and validation system |
 
 ## Completed Tasks
 
@@ -99,8 +107,9 @@ None at this time.
 
 ## Next Steps
 
-1. Continue with remaining Phase 2 tasks
-2. Focus on [P2-T3] Implement group chat manager
+1. Begin Phase 3 implementation with focus on code analysis and review agents
+2. Focus on [P3-T1] Implement group chat manager and [P3-T2] Create tool registry
+3. Plan for code review and security audit commands
 
 ## Notes
 
@@ -115,16 +124,17 @@ None at this time.
 
 ### Overall Progress
 - Phase 1 tasks completed: 23 out of 23 (100%)
-- Phase 2 tasks completed: 5 out of 15 (33.3%)
-- MVP tasks completed: 28 out of 42 (66.7%)
+- Phase 2 tasks completed: 5 out of 5 (100%)
+- Phase 3 tasks completed: 0 out of 15 (0%)
+- Total project completion: 28 out of 43 (65.1%)
 
 ### Next Milestone
-- AutoGen Agent Implementation (10 remaining tasks)
-- Current focus: [P2-T3] Implement group chat manager
-- Estimated completion: 2025-07-15
+- Code Analysis and Review Agents (15 tasks)
+- Current focus: [P3-T1] Implement group chat manager and [P3-T2] Create tool registry
+- Estimated completion: 2025-08-30
 
 ### Recent Achievements
-- Completed all configuration management tasks
+- Completed all Phase 2 tasks
 - Designed comprehensive AutoGen agent architecture
 - Created detailed implementation plan for agent system
 - Implemented base agent classes with registry and factory pattern
