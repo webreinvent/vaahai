@@ -11,6 +11,7 @@ from typing import Any, Dict, List, Optional, Set, Union
 from vaahai.review.steps.base import ReviewStep, ReviewStepCategory, ReviewStepSeverity
 from vaahai.review.steps.registry import ReviewStepRegistry
 from vaahai.review.steps.progress import ReviewProgress, ReviewStepStatus
+from vaahai.review.steps.statistics import ReviewStatistics
 
 # Setup logging
 logger = logging.getLogger(__name__)
@@ -45,6 +46,7 @@ class ReviewRunner:
         """
         self.step_instances = []
         self.progress = ReviewProgress()
+        self.statistics = ReviewStatistics()
         
         # Get the registry instance
         registry = ReviewStepRegistry()
@@ -108,6 +110,10 @@ class ReviewRunner:
         results = []
         total_issues = 0
         
+        # Register file with statistics collector if file_path is provided
+        if file_path:
+            self.statistics.add_file(file_path)
+        
         for step in self.step_instances:
             try:
                 # Mark step as in progress
@@ -125,6 +131,15 @@ class ReviewRunner:
                 
                 # Add duration to the result
                 step_result["duration"] = self.progress.get_step_duration(step.id)
+                
+                # Update statistics with step result
+                self.statistics.add_step_result(
+                    step.id,
+                    step.category.name,
+                    step.severity.name,
+                    step_result,
+                    file_path
+                )
                 
                 results.append(step_result)
                 total_issues += len(step_result.get("issues", []))
@@ -148,12 +163,16 @@ class ReviewRunner:
         # Get progress summary
         progress_summary = self.progress.get_progress_summary()
         
+        # Get statistics summary
+        statistics_summary = self.statistics.get_statistics_summary()
+        
         return {
             "status": "success",
             "message": f"Ran {len(results)} review steps, found {total_issues} issues",
             "results": results,
             "total_issues": total_issues,
             "progress": progress_summary,
+            "statistics": statistics_summary,
         }
     
     def run_on_file(self, file_path: str) -> Dict[str, Any]:
@@ -223,6 +242,9 @@ class ReviewRunner:
         # Reset progress tracker for directory review
         self.progress.reset()
         
+        # Reset statistics collector for directory review
+        self.statistics.reset()
+        
         # Register all step instances with the progress tracker
         for step in self.step_instances:
             self.progress.register_step(step.id)
@@ -255,12 +277,16 @@ class ReviewRunner:
         # Get progress summary
         progress_summary = self.progress.get_progress_summary()
         
+        # Get statistics summary
+        statistics_summary = self.statistics.get_statistics_summary()
+        
         return {
             "status": "success",
             "message": f"Reviewed {len(file_results)} files, found {total_issues} issues",
             "file_results": file_results,
             "total_issues": total_issues,
             "progress": progress_summary,
+            "statistics": statistics_summary,
         }
     
     def get_progress(self) -> ReviewProgress:
@@ -271,3 +297,12 @@ class ReviewRunner:
             The progress tracker instance.
         """
         return self.progress
+    
+    def get_statistics(self) -> ReviewStatistics:
+        """
+        Get the statistics collector.
+        
+        Returns:
+            The statistics collector instance.
+        """
+        return self.statistics
