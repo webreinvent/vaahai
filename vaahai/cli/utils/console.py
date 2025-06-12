@@ -17,6 +17,8 @@ from rich.table import Table
 
 # Create a shared console instance for consistent styling
 console = Console()
+# Create an error console that outputs to stderr
+error_console = Console(stderr=True, style="bold red")
 
 
 def print_header(title: str, subtitle: Optional[str] = None) -> None:
