@@ -12,6 +12,21 @@ This directory contains the AI agent implementations for the VaahAI project usin
 - `Applier` - Applies code changes to files when approved by the user
 - `Committer` - Handles git commit operations for applied changes
 
+## Directory Structure
+
+The agents module follows this directory structure:
+
+```
+agents/
+├── applications/       # Application-specific agent implementations
+│   ├── framework_detection/
+│   ├── language_detection/
+│   └── hello_world/
+├── base/               # Base classes and interfaces for all agents
+├── utils/              # Utility functions and classes for agents
+└── prompts/            # Shared prompt templates
+```
+
 ## Implementation
 
 Each agent is implemented as a separate module with a clear interface. The agents use the Autogen Framework for orchestration and communication.

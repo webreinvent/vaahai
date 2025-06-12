@@ -1,5 +1,5 @@
 import pytest
-from vaahai.agents.impl.language_detection.agent import LanguageDetectionAgent
+from vaahai.agents.applications.language_detection.agent import LanguageDetectionAgent
 
 @pytest.fixture
 def agent():
