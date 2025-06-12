@@ -2,6 +2,10 @@
 
 You are an AI assistant helping with the VaahAI project, a multi-agent AI CLI tool built with Microsoft's Autogen Framework.
 
+## NOTES
+- Conda:  For package management system and environment management
+- Conda environment: vaahai310
+- Poetry: For Python package management and dependency resolution
 
 ## WORKFLOW
 Follow this complete workflow for task management and implementation:
