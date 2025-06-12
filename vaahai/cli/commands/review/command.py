@@ -329,6 +329,84 @@ def run(
                         console.print(f"Skipped steps: {progress_summary.get('skipped_steps', 0)}")
                         console.print(f"Total duration: {progress_summary.get('total_duration', 0):.2f} seconds")
                     
+                    # Display statistics summary
+                    statistics_summary = result.get("statistics", {})
+                    if statistics_summary:
+                        console.print("\n[bold]Review Statistics Summary:[/bold]")
+                        
+                        # File statistics
+                        total_files = statistics_summary.get("total_files", 0)
+                        files_with_issues = statistics_summary.get("files_with_issues", 0)
+                        files_with_issues_percentage = statistics_summary.get("files_with_issues_percentage", 0)
+                        
+                        console.print(f"Files reviewed: {total_files}")
+                        console.print(f"Files with issues: {files_with_issues} ({files_with_issues_percentage:.1f}%)")
+                        console.print(f"Total issues: {statistics_summary.get('total_issues', 0)}")
+                        console.print(f"Average issues per file: {statistics_summary.get('issues_per_file', 0):.2f}")
+                        
+                        # Issues by severity
+                        issues_by_severity = statistics_summary.get("issues_by_severity", {})
+                        if issues_by_severity:
+                            console.print("\n[bold]Issues by Severity:[/bold]")
+                            severity_table = Table(show_header=True, header_style="bold")
+                            severity_table.add_column("Severity", style="cyan")
+                            severity_table.add_column("Count", style="yellow")
+                            severity_table.add_column("Percentage", style="green")
+                            
+                            total_issues = statistics_summary.get("total_issues", 0)
+                            for severity, count in issues_by_severity.items():
+                                percentage = (count / total_issues * 100) if total_issues > 0 else 0
+                                severity_style = {
+                                    "critical": "bold red",
+                                    "high": "red",
+                                    "medium": "yellow",
+                                    "low": "green",
+                                    "info": "blue",
+                                }.get(severity.lower(), "white")
+                                
+                                severity_table.add_row(
+                                    f"[{severity_style}]{severity.upper()}[/{severity_style}]",
+                                    str(count),
+                                    f"{percentage:.1f}%"
+                                )
+                            
+                            console.print(severity_table)
+                        
+                        # Issues by category
+                        issues_by_category = statistics_summary.get("issues_by_category", {})
+                        if issues_by_category:
+                            console.print("\n[bold]Issues by Category:[/bold]")
+                            category_table = Table(show_header=True, header_style="bold")
+                            category_table.add_column("Category", style="cyan")
+                            category_table.add_column("Count", style="yellow")
+                            category_table.add_column("Percentage", style="green")
+                            
+                            for category, count in sorted(issues_by_category.items(), key=lambda x: x[1], reverse=True):
+                                percentage = (count / total_issues * 100) if total_issues > 0 else 0
+                                category_table.add_row(
+                                    category.upper(),
+                                    str(count),
+                                    f"{percentage:.1f}%"
+                                )
+                            
+                            console.print(category_table)
+                        
+                        # Most common issues
+                        most_common_issues = statistics_summary.get("most_common_issues", [])
+                        if most_common_issues:
+                            console.print("\n[bold]Most Common Issues:[/bold]")
+                            common_issues_table = Table(show_header=True, header_style="bold")
+                            common_issues_table.add_column("Issue", style="cyan")
+                            common_issues_table.add_column("Count", style="yellow")
+                            
+                            for issue, count in most_common_issues[:5]:  # Show top 5
+                                common_issues_table.add_row(
+                                    issue[:100] + ("..." if len(issue) > 100 else ""),  # Truncate long messages
+                                    str(count)
+                                )
+                            
+                            console.print(common_issues_table)
+                    
                     if total_issues > 0:
                         console.print(f"\n[yellow]Found {total_issues} issues[/yellow]\n")
                         
