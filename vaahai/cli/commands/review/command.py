@@ -7,19 +7,22 @@ which is used to perform code reviews on files or directories.
 
 import os
 import logging
+import time
 from pathlib import Path
 from typing import List, Optional
 
 import typer
 from rich.console import Console
 from rich.panel import Panel
-from rich.progress import Progress, SpinnerColumn, TextColumn
+from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TaskProgressColumn, TimeElapsedColumn
 from rich.table import Table
+from rich.live import Live
 
 from vaahai.cli.utils.help import CustomHelpCommand, create_typer_app
 from vaahai.review.steps.registry import ReviewStepRegistry
 from vaahai.review.runner import ReviewRunner
 from vaahai.review.steps.base import ReviewStep, ReviewStepCategory, ReviewStepSeverity
+from vaahai.review.steps.progress import ReviewStepStatus
 
 # Import built-in review steps to ensure they are registered
 from vaahai.review.steps.built_in import LineLength, IndentationConsistency
@@ -213,73 +216,163 @@ def run(
         # Create a ReviewRunner with the filtered instances
         runner = ReviewRunner(steps=filtered_instances)
         
-        # Run the review
-        task = progress.add_task("Running review steps...", total=1)
-        
-        try:
-            if path.is_file():
-                # Run on a single file
-                with open(path, 'r') as f:
-                    content = f.read()
-                result = runner.run_on_content(content, file_path=str(path))
-            else:
-                # Run on a directory
-                result = runner.run_on_directory(str(path))
-            
-            progress.update(task, completed=1, description="Review completed")
-        
-            # Display results
-            if result["status"] == "success":
-                total_issues = 0
-                step_results = {}
+        # Create a progress display for the review steps
+        if filtered_instances:
+            # Create a progress bar for overall progress
+            with Progress(
+                TextColumn("[bold blue]{task.description}"),
+                BarColumn(),
+                TaskProgressColumn(),
+                TextColumn("•"),
+                TimeElapsedColumn(),
+                console=console,
+            ) as review_progress:
+                # Add a task for overall progress
+                overall_task = review_progress.add_task(
+                    "Running review steps...", 
+                    total=len(filtered_instances)
+                )
                 
-                # Process results based on their structure
-                if "results" in result and isinstance(result["results"], dict):
-                    # Dictionary format
-                    step_results = result["results"]
-                    for step_result in step_results.values():
-                        total_issues += len(step_result.get("issues", []))
-                elif "results" in result and isinstance(result["results"], list):
-                    # List format
-                    for step_result in result["results"]:
-                        step_id = step_result.get("step_id")
-                        if step_id:
-                            step_results[step_id] = step_result
-                            total_issues += len(step_result.get("issues", []))
+                # Add tasks for each review step
+                step_tasks = {}
+                for step in filtered_instances:
+                    step_tasks[step.id] = review_progress.add_task(
+                        f"[cyan]{step.id}[/cyan] ({step.category.name})",
+                        total=1,
+                        visible=False
+                    )
                 
-                if total_issues > 0:
-                    console.print(f"\n[yellow]Found {total_issues} issues[/yellow]\n")
+                # Run the review with progress tracking
+                try:
+                    # Start a background thread to update progress
+                    def update_progress():
+                        completed_steps = 0
+                        
+                        while completed_steps < len(filtered_instances):
+                            # Get current progress
+                            progress_info = runner.get_progress().get_progress_summary()
+                            
+                            # Update overall progress
+                            completed_steps = (
+                                progress_info["completed_steps"] + 
+                                progress_info["failed_steps"] + 
+                                progress_info["skipped_steps"]
+                            )
+                            review_progress.update(overall_task, completed=completed_steps)
+                            
+                            # Update individual step progress
+                            for step_id, status in runner.get_progress().step_statuses.items():
+                                if step_id in step_tasks:
+                                    # Make the task visible if it's in progress
+                                    if status == ReviewStepStatus.IN_PROGRESS:
+                                        review_progress.update(step_tasks[step_id], visible=True)
+                                    
+                                    # Update completion status
+                                    if status in [ReviewStepStatus.COMPLETED, ReviewStepStatus.FAILED]:
+                                        review_progress.update(
+                                            step_tasks[step_id], 
+                                            completed=1,
+                                            visible=True,
+                                            description=(
+                                                f"[green]{step_id}[/green] ({runner.get_progress().get_step_duration(step_id):.2f}s)"
+                                                if status == ReviewStepStatus.COMPLETED
+                                                else f"[red]{step_id}[/red] (failed)"
+                                            )
+                                        )
+                            
+                            # Sleep briefly to avoid high CPU usage
+                            time.sleep(0.1)
                     
-                    # Create a table to display issues by step
-                    table = Table(title="Review Results")
-                    table.add_column("Step", style="cyan")
-                    table.add_column("Category", style="magenta")
-                    table.add_column("Issues", style="yellow")
+                    # Start the progress update in a separate thread
+                    import threading
+                    progress_thread = threading.Thread(target=update_progress)
+                    progress_thread.daemon = True
+                    progress_thread.start()
                     
-                    for step_id, step_result in step_results.items():
-                        # Find the step instance with this ID
-                        step_instance = next((s for s in filtered_instances if s.id == step_id), None)
-                        category_name = step_instance.category.name if step_instance else "Unknown"
-                        issues_count = len(step_result.get("issues", []))
-                        table.add_row(step_id, category_name, str(issues_count))
+                    # Run the review
+                    if path.is_file():
+                        # Run on a single file
+                        with open(path, 'r') as f:
+                            content = f.read()
+                        result = runner.run_on_content(content, file_path=str(path))
+                    else:
+                        # Run on a directory
+                        result = runner.run_on_directory(str(path))
                     
-                    console.print(table)
+                    # Wait for the progress thread to catch up
+                    time.sleep(0.5)
                     
-                    # Display detailed issues
-                    console.print("\n[bold]Detailed Issues:[/bold]")
-                    for step_id, step_result in step_results.items():
-                        if step_result.get("issues"):
-                            console.print(f"\n[bold cyan]{step_id}[/bold cyan]:")
-                            for issue in step_result.get("issues", []):
-                                console.print(f"  • {issue}")
-                else:
-                    console.print("\n[green]No issues found![/green]")
-            else:
-                console.print(f"\n[red]Review failed:[/red] {result.get('message', 'Unknown error')}")
-        except Exception as e:
-            progress.update(task, completed=1, description="Review failed")
-            console.print(f"\n[red]✗ An unexpected error occurred:[/red] {str(e)}")
-            if debug:
-                import traceback
-                console.print("\n[bold]Debug: Traceback[/bold]")
-                console.print(traceback.format_exc())
+                    # Display results
+                    if result["status"] == "success":
+                        total_issues = 0
+                        step_results = {}
+                        
+                        # Process results based on their structure
+                        if "results" in result and isinstance(result["results"], dict):
+                            # Dictionary format
+                            step_results = result["results"]
+                            for step_result in step_results.values():
+                                total_issues += len(step_result.get("issues", []))
+                        elif "results" in result and isinstance(result["results"], list):
+                            # List format
+                            for step_result in result["results"]:
+                                step_id = step_result.get("step_id")
+                                if step_id:
+                                    step_results[step_id] = step_result
+                                    total_issues += len(step_result.get("issues", []))
+                        
+                        # Display progress summary
+                        progress_summary = result.get("progress", {})
+                        if progress_summary:
+                            console.print("\n[bold]Review Progress Summary:[/bold]")
+                            console.print(f"Total steps: {progress_summary.get('total_steps', 0)}")
+                            console.print(f"Completed steps: {progress_summary.get('completed_steps', 0)}")
+                            console.print(f"Failed steps: {progress_summary.get('failed_steps', 0)}")
+                            console.print(f"Skipped steps: {progress_summary.get('skipped_steps', 0)}")
+                            console.print(f"Total duration: {progress_summary.get('total_duration', 0):.2f} seconds")
+                        
+                        if total_issues > 0:
+                            console.print(f"\n[yellow]Found {total_issues} issues[/yellow]\n")
+                            
+                            # Create a table to display issues by step
+                            table = Table(title="Review Results")
+                            table.add_column("Step", style="cyan")
+                            table.add_column("Category", style="magenta")
+                            table.add_column("Issues", style="yellow")
+                            table.add_column("Duration (s)", style="blue")
+                            
+                            for step_id, step_result in step_results.items():
+                                # Find the step instance with this ID
+                                step_instance = next((s for s in filtered_instances if s.id == step_id), None)
+                                category_name = step_instance.category.name if step_instance else "Unknown"
+                                issues_count = len(step_result.get("issues", []))
+                                duration = step_result.get("duration", 0)
+                                table.add_row(
+                                    step_id, 
+                                    category_name, 
+                                    str(issues_count),
+                                    f"{duration:.2f}"
+                                )
+                            
+                            console.print(table)
+                            
+                            # Display detailed issues
+                            console.print("\n[bold]Detailed Issues:[/bold]")
+                            for step_id, step_result in step_results.items():
+                                if step_result.get("issues"):
+                                    console.print(f"\n[bold cyan]{step_id}[/bold cyan]:")
+                                    for issue in step_result.get("issues", []):
+                                        console.print(f"  • {issue}")
+                        else:
+                            console.print("\n[green]No issues found![/green]")
+                    else:
+                        console.print(f"\n[red]Review failed:[/red] {result.get('message', 'Unknown error')}")
+                except Exception as e:
+                    console.print(f"\n[red]✗ An unexpected error occurred:[/red] {str(e)}")
+                    if debug:
+                        import traceback
+                        console.print("\n[bold]Debug: Traceback[/bold]")
+                        console.print(traceback.format_exc())
+        else:
+            console.print("\n[yellow]No review steps selected after filtering.[/yellow]")
+            console.print("Try adjusting the focus area or severity level.")
