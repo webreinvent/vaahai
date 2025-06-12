@@ -56,7 +56,17 @@ This document tracks the tasks for the VaahAI project, organized by priority and
 | [P3-T1.10] | Write unit tests | 🟢 | [P3-T1.9] | Created comprehensive test suite for the group chat manager |
 | [P3-T1.11] | Create documentation | 🟢 | [P3-T1.10] | Added detailed documentation with usage examples |
 | [P3-T1.12] | Create example script | 🟢 | [P3-T1.11] | Created example script demonstrating group chat manager usage |
-| [P3-T2] | Create tool registry | 🔴 | [P2-T1] | Implement tool registration and validation system for code analysis tools |
+| [P3-T2] | Create tool registry | 🟢 | [P2-T1] | Implement tool registration and validation system for code analysis tools |
+| [P3-T2.1] | Design tool registry interface | 🟢 | [P3-T2] | Defined interface for tool registry with registration and lookup functionality |
+| [P3-T2.2] | Implement tool base class | 🟢 | [P3-T2.1] | Created abstract base class defining the interface for all tools |
+| [P3-T2.3] | Implement tool registry | 🟢 | [P3-T2.2] | Created registry for dynamic tool registration with filtering by tags, input/output types |
+| [P3-T2.4] | Implement tool factory | 🟢 | [P3-T2.3] | Created factory for creating tool instances from configurations |
+| [P3-T2.5] | Implement tool config loader | 🟢 | [P3-T2.4] | Created loader for tool configurations with environment variable processing |
+| [P3-T2.6] | Create tool schemas | 🟢 | [P3-T2.5] | Implemented schemas and validation functions for tool configurations |
+| [P3-T2.7] | Create example tools | 🟢 | [P3-T2.6] | Implemented example tools (code linter, static analyzer) |
+| [P3-T2.8] | Implement tool pipeline | 🟢 | [P3-T2.7] | Created utility for chaining multiple tools together in sequence |
+| [P3-T2.9] | Write unit tests | 🟢 | [P3-T2.8] | Created comprehensive test suite for the tool registry components |
+| [P3-T2.10] | Create example script | 🟢 | [P3-T2.9] | Created example script demonstrating tool registry usage |
 | [P3-T3] | Implement language detection agent | 🔴 | [P2-T1], [P2-T2] | Create specialized agent that can identify programming languages from code samples |
 | [P3-T4] | Implement framework/CMS detection agent | 🔴 | [P2-T1], [P2-T2], [P3-T3] | Create agent that can identify frameworks and CMS from code patterns |
 | [P3-T5] | Create review steps registry | 🔴 | [P2-T1] | Implement system to define, store, and track code review steps (coding standards, naming conventions, etc.) |
@@ -78,12 +88,13 @@ This document tracks the tasks for the VaahAI project, organized by priority and
 
 | Task ID | Description | Status | Dependencies | Notes |
 |---------|-------------|--------|--------------|-------|
-| [P3-T2] | Create tool registry | 🔴 | [P2-T1] | Implement tool registration and validation system |
+| [P3-T3] | Implement language detection agent | 🔴 | [P2-T1], [P2-T2] | Create specialized agent that can identify programming languages from code samples |
 
 ## Completed Tasks
 
 | Task ID | Description | Completion Date | Notes |
 |---------|-------------|-----------------|-------|
+| [P3-T2] | Create tool registry | 2025-06-12 | Implemented tool registration and validation system with example tools and pipeline support |
 | [P1-T24] | Show default tag/label for LLM in config show | 2025-06-11 | Enhanced `vaahai config show` to display default tag or label for the configured LLM provider |
 | [P1-T1] | Set up project structure |  | Create basic directory structure following project scope |
 | [P1-T2] | Initialize Poetry project |  | Create pyproject.toml with initial dependencies |
@@ -123,8 +134,8 @@ None at this time.
 ## Next Steps
 
 1. Begin Phase 3 implementation with focus on the Code Review Agent
-2. Focus on [P3-T2] Create tool registry
-3. Implement language and framework detection agents [P3-T3] and [P3-T4]
+2. Focus on [P3-T3] Implement language detection agent
+3. Implement framework detection agent [P3-T4]
 4. Create review steps registry and progress tracking [P3-T5] and [P3-T6]
 
 ## MVP Development Strategy
@@ -151,12 +162,12 @@ Phase 3 follows an MVP approach with these key principles:
 ### Overall Progress
 - Phase 1 tasks completed: 23 out of 23 (100%)
 - Phase 2 tasks completed: 5 out of 5 (100%)
-- Phase 3 tasks completed: 1 out of 18 (5.6%)
-- Total project completion: 29 out of 46 (63.0%)
+- Phase 3 tasks completed: 2 out of 18 (11.1%)
+- Total project completion: 30 out of 46 (65.2%)
 
 ### Next Milestone
 - Code Review Agent MVP (18 tasks)
-- Current focus: [P3-T2] Create tool registry
+- Current focus: [P3-T3] Implement language detection agent
 - Estimated completion: 2025-09-15
 
 ### Recent Achievements
