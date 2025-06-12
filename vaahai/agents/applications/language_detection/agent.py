@@ -115,16 +115,21 @@ class LanguageDetectionAgent(AgentBase):
 
     def _initialize_llm_client(self):
         """
-        Initialize LLM client for advanced language detection.
-        This is a stub method that would be implemented in a full version
-        to connect to an LLM service for more advanced language detection.
+        Initialize LLM client for language detection if available.
         
         Returns:
-            Optional[Any]: LLM client instance or None if not available
+            Optional[Any]: LLM client or None if not available
         """
-        # In a full implementation, this would initialize an LLM client
-        # based on the agent configuration
-        return None
+        # This is a stub for now - in a full implementation, this would
+        # initialize a connection to the configured LLM provider
+        try:
+            # Check if LLM configuration exists
+            if "llm" in self.config:
+                logger.info("LLM configuration found, but client initialization is not implemented yet")
+            return None
+        except Exception as e:
+            logger.warning(f"Failed to initialize LLM client: {e}")
+            return None
 
     def _detect_language_by_extension(self, file_path: str) -> Optional[str]:
         """

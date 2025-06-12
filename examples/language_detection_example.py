@@ -13,7 +13,7 @@ from pathlib import Path
 # Add project root to path to allow imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from vaahai.agents.impl.language_detection import LanguageDetectionAgent
+from vaahai.agents.applications.language_detection import LanguageDetectionAgent
 
 def main():
     """Run language detection examples."""
