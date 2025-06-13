@@ -12,6 +12,7 @@ import threading
 from pathlib import Path
 from typing import List, Optional
 import sys
+from datetime import datetime
 
 import typer
 from InquirerPy import inquirer
@@ -26,6 +27,7 @@ from vaahai.review.runner import ReviewRunner
 from vaahai.review.steps.base import ReviewStep, ReviewStepCategory, ReviewStepSeverity
 from vaahai.review.steps.progress import ReviewStepStatus
 from vaahai.reporting.formats import OutputFormat
+from vaahai.reporting.markdown_reporter import generate_markdown_report
 
 # Import built-in review steps to ensure they are registered
 from vaahai.review.steps.built_in import LineLength, IndentationConsistency
@@ -336,6 +338,31 @@ def run(
                 
                 # Wait for the progress thread to catch up
                 time.sleep(0.5)
+                
+                # Handle different output formats
+                if output_format == OutputFormat.MARKDOWN:
+                    # Generate markdown report
+                    markdown_report = generate_markdown_report(result)
+                    
+                    # Create a report file with timestamp
+                    report_path = f"vaahai_review_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md"
+                    with open(report_path, "w") as f:
+                        f.write(markdown_report)
+                    
+                    console.print(f"\n[green]Markdown report generated:[/green] {report_path}")
+                    
+                    # Show a preview of the report
+                    preview_length = min(500, len(markdown_report))
+                    console.print("\n[bold]Report Preview:[/bold]")
+                    console.print(Panel(
+                        markdown_report[:preview_length] + ("..." if len(markdown_report) > preview_length else ""),
+                        title="Markdown Preview",
+                        border_style="blue"
+                    ))
+                    
+                    # Return early as we've already handled the output
+                    console.print(f"[green]Report format:[/green] {output_format.value}")
+                    return report_path
                 
                 # Display results
                 if result["status"] == "success":

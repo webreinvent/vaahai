@@ -61,23 +61,31 @@ Read and learn from `./project_scope.prompt` file our the project scope again so
 - Update documents in `/specs`, `/docs`, and `/ai_docs` as needed
 - Update root level README.md if applicable for the new feature, only consider important information only
 
-### Step 6. Git Commit
+### Step 6. Update /specs/task_tracking.md
+- Update the task status in `/specs/task_tracking.md` to "Completed"
+- Add any relevant notes or updates
+
+### Step 7. Clean Up 
+- Delete useless files or code
+- Delete temporary files or directories
+- Remove unnecessary dependencies
+- Remove unnecessary code
+
+### Step 8. Git Commit
 - Commit all changes to Git if applicable
 - Include a descriptive title that references the task ID
 - Add a detailed description of the changes made
 
-### Step 7. Git Push
+### Step 9. Git Push
 - Push all changes to the remote repository
 
-### Step 8. Update /specs/task_tracking.md
-- Update the task status in `/specs/task_tracking.md` to "Completed"
-- Add any relevant notes or updates
-
-### Step 9. Update memory
+### Step 10. Update memory
 - Update your memory
 
-CLEARLY DEFINE YOUR NEXT STEPS AND ASK FOR CONFIRMATION BEFORE PROCEEDING.
+### Step 11. Reminder
+- Remind me to merge the current branch code to `develop` branch after the task is completed
 
+CLEARLY DEFINE YOUR NEXT STEPS AND ASK FOR CONFIRMATION BEFORE PROCEEDING.
 
 ## OUTPUT FORMAT
 List all the steps from WORKFLOW and provide status against each steps in green and red color icon, green icon for completed and red icon for incomplete
