@@ -14,6 +14,9 @@ from vaahai.review.steps.progress import ReviewProgress, ReviewStepStatus
 from vaahai.review.steps.statistics import ReviewStatistics
 from vaahai.review.steps.findings import KeyFindingsReporter
 
+# For output format selection
+from vaahai.reporting.formats import OutputFormat
+
 # Setup logging
 logger = logging.getLogger(__name__)
 
@@ -84,7 +87,10 @@ class ReviewRunner:
             self.progress.register_step(step.id)
     
     def run_on_content(
-        self, content: str, file_path: Optional[str] = None
+        self,
+        content: str,
+        file_path: Optional[str] = None,
+        output_format: OutputFormat = OutputFormat.RICH,
     ) -> Dict[str, Any]:
         """
         Run all review steps on the provided content.
@@ -92,6 +98,7 @@ class ReviewRunner:
         Args:
             content: The code content to review.
             file_path: Optional path to the file being reviewed.
+            output_format: Optional output format for the results.
         
         Returns:
             Dictionary containing the aggregated results of all review steps.
@@ -102,6 +109,7 @@ class ReviewRunner:
                 "message": "No content provided for review",
                 "results": [],
                 "total_issues": 0,
+                "output_format": output_format.value,
             }
         
         context = {
@@ -183,14 +191,16 @@ class ReviewRunner:
             "statistics": statistics_summary,
             "key_findings": key_findings,
             "recommendations": recommendations,
+            "output_format": output_format.value,
         }
     
-    def run_on_file(self, file_path: str) -> Dict[str, Any]:
+    def run_on_file(self, file_path: str, output_format: OutputFormat = OutputFormat.RICH) -> Dict[str, Any]:
         """
         Run all review steps on the specified file.
         
         Args:
             file_path: Path to the file to review.
+            output_format: Optional output format for the results.
         
         Returns:
             Dictionary containing the aggregated results of all review steps.
@@ -201,13 +211,14 @@ class ReviewRunner:
                 "message": f"File not found: {file_path}",
                 "results": [],
                 "total_issues": 0,
+                "output_format": output_format.value,
             }
         
         try:
             with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
             
-            return self.run_on_content(content, file_path)
+            return self.run_on_content(content, file_path, output_format)
         except Exception as e:
             logger.error(f"Error reading file '{file_path}': {e}")
             return {
@@ -215,6 +226,7 @@ class ReviewRunner:
                 "message": f"Error reading file: {str(e)}",
                 "results": [],
                 "total_issues": 0,
+                "output_format": output_format.value,
             }
     
     def run_on_directory(
@@ -223,6 +235,7 @@ class ReviewRunner:
         file_extensions: Optional[List[str]] = None,
         recursive: bool = True,
         exclude_dirs: Optional[List[str]] = None,
+        output_format: OutputFormat = OutputFormat.RICH,
     ) -> Dict[str, Any]:
         """
         Run all review steps on files in the specified directory.
@@ -233,6 +246,7 @@ class ReviewRunner:
                            If not provided, all files will be reviewed.
             recursive: If True, review files in subdirectories as well.
             exclude_dirs: Optional list of directory names to exclude.
+            output_format: Optional output format for the results.
         
         Returns:
             Dictionary containing the aggregated results of all review steps.
@@ -243,6 +257,7 @@ class ReviewRunner:
                 "message": f"Directory not found: {directory_path}",
                 "results": [],
                 "total_issues": 0,
+                "output_format": output_format.value,
             }
         
         exclude_dirs = exclude_dirs or [".git", "__pycache__", "venv", ".venv", "node_modules"]
@@ -270,7 +285,7 @@ class ReviewRunner:
                     continue
                 
                 file_path = os.path.join(root, file)
-                file_result = self.run_on_file(file_path)
+                file_result = self.run_on_file(file_path, output_format)
                 
                 if file_result["status"] == "success":
                     file_results.append({
@@ -305,6 +320,7 @@ class ReviewRunner:
             "statistics": statistics_summary,
             "key_findings": key_findings,
             "recommendations": recommendations,
+            "output_format": output_format.value,
         }
     
     def get_progress(self) -> ReviewProgress:

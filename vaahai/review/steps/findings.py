@@ -203,23 +203,51 @@ class KeyFindingsReporter:
             List of recommendation strings
         """
         recommendations = []
+        # Track categories and severities we've already added recommendations for
+        added_categories = set()
+        added_severities = set()
+        # Find if a critical security finding exists and cache its count
+        critical_security_finding = next(
+            (f for f in self.findings if f.get("type") == "severity" and f.get("severity") == "critical" and f.get("category", "").lower() == "security"),
+            None
+        )
+        has_critical_security = critical_security_finding is not None
         
+        # Generate findings first if not already generated
+        if not self.findings:
+            self.generate_findings()
+            
         # Process findings to generate recommendations
         for finding in self.findings:
             if finding.get("type") == "severity":
                 severity = finding.get("severity", "")
                 count = finding.get("count", 0)
                 
+                # Skip if we already added a recommendation for this severity
+                if severity in added_severities:
+                    continue
+                added_severities.add(severity)
+                
                 if severity == "critical":
-                    recommendations.append(f"Address {count} critical issues immediately to prevent security vulnerabilities")
-                elif severity == "high":
-                    recommendations.append(f"Prioritize fixing {count} high severity issues in the next development cycle")
+                    # If this is a critical security issue, mention security in the message
+                    if finding.get("category", "").lower() == "security":
+                        recommendations.append(f"Address {count} critical security issues immediately to prevent security vulnerabilities")
+                    else:
+                        recommendations.append(f"Address {count} critical issues immediately")
             
             elif finding.get("type") == "category":
                 category = finding.get("category", "")
                 count = finding.get("count", 0)
                 
+                # Skip if we already added a recommendation for this category
+                if category in added_categories:
+                    continue
+                added_categories.add(category)
+                
                 if category == "security":
+                    # If a critical security issue already recommended, skip category-based recommendation
+                    if has_critical_security:
+                        continue
                     recommendations.append(f"Review and fix {count} security issues to improve code safety")
                 elif category == "performance":
                     recommendations.append(f"Optimize {count} performance issues to improve application efficiency")
