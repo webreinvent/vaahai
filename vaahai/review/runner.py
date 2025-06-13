@@ -6,7 +6,7 @@ This module provides utilities for running multiple review steps on code.
 
 import logging
 import os
-from typing import Any, Dict, List, Optional, Set, Union
+from typing import Any, Dict, List, Optional, Set, Union, Callable
 
 from vaahai.review.steps.base import ReviewStep, ReviewStepCategory, ReviewStepSeverity
 from vaahai.review.steps.registry import ReviewStepRegistry
@@ -236,6 +236,7 @@ class ReviewRunner:
         recursive: bool = True,
         exclude_dirs: Optional[List[str]] = None,
         output_format: OutputFormat = OutputFormat.RICH,
+        file_callback: Optional[Callable[[str, str], None]] = None,
     ) -> Dict[str, Any]:
         """
         Run all review steps on files in the specified directory.
@@ -245,8 +246,11 @@ class ReviewRunner:
             file_extensions: Optional list of file extensions to include (e.g., ['.py', '.js']).
                            If not provided, all files will be reviewed.
             recursive: If True, review files in subdirectories as well.
-            exclude_dirs: Optional list of directory names to exclude.
+            exclude_dirs: Optional list of directory names to exclude (e.g., ['node_modules', '.git']).
             output_format: Optional output format for the results.
+            file_callback: Optional callback function to report file processing progress.
+                          The callback receives (file_path, status) where status is one of:
+                          "processing", "completed", "failed", or "skipped".
         
         Returns:
             Dictionary containing the aggregated results of all review steps.
@@ -255,55 +259,82 @@ class ReviewRunner:
             return {
                 "status": "error",
                 "message": f"Directory not found: {directory_path}",
-                "results": [],
+                "file_results": [],
                 "total_issues": 0,
                 "output_format": output_format.value,
             }
         
-        exclude_dirs = exclude_dirs or [".git", "__pycache__", "venv", ".venv", "node_modules"]
-        file_results = []
-        total_issues = 0
+        # Default exclude dirs
+        if exclude_dirs is None:
+            exclude_dirs = [".git", "node_modules", "__pycache__", "venv", ".env"]
         
-        # Reset progress tracker for directory review
-        self.progress.reset()
-        
-        # Reset statistics collector for directory review
-        self.statistics.reset()
-        
-        # Register all step instances with the progress tracker
-        for step in self.step_instances:
-            self.progress.register_step(step.id)
-        
+        # Find all files in the directory
+        file_paths = []
         for root, dirs, files in os.walk(directory_path):
             # Skip excluded directories
             dirs[:] = [d for d in dirs if d not in exclude_dirs]
             
-            # Process files in the current directory
+            # Skip hidden directories (starting with .)
+            dirs[:] = [d for d in dirs if not d.startswith(".")]
+            
+            if not recursive:
+                # If not recursive, clear dirs to prevent further traversal
+                dirs.clear()
+            
             for file in files:
-                # Skip files with unwanted extensions
-                if file_extensions and not any(file.endswith(ext) for ext in file_extensions):
+                # Skip hidden files
+                if file.startswith("."):
                     continue
                 
                 file_path = os.path.join(root, file)
-                file_result = self.run_on_file(file_path, output_format)
                 
-                if file_result["status"] == "success":
+                # Filter by extension if provided
+                if file_extensions:
+                    ext = os.path.splitext(file)[1].lower()
+                    if ext not in file_extensions:
+                        continue
+                
+                file_paths.append(file_path)
+        
+        # Run review on each file
+        file_results = []
+        total_issues = 0
+        
+        for file_path in file_paths:
+            try:
+                # Notify about file processing start if callback provided
+                if file_callback:
+                    file_callback(file_path, "processing")
+                
+                # Run review on the file
+                result = self.run_on_file(file_path, output_format)
+                
+                if result["status"] == "success":
                     file_results.append({
                         "file_path": file_path,
-                        "results": file_result["results"],
-                        "total_issues": file_result["total_issues"],
+                        "issues": result.get("total_issues", 0),
+                        "results": result.get("results", []),
                     })
-                    total_issues += file_result["total_issues"]
-            
-            # If not recursive, break after the first iteration
-            if not recursive:
-                break
+                    total_issues += result.get("total_issues", 0)
+                    
+                    # Notify about file completion if callback provided
+                    if file_callback:
+                        file_callback(file_path, "completed")
+                else:
+                    # Notify about file failure if callback provided
+                    if file_callback:
+                        file_callback(file_path, "failed")
+            except Exception as e:
+                logger.error(f"Error reviewing file '{file_path}': {e}")
+                # Notify about file failure if callback provided
+                if file_callback:
+                    file_callback(file_path, "failed")
         
         # Get progress summary
         progress_summary = self.progress.get_progress_summary()
         
         # Get statistics summary
-        statistics_summary = self.statistics.get_statistics_summary()
+        statistics_summary = self.statistics.get_summary()
         
         # Generate key findings
         key_findings = self.findings_reporter.generate_findings()
