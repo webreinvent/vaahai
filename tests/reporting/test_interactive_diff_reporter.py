@@ -143,19 +143,28 @@ class TestInteractiveDiffReporter(unittest.TestCase):
     
     @patch('vaahai.reporting.interactive_diff_reporter.InteractiveDiffReporter')
     def test_generate_interactive_diff_report(self, mock_reporter_class):
-        """Test the generate_interactive_diff_report helper function."""
-        # Create a mock reporter instance
-        mock_reporter = MagicMock()
-        mock_reporter_class.return_value = mock_reporter
+        """Test generating an interactive diff report."""
+        # Mock the CodeChangeManager
+        mock_manager = MagicMock(spec=CodeChangeManager)
         
-        # Call the helper function
-        generate_interactive_diff_report(self.mock_results, self.mock_console)
-        
-        # Verify reporter was created with the correct arguments
-        mock_reporter_class.assert_called_once_with(self.mock_results, self.mock_console)
-        
-        # Verify display_interactive_report was called
-        mock_reporter.display_interactive_report.assert_called_once()
+        # Enable test mode for the real CodeChangeManager that might be created
+        with patch('vaahai.reporting.interactive_diff_reporter.CodeChangeManager') as mock_ccm_class:
+            mock_ccm_instance = MagicMock()
+            mock_ccm_instance.set_test_mode = MagicMock()
+            mock_ccm_class.return_value = mock_ccm_instance
+            
+            # Mock the Live context manager
+            with patch('vaahai.reporting.interactive_diff_reporter.Live') as mock_live:
+                # Mock the input function to simulate key presses
+                with patch('builtins.input', side_effect=['q']):
+                    # Call the function
+                    generate_interactive_diff_report(self.mock_results)
+                    
+                    # Check that Live was called
+                    mock_live.assert_called_once()
+                    
+                    # Check that set_test_mode was called on the CodeChangeManager
+                    mock_ccm_instance.set_test_mode.assert_called_once_with(True, 'y')
     
     @patch('rich.live.Live')
     def test_handle_navigation(self, mock_live):

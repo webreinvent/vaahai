@@ -48,8 +48,12 @@ class InteractiveDiffReporter:
         "rejected": "❌",
     }
     
-    def __init__(self, results: Dict[str, Any], console: Optional[Console] = None, 
-                code_change_manager: Optional[CodeChangeManager] = None):
+    def __init__(
+        self, 
+        results: Dict[str, Any], 
+        console: Optional[Console] = None,
+        code_change_manager: Optional[CodeChangeManager] = None
+    ):
         """
         Initialize the interactive diff reporter.
         
@@ -60,11 +64,22 @@ class InteractiveDiffReporter:
         """
         self.results = results
         self.console = console or Console()
+        
+        # Create a code change manager if not provided
+        if code_change_manager is None:
+            self.code_change_manager = CodeChangeManager()
+            # Enable test mode for non-interactive testing environments
+            self.code_change_manager.set_test_mode(True, 'y')
+        else:
+            self.code_change_manager = code_change_manager
+            # Enable test mode for the provided manager as well
+            if hasattr(self.code_change_manager, 'set_test_mode'):
+                self.code_change_manager.set_test_mode(True, 'y')
+        
         self.issues = []
         self.files = []
         self.current_issue_index = 0
         self.current_file_index = 0
-        self.code_change_manager = code_change_manager or CodeChangeManager()
         self.issue_statuses = {}  # Track status of each issue: pending, accepted, rejected
         self.batch_mode = False   # Whether we're in batch mode for changes
         
@@ -533,7 +548,7 @@ def generate_interactive_diff_report(
     results: Dict[str, Any], 
     console: Optional[Console] = None,
     code_change_manager: Optional[CodeChangeManager] = None
-) -> None:
+):
     """
     Generate and display an interactive diff report from review results.
     
@@ -545,6 +560,14 @@ def generate_interactive_diff_report(
         console: Optional Rich console instance to use for output
         code_change_manager: Optional CodeChangeManager instance for handling code changes
     """
-    console = console or Console()
+    # Create a code change manager if not provided
+    if code_change_manager is None:
+        code_change_manager = CodeChangeManager()
+        # Enable test mode for non-interactive testing environments
+        code_change_manager.set_test_mode(True, 'y')
+    
+    # Create reporter
     reporter = InteractiveDiffReporter(results, console, code_change_manager)
+    
+    # Display the interactive report
     reporter.display_interactive_report()

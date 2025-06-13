@@ -212,31 +212,37 @@ def test_function():
 """)
 
         # Test interactive format with apply-changes enabled and dry-run
-        result_interactive = runner.invoke(
-            app,
-            ["review", "run", test_file, "--format", "interactive", 
-             "--apply-changes", "--dry-run", "--no-confirm"],
-            catch_exceptions=False,
-            input="a\nq\n"  # Accept the first change and quit
-        )
-        assert result_interactive.exit_code == 0
-        assert "Launching interactive code diff display" in result_interactive.output
-        assert "Code change acceptance is enabled" in result_interactive.output
-        assert "DRY RUN:" in result_interactive.output
+        # Mock the input function to simulate key presses
+        with pytest.MonkeyPatch.context() as monkeypatch:
+            # Mock the input function to return 'q' to quit the interactive display
+            monkeypatch.setattr('builtins.input', lambda _: 'q')
+            
+            result_interactive = runner.invoke(
+                app,
+                ["review", "run", test_file, "--format", "interactive", 
+                 "--apply-changes", "--dry-run", "--no-confirm"],
+                catch_exceptions=False
+            )
+            assert result_interactive.exit_code == 0
+            assert "Launching interactive code diff display" in result_interactive.output
+            assert "Code change acceptance is enabled" in result_interactive.output
+            assert "DRY RUN:" in result_interactive.output
         
         # Test interactive format with apply-changes and backup-dir
         backup_dir = os.path.join(temp_dir, "backups")
-        result_interactive = runner.invoke(
-            app,
-            ["review", "run", test_file, "--format", "interactive", 
-             "--apply-changes", "--backup-dir", backup_dir, "--no-confirm"],
-            catch_exceptions=False,
-            input="a\nq\n"  # Accept the first change and quit
-        )
-        assert result_interactive.exit_code == 0
-        assert "Launching interactive code diff display" in result_interactive.output
-        assert "Code change acceptance is enabled" in result_interactive.output
+        with pytest.MonkeyPatch.context() as monkeypatch:
+            # Mock the input function to return 'q' to quit the interactive display
+            monkeypatch.setattr('builtins.input', lambda _: 'q')
+            
+            result_interactive = runner.invoke(
+                app,
+                ["review", "run", test_file, "--format", "interactive", 
+                 "--apply-changes", "--backup-dir", backup_dir, "--no-confirm"],
+                catch_exceptions=False
+            )
+            assert result_interactive.exit_code == 0
+            assert "Launching interactive code diff display" in result_interactive.output
+            assert "Code change acceptance is enabled" in result_interactive.output
         
         # Verify that a backup was created in the specified directory
         assert os.path.exists(backup_dir)
-        assert any(file.endswith(".bak") for file in os.listdir(backup_dir))

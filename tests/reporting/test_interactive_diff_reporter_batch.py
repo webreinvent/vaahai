@@ -26,6 +26,7 @@ class TestInteractiveDiffReporterBatch(unittest.TestCase):
         
         # Create mock code change manager
         self.mock_manager = MagicMock(spec=CodeChangeManager)
+        self.mock_manager.set_test_mode = MagicMock()
         
         # Create mock results with multiple issues
         self.mock_results = {
@@ -92,6 +93,9 @@ class TestInteractiveDiffReporterBatch(unittest.TestCase):
         
         # Enable batch mode
         reporter.batch_mode = True
+        
+        # Enable test mode on the code change manager
+        self.mock_manager.set_test_mode.assert_called_once_with(True, 'y')
         
         # Mock the input method to simulate keyboard input: 'a' (accept), 'q' (quit)
         self.mock_console.input.side_effect = ['a', 'q']
