@@ -139,3 +139,104 @@ def run_command(user_input):
         
         # At least one category emoji should be present
         assert any(emoji in result.output for emoji in category_emojis)
+
+
+def test_review_output_format_selection():
+    """Test that the review command supports different output formats."""
+    # Create a temporary directory with test files
+    with tempfile.TemporaryDirectory() as temp_dir:
+        # Create a test file with content that will trigger issues
+        test_file = os.path.join(temp_dir, "test_file.py")
+        with open(test_file, "w") as f:
+            f.write("""
+# Test file with a simple issue
+def test_function():
+    password = "hardcoded_password"
+    return password
+""")
+
+        # Test markdown format
+        result_md = runner.invoke(
+            app,
+            ["review", "run", test_file, "--format", "markdown", "--no-confirm"],
+            catch_exceptions=False
+        )
+        assert result_md.exit_code == 0
+        assert "Markdown report generated:" in result_md.output
+        assert ".md" in result_md.output
+        
+        # Test HTML format
+        result_html = runner.invoke(
+            app,
+            ["review", "run", test_file, "--format", "html", "--no-confirm"],
+            catch_exceptions=False
+        )
+        assert result_html.exit_code == 0
+        assert "HTML report generated:" in result_html.output
+        assert ".html" in result_html.output
+        
+        # Test rich format (default)
+        result_rich = runner.invoke(
+            app,
+            ["review", "run", test_file, "--format", "rich", "--no-confirm"],
+            catch_exceptions=False
+        )
+        assert result_rich.exit_code == 0
+        assert "Report format: rich" in result_rich.output
+        
+        # Test interactive format with apply-changes disabled
+        # This should run without error but not enable code changes
+        result_interactive = runner.invoke(
+            app,
+            ["review", "run", test_file, "--format", "interactive", "--no-confirm"],
+            catch_exceptions=False,
+            input="q\n"  # Quit the interactive display
+        )
+        assert result_interactive.exit_code == 0
+        assert "Launching interactive code diff display" in result_interactive.output
+        assert "Code change acceptance is disabled" in result_interactive.output
+
+
+def test_review_interactive_code_changes():
+    """Test that the review command supports interactive code changes."""
+    # Create a temporary directory with test files
+    with tempfile.TemporaryDirectory() as temp_dir:
+        # Create a test file with content that will trigger issues
+        test_file = os.path.join(temp_dir, "test_file.py")
+        with open(test_file, "w") as f:
+            f.write("""
+# Test file with a simple issue
+def test_function():
+    password = "hardcoded_password"
+    return password
+""")
+
+        # Test interactive format with apply-changes enabled and dry-run
+        result_interactive = runner.invoke(
+            app,
+            ["review", "run", test_file, "--format", "interactive", 
+             "--apply-changes", "--dry-run", "--no-confirm"],
+            catch_exceptions=False,
+            input="a\nq\n"  # Accept the first change and quit
+        )
+        assert result_interactive.exit_code == 0
+        assert "Launching interactive code diff display" in result_interactive.output
+        assert "Code change acceptance is enabled" in result_interactive.output
+        assert "DRY RUN:" in result_interactive.output
+        
+        # Test interactive format with apply-changes and backup-dir
+        backup_dir = os.path.join(temp_dir, "backups")
+        result_interactive = runner.invoke(
+            app,
+            ["review", "run", test_file, "--format", "interactive", 
+             "--apply-changes", "--backup-dir", backup_dir, "--no-confirm"],
+            catch_exceptions=False,
+            input="a\nq\n"  # Accept the first change and quit
+        )
+        assert result_interactive.exit_code == 0
+        assert "Launching interactive code diff display" in result_interactive.output
+        assert "Code change acceptance is enabled" in result_interactive.output
+        
+        # Verify that a backup was created in the specified directory
+        assert os.path.exists(backup_dir)
+        assert any(file.endswith(".bak") for file in os.listdir(backup_dir))
