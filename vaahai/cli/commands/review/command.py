@@ -37,6 +37,10 @@ from vaahai.review.steps.built_in import LineLength, IndentationConsistency
 from vaahai.review.steps.built_in import HardcodedSecrets, SQLInjection
 from vaahai.review.steps.built_in import InefficientLoops, LargeMemoryUsage
 
+# Import detection agents
+from vaahai.agents.applications.language_detection.agent import LanguageDetectionAgent
+from vaahai.agents.applications.framework_detection.agent import FrameworkDetectionAgent
+
 # Create a rich console for formatted output
 console = Console()
 
@@ -121,6 +125,21 @@ def run(
     This command analyzes the code in the specified path and provides
     feedback on code quality, potential bugs, and suggested improvements.
     """
+    # --- Language and Framework Detection ---
+    try:
+        lang_agent = LanguageDetectionAgent({"name": "LangDetectCLI"})
+        lang_result = lang_agent.run(str(path))
+        detected_language = lang_result.get("primary_language", {}).get("name", "Unknown")
+    except Exception:
+        detected_language = "Unknown"
+
+    try:
+        fw_agent = FrameworkDetectionAgent({"name": "FrameworkDetectCLI"})
+        fw_result = fw_agent.run(str(path))
+        detected_framework = fw_result.get("primary_framework", {}).get("name", "Unknown")
+    except Exception:
+        detected_framework = "Unknown"
+
     # Enable debug logging if debug flag is set
     if debug:
         logging.basicConfig(level=logging.DEBUG)
@@ -129,6 +148,8 @@ def run(
     console.print(
         Panel(
             f"[bold]Reviewing:[/bold] {path}\n"
+            f"[bold]Language:[/bold] {detected_language}\n"
+            f"[bold]Framework:[/bold] {detected_framework}\n"
             f"[bold]Depth:[/bold] {depth}\n"
             f"[bold]Focus:[/bold] {focus or 'All areas'}\n"
             f"[bold]Severity:[/bold] {severity or 'All levels'}",

@@ -24,6 +24,9 @@ def test_review_run_command_with_directory():
         assert "Code Review" in result.stdout
         assert temp_dir in result.stdout
         assert "Depth: standard" in result.stdout
+        # Check for language/framework detection output
+        assert "Language:" in result.stdout
+        assert "Framework:" in result.stdout
 
 
 def test_review_run_command_with_options():
@@ -37,3 +40,6 @@ def test_review_run_command_with_options():
         assert "Code Review" in result.stdout
         assert "Depth: thorough" in result.stdout
         assert "Focus: security" in result.stdout
+        # Check for language/framework detection output
+        assert "Language:" in result.stdout
+        assert "Framework:" in result.stdout
