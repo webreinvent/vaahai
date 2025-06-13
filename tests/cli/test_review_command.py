@@ -43,3 +43,28 @@ def test_review_run_command_with_options():
         # Check for language/framework detection output
         assert "Language:" in result.stdout
         assert "Framework:" in result.stdout
+
+
+def test_review_progress_display():
+    """Test that the review command displays enhanced progress information."""
+    with tempfile.TemporaryDirectory() as temp_dir:
+        # Create a test file to review
+        test_file = Path(temp_dir) / "test_file.py"
+        with open(test_file, "w") as f:
+            f.write("def test_function():\n    x = 1\n    return x\n")
+        
+        result = runner.invoke(app, ["review", "run", str(test_file)])
+        
+        assert result.exit_code == 0
+        
+        # Verify progress display components
+        assert "Running review steps" in result.stdout
+        
+        # Check for emoji indicators in the output
+        assert "✅" in result.stdout  # Completed steps
+        
+        # Check for statistics panel
+        assert "Review Statistics" in result.stdout
+        assert "Total steps:" in result.stdout
+        assert "Completed:" in result.stdout
+        assert "Total duration:" in result.stdout

@@ -20,6 +20,12 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TaskProgressColumn, TimeElapsedColumn
 from rich.table import Table
+from rich.live import Live
+from rich.layout import Layout
+from rich.tree import Tree
+from rich.emoji import Emoji
+from rich.text import Text
+from rich.columns import Columns
 
 from vaahai.cli.utils.help import CustomHelpCommand, create_typer_app
 from vaahai.review.steps.registry import ReviewStepRegistry
@@ -43,6 +49,15 @@ from vaahai.agents.applications.framework_detection.agent import FrameworkDetect
 
 # Create a rich console for formatted output
 console = Console()
+
+# Status emoji mapping for visual indicators
+STATUS_EMOJI = {
+    ReviewStepStatus.PENDING: "⏳",
+    ReviewStepStatus.IN_PROGRESS: "🔄",
+    ReviewStepStatus.COMPLETED: "✅",
+    ReviewStepStatus.FAILED: "❌",
+    ReviewStepStatus.SKIPPED: "⏭️"
+}
 
 # Create the review command group with custom help formatting
 review_app = create_typer_app(
@@ -321,6 +336,10 @@ def run(
                     visible=False
                 )
             
+            # For directory reviews, track file-level progress
+            file_progress_task = None
+            file_tasks = {}
+            
             # Run the review with progress tracking
             try:
                 # Start a background thread to update progress
@@ -342,21 +361,38 @@ def run(
                         # Update individual step progress
                         for step_id, status in runner.get_progress().step_statuses.items():
                             if step_id in step_tasks:
-                                # Make the task visible if it's in progress
-                                if status == ReviewStepStatus.IN_PROGRESS:
+                                # Make the task visible if it's in progress or completed
+                                if status in [ReviewStepStatus.IN_PROGRESS, ReviewStepStatus.COMPLETED, ReviewStepStatus.FAILED]:
                                     progress.update(step_tasks[step_id], visible=True)
                                 
                                 # Update completion status
                                 if status in [ReviewStepStatus.COMPLETED, ReviewStepStatus.FAILED]:
+                                    duration = runner.get_progress().get_step_duration(step_id)
+                                    emoji = STATUS_EMOJI[status]
+                                    
                                     progress.update(
                                         step_tasks[step_id], 
                                         completed=1,
                                         visible=True,
                                         description=(
-                                            f"[green]{step_id}[/green] ({runner.get_progress().get_step_duration(step_id):.2f}s)"
+                                            f"{emoji} [green]{step_id}[/green] ({duration:.2f}s)"
                                             if status == ReviewStepStatus.COMPLETED
-                                            else f"[red]{step_id}[/red] (failed)"
+                                            else f"{emoji} [red]{step_id}[/red] (failed in {duration:.2f}s)"
                                         )
+                                    )
+                                elif status == ReviewStepStatus.IN_PROGRESS:
+                                    emoji = STATUS_EMOJI[status]
+                                    progress.update(
+                                        step_tasks[step_id],
+                                        description=f"{emoji} [yellow]{step_id}[/yellow] (running...)"
+                                    )
+                                elif status == ReviewStepStatus.SKIPPED:
+                                    emoji = STATUS_EMOJI[status]
+                                    progress.update(
+                                        step_tasks[step_id],
+                                        completed=1,
+                                        visible=True,
+                                        description=f"{emoji} [blue]{step_id}[/blue] (skipped)"
                                     )
                         
                         # Sleep briefly to avoid high CPU usage
@@ -378,11 +414,51 @@ def run(
                         content = f.read()
                     result = runner.run_on_content(content, file_path=str(path), output_format=output_format)
                 else:
-                    # Run on a directory
-                    result = runner.run_on_directory(str(path), output_format=output_format)
+                    # For directory reviews, add file progress tracking
+                    file_count = sum(1 for _ in Path(path).rglob('*') if _.is_file() and not any(part.startswith('.') for part in _.parts))
+                    file_progress_task = progress.add_task(f"Processing files in {path}", total=file_count, visible=True)
+                    
+                    # Create a file processing callback for the runner
+                    def file_progress_callback(file_path, status="processing"):
+                        nonlocal file_tasks
+                        
+                        # Create a task for this file if it doesn't exist
+                        if file_path not in file_tasks:
+                            file_tasks[file_path] = progress.add_task(
+                                f"[cyan]{os.path.basename(file_path)}[/cyan]",
+                                total=1,
+                                visible=True
+                            )
+                        
+                        # Update the task status
+                        if status == "completed":
+                            progress.update(file_tasks[file_path], completed=1, description=f"✅ {os.path.basename(file_path)}")
+                            progress.update(file_progress_task, advance=1)
+                        elif status == "failed":
+                            progress.update(file_tasks[file_path], completed=1, description=f"❌ {os.path.basename(file_path)}")
+                            progress.update(file_progress_task, advance=1)
+                        elif status == "skipped":
+                            progress.update(file_tasks[file_path], completed=1, description=f"⏭️ {os.path.basename(file_path)}")
+                            progress.update(file_progress_task, advance=1)
+                    
+                    # Run on a directory with the callback
+                    result = runner.run_on_directory(str(path), output_format=output_format, file_callback=file_progress_callback)
                 
                 # Wait for the progress thread to catch up
                 time.sleep(0.5)
+                
+                # Display timing statistics
+                progress_summary = runner.get_progress().get_progress_summary()
+                stats_panel = Panel(
+                    f"[bold]Total steps:[/bold] {progress_summary['total_steps']}\n"
+                    f"[bold]Completed:[/bold] {progress_summary['completed_steps']} ✅\n"
+                    f"[bold]Failed:[/bold] {progress_summary['failed_steps']} ❌\n"
+                    f"[bold]Skipped:[/bold] {progress_summary['skipped_steps']} ⏭️\n"
+                    f"[bold]Total duration:[/bold] {progress_summary['total_duration']:.2f}s",
+                    title="Review Statistics",
+                    border_style="green"
+                )
+                console.print(stats_panel)
                 
                 # Handle different output formats
                 if output_format == OutputFormat.MARKDOWN:
