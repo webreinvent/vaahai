@@ -76,7 +76,7 @@ This document tracks the tasks for the VaahAI project, organized by priority and
 | [P3-T9] | Add output format selection | 🟢 | [P1-T9], [P1-T10] | Implement InquirerPy prompt to select output format (markdown, HTML, interactive) |
 | [P3-T10] | Create markdown report generator | 🟢 | [P3-T8], [P3-T9] | Implemented MarkdownReporter class to generate structured markdown reports from review results and integrated with CLI review command |
 | [P3-T11] | Create HTML report generator | 🟢 | [P3-T8], [P3-T9] | Implement HTML formatting for code review reports with syntax highlighting |
-| [P3-T12] | Implement interactive code diff display | 🟡 | [P3-T9] | Create Rich-based display showing original and suggested code with differences highlighted |
+| [P3-T12] | Implement interactive code diff display | 🟢 | [P3-T9] | Create Rich-based display showing original and suggested code with differences highlighted |
 | [P3-T13] | Add code change acceptance mechanism | 🔴 | [P3-T12] | Implement interactive prompt for accepting or rejecting suggested code changes |
 | [P3-T14] | Implement file modification system | 🔴 | [P3-T13] | Create system to safely apply accepted changes to original files |
 | [P3-T15] | Create basic review command | 🔴 | [P3-T1], [P3-T3], [P3-T4], [P3-T5] | Implement initial `vaahai review [PATH]` command with minimal functionality |
@@ -88,7 +88,7 @@ This document tracks the tasks for the VaahAI project, organized by priority and
 
 | Task ID | Description | Status | Dependencies | Notes |
 |---------|-------------|--------|--------------|-------|
-| [P3-T12] | Implement interactive code diff display | 🟡 | [P3-T9] | Create Rich-based display showing original and suggested code with differences highlighted using Rich library |
+| [P3-T13] | Add code change acceptance mechanism | 🔴 | [P3-T12] | Implement interactive prompt for accepting or rejecting suggested code changes |
 
 ## Completed Tasks
 
@@ -134,6 +134,7 @@ This document tracks the tasks for the VaahAI project, organized by priority and
 | [P3-T9] | Add output format selection | 2025-06-13 | Implemented InquirerPy prompt to select output format (rich, markdown, HTML, interactive) with CLI integration and robust error handling |
 | [P3-T10] | Create markdown report generator | 2025-06-13 | Implemented MarkdownReporter class to generate structured markdown reports from review results and integrated with CLI review command |
 | [P3-T11] | Create HTML report generator | 2025-06-13 | Implemented HTMLReporter class to generate HTML reports with syntax highlighting using Pygments, integrated with CLI review command for saving and previewing reports |
+| [P3-T12] | Implement interactive code diff display | 2025-06-13 | Implemented InteractiveDiffReporter class to display interactive code diffs with syntax highlighting, side-by-side comparison, and keyboard navigation |
 
 ## Current Blockers
 
@@ -169,12 +170,12 @@ Phase 3 follows an MVP approach with these key principles:
 ### Overall Progress
 - Phase 1 tasks completed: 23 out of 23 (100%)
 - Phase 2 tasks completed: 5 out of 5 (100%)
-- Phase 3 tasks completed: 11 out of 18 (61.1%)
-- Total project completion: 39 out of 46 (84.8%)
+- Phase 3 tasks completed: 12 out of 18 (66.7%)
+- Total project completion: 40 out of 46 (87%)
 
 ### Next Milestone
 - Code Review Agent MVP (18 tasks)
-- Current focus: [P3-T12] Implement interactive code diff display
+- Current focus: [P3-T13] Add code change acceptance mechanism
 - Estimated completion: 2025-09-15
 
 ### Recent Achievements
