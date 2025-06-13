@@ -11,8 +11,10 @@ import time
 import threading
 from pathlib import Path
 from typing import List, Optional
+import sys
 
 import typer
+from InquirerPy import inquirer
 from rich.console import Console
 from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TaskProgressColumn, TimeElapsedColumn
@@ -23,6 +25,7 @@ from vaahai.review.steps.registry import ReviewStepRegistry
 from vaahai.review.runner import ReviewRunner
 from vaahai.review.steps.base import ReviewStep, ReviewStepCategory, ReviewStepSeverity
 from vaahai.review.steps.progress import ReviewStepStatus
+from vaahai.reporting.formats import OutputFormat
 
 # Import built-in review steps to ensure they are registered
 from vaahai.review.steps.built_in import LineLength, IndentationConsistency
@@ -77,6 +80,13 @@ def run(
         False,
         "--debug",
         help="Show debug information",
+    ),
+    format: str = typer.Option(
+        None,
+        "--format",
+        "-f",
+        help="Output format for the report (rich, markdown, html, interactive)",
+        case_sensitive=False,
     ),
 ):
     """
@@ -157,6 +167,33 @@ def run(
     
     if debug:
         console.print(f"[bold]Debug:[/bold] Minimum severity level: {min_severity_level.name} (ordinal: {min_severity_ordinal})")
+    
+    # If format not provided, ask with InquirerPy
+    if format is None:
+        # Skip prompt in non-interactive environments (e.g., during tests)
+        if not hasattr(sys.stdin, "isatty") or not sys.stdin.isatty():
+            format = OutputFormat.RICH.value
+        else:
+            format = inquirer.select(
+                message="Select output format",
+                choices=[
+                    ("Rich (default colourful CLI)", OutputFormat.RICH.value),
+                    ("Markdown", OutputFormat.MARKDOWN.value),
+                    ("HTML", OutputFormat.HTML.value),
+                    ("Interactive Rich diff", OutputFormat.INTERACTIVE.value),
+                ],
+                default=OutputFormat.RICH.value,
+            ).execute()
+            # If a tuple is returned (edge case), extract value
+            if isinstance(format, tuple):
+                format = format[1]
+    
+    # Validate format string to enum (fallback to RICH)
+    try:
+        output_format = OutputFormat(format.lower())
+    except ValueError:
+        console.print(f"[yellow]Unknown format '{format}', falling back to 'rich'.[/yellow]")
+        output_format = OutputFormat.RICH
     
     # Use a single Progress context manager for all progress reporting
     with Progress(
@@ -292,10 +329,10 @@ def run(
                     # Run on a single file
                     with open(path, 'r') as f:
                         content = f.read()
-                    result = runner.run_on_content(content, file_path=str(path))
+                    result = runner.run_on_content(content, file_path=str(path), output_format=output_format)
                 else:
                     # Run on a directory
-                    result = runner.run_on_directory(str(path))
+                    result = runner.run_on_directory(str(path), output_format=output_format)
                 
                 # Wait for the progress thread to catch up
                 time.sleep(0.5)
@@ -510,3 +547,5 @@ def run(
         else:
             console.print("\n[yellow]No review steps selected after filtering.[/yellow]")
             console.print("Try adjusting the focus area or severity level.")
+    
+    console.print(f"[green]Report format:[/green] {output_format.value}")

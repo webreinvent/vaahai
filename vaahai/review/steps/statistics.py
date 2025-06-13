@@ -276,4 +276,16 @@ class ReviewStatistics:
             if len(key_findings) >= max_findings:
                 break
         
+        # If we still have slots and no duplicates met the threshold, include single-occurrence issues
+        if len(key_findings) < max_findings:
+            for issue_message, count in self.common_issues.most_common(max_findings - len(key_findings)):
+                if count == 1:
+                    key_findings.append({
+                        "type": "common_issue",
+                        "message": issue_message,
+                        "count": count,
+                    })
+                if len(key_findings) >= max_findings:
+                    break
+        
         return key_findings
