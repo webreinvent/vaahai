@@ -28,6 +28,7 @@ from vaahai.review.steps.base import ReviewStep, ReviewStepCategory, ReviewStepS
 from vaahai.review.steps.progress import ReviewStepStatus
 from vaahai.reporting.formats import OutputFormat
 from vaahai.reporting.markdown_reporter import generate_markdown_report
+from vaahai.reporting.html_reporter import generate_html_report
 
 # Import built-in review steps to ensure they are registered
 from vaahai.review.steps.built_in import LineLength, IndentationConsistency
@@ -357,6 +358,30 @@ def run(
                     console.print(Panel(
                         markdown_report[:preview_length] + ("..." if len(markdown_report) > preview_length else ""),
                         title="Markdown Preview",
+                        border_style="blue"
+                    ))
+                    
+                    # Return early as we've already handled the output
+                    console.print(f"[green]Report format:[/green] {output_format.value}")
+                    return report_path
+                
+                elif output_format == OutputFormat.HTML:
+                    # Generate HTML report
+                    html_report = generate_html_report(result)
+                    
+                    # Create a report file with timestamp
+                    report_path = f"vaahai_review_{datetime.now().strftime('%Y%m%d_%H%M%S')}.html"
+                    with open(report_path, "w") as f:
+                        f.write(html_report)
+                    
+                    console.print(f"\n[green]HTML report generated:[/green] {report_path}")
+                    
+                    # Show a preview of the report
+                    preview_length = min(500, len(html_report))
+                    console.print("\n[bold]Report Preview:[/bold]")
+                    console.print(Panel(
+                        html_report[:preview_length] + ("..." if len(html_report) > preview_length else ""),
+                        title="HTML Preview",
                         border_style="blue"
                     ))
                     
