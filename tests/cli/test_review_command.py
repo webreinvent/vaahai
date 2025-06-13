@@ -6,6 +6,7 @@ function correctly.
 """
 
 import tempfile
+import os
 from pathlib import Path
 
 import pytest
@@ -68,3 +69,73 @@ def test_review_progress_display():
         assert "Total steps:" in result.stdout
         assert "Completed:" in result.stdout
         assert "Total duration:" in result.stdout
+
+
+def test_review_statistics_findings_display():
+    """Test that the review command displays statistics and findings."""
+    # Create a temporary directory with test files
+    with tempfile.TemporaryDirectory() as temp_dir:
+        # Create a test file with content that will trigger issues
+        test_file = os.path.join(temp_dir, "test_file.py")
+        with open(test_file, "w") as f:
+            f.write("""
+# This file has several issues for testing
+import os
+import sys
+import subprocess
+
+# SQL Injection vulnerability
+def execute_query(user_input):
+    query = "SELECT * FROM users WHERE name = '" + user_input + "'"
+    return query
+
+# Inefficient loop
+def process_items(items):
+    result = []
+    for i in range(len(items)):
+        result.append(items[i] * 2)
+    return result
+
+# Hardcoded credentials
+PASSWORD = "supersecret123"
+API_KEY = "abcd1234"
+
+# Command injection
+def run_command(user_input):
+    os.system("echo " + user_input)
+    return subprocess.check_output("ls " + user_input, shell=True)
+""")
+
+        # Run the review command
+        runner = CliRunner()
+        result = runner.invoke(
+            app,
+            ["review", "run", test_file, "--no-confirm"],
+            catch_exceptions=False
+        )
+        
+        # Check that the command executed successfully
+        assert result.exit_code == 0
+        
+        # Verify that statistics are displayed
+        assert "Review Statistics" in result.output
+        assert "Files reviewed:" in result.output
+        assert "Total issues:" in result.output
+        assert "Issues by Severity:" in result.output
+        assert "Issues by Category:" in result.output
+        
+        # Verify that key findings are displayed
+        assert "Key Findings" in result.output
+        
+        # Verify that recommendations are displayed
+        assert "Recommendations" in result.output
+        
+        # Check for emoji indicators in statistics and findings
+        severity_emojis = ["🔴", "🟠", "🟡", "🟢", "🔵"]
+        category_emojis = ["🔒", "⚡", "✨", "🧩", "🔧"]
+        
+        # At least one severity emoji should be present
+        assert any(emoji in result.output for emoji in severity_emojis)
+        
+        # At least one category emoji should be present
+        assert any(emoji in result.output for emoji in category_emojis)

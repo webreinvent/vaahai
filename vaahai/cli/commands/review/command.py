@@ -59,6 +59,29 @@ STATUS_EMOJI = {
     ReviewStepStatus.SKIPPED: "⏭️"
 }
 
+# Severity emoji for different severity levels
+SEVERITY_EMOJI = {
+    "critical": "🔴",
+    "high": "🟠",
+    "medium": "🟡",
+    "low": "🟢",
+    "info": "🔵",
+}
+
+# Category emoji for different categories
+CATEGORY_EMOJI = {
+    "security": "🔒",
+    "performance": "⚡",
+    "style": "✨",
+    "complexity": "🧩",
+    "maintainability": "🔧",
+    "best_practice": "📚",
+    "convention": "📏",
+    "error": "💥",
+    "warning": "⚠️",
+    "other": "❓",
+}
+
 # Create the review command group with custom help formatting
 review_app = create_typer_app(
     name="review",
@@ -340,11 +363,17 @@ def run(
             file_progress_task = None
             file_tasks = {}
             
+            # Create tasks for statistics and findings display
+            statistics_task = progress.add_task("Collecting statistics...", total=1, visible=False)
+            findings_task = progress.add_task("Analyzing key findings...", total=1, visible=False)
+            
             # Run the review with progress tracking
             try:
                 # Start a background thread to update progress
                 def update_progress():
                     completed_steps = 0
+                    last_stats_update = time.time()
+                    stats_update_interval = 2.0  # Update statistics every 2 seconds
                     
                     while completed_steps < len(filtered_instances):
                         # Get current progress
@@ -395,12 +424,55 @@ def run(
                                         description=f"{emoji} [blue]{step_id}[/blue] (skipped)"
                                     )
                         
-                        # Sleep briefly to avoid high CPU usage
-                        time.sleep(0.1)
-                        
-                        # Exit if all steps are completed
-                        if completed_steps >= len(filtered_instances):
-                            break
+                        # Update statistics and findings periodically
+                        current_time = time.time()
+                        if current_time - last_stats_update >= stats_update_interval:
+                            # Get current statistics
+                            statistics = runner.get_statistics()
+                            if statistics.total_issues > 0:
+                                # Make statistics task visible and update
+                                progress.update(statistics_task, visible=True)
+                                
+                                # Create a statistics summary
+                                stats_summary = statistics.get_statistics_summary()
+                                
+                                # Update statistics display
+                                stats_description = (
+                                    f"📊 [bold]Statistics:[/bold] "
+                                    f"{stats_summary.get('total_issues', 0)} issues "
+                                    f"({', '.join([f'{count} {sev}' for sev, count in stats_summary.get('issues_by_severity', {}).items()])})"
+                                )
+                                progress.update(statistics_task, description=stats_description)
+                                
+                                # Generate and display key findings
+                                findings = runner.get_key_findings(max_findings=3)
+                                if findings:
+                                    # Make findings task visible and update
+                                    progress.update(findings_task, visible=True)
+                                    
+                                    # Create a findings summary
+                                    findings_text = []
+                                    for finding in findings:
+                                        if finding.get("type") == "severity":
+                                            severity = finding.get("severity", "")
+                                            emoji = SEVERITY_EMOJI.get(severity, "❓")
+                                            findings_text.append(f"{emoji} {finding.get('count', 0)} {severity} issues")
+                                        elif finding.get("type") == "category":
+                                            category = finding.get("category", "")
+                                            emoji = CATEGORY_EMOJI.get(category.lower(), "❓")
+                                            findings_text.append(f"{emoji} {finding.get('count', 0)} {category} issues")
+                                        
+                                    findings_description = f"🔍 [bold]Key Findings:[/bold] {' | '.join(findings_text)}"
+                                    progress.update(findings_task, description=findings_description)
+                                
+                                last_stats_update = current_time
+                            
+                            # Sleep briefly to avoid high CPU usage
+                            time.sleep(0.1)
+                            
+                            # Exit if all steps are completed
+                            if completed_steps >= len(filtered_instances):
+                                break
                 
                 # Start the progress update in a separate thread
                 progress_thread = threading.Thread(target=update_progress)
@@ -455,10 +527,159 @@ def run(
                     f"[bold]Failed:[/bold] {progress_summary['failed_steps']} ❌\n"
                     f"[bold]Skipped:[/bold] {progress_summary['skipped_steps']} ⏭️\n"
                     f"[bold]Total duration:[/bold] {progress_summary['total_duration']:.2f}s",
-                    title="Review Statistics",
+                    title="Review Progress",
                     border_style="green"
                 )
                 console.print(stats_panel)
+                
+                # Display statistics summary
+                statistics_summary = result.get("statistics", {})
+                if statistics_summary:
+                    # Create a statistics panel
+                    stats_content = (
+                        f"[bold]Files reviewed:[/bold] {statistics_summary.get('total_files', 0)}\n"
+                        f"[bold]Files with issues:[/bold] {statistics_summary.get('files_with_issues', 0)} "
+                        f"({statistics_summary.get('files_with_issues_percentage', 0):.1f}%)\n"
+                        f"[bold]Total issues:[/bold] {statistics_summary.get('total_issues', 0)}\n"
+                        f"[bold]Average issues per file:[/bold] {statistics_summary.get('issues_per_file', 0):.2f}"
+                    )
+                    
+                    console.print(Panel(
+                        stats_content,
+                        title="Review Statistics",
+                        border_style="blue"
+                    ))
+                    
+                    # Issues by severity
+                    issues_by_severity = statistics_summary.get("issues_by_severity", {})
+                    if issues_by_severity:
+                        console.print("\n[bold]Issues by Severity:[/bold]")
+                        severity_table = Table(show_header=True, header_style="bold")
+                        severity_table.add_column("Severity", style="cyan")
+                        severity_table.add_column("Count", style="yellow")
+                        severity_table.add_column("Percentage", style="green")
+                        
+                        total_issues = statistics_summary.get("total_issues", 0)
+                        for severity, count in issues_by_severity.items():
+                            percentage = (count / total_issues * 100) if total_issues > 0 else 0
+                            severity_style = {
+                                "critical": "bold red",
+                                "high": "bold yellow",
+                                "medium": "yellow",
+                                "low": "green",
+                                "info": "blue",
+                            }.get(severity, "white")
+                            
+                            emoji = SEVERITY_EMOJI.get(severity, "")
+                            severity_table.add_row(
+                                f"{emoji} {severity.capitalize()}" if emoji else severity.capitalize(),
+                                str(count),
+                                f"{percentage:.1f}%",
+                                style=severity_style
+                            )
+                        
+                        console.print(severity_table)
+                    
+                    # Issues by category
+                    issues_by_category = statistics_summary.get("issues_by_category", {})
+                    if issues_by_category:
+                        console.print("\n[bold]Issues by Category:[/bold]")
+                        category_table = Table(show_header=True, header_style="bold")
+                        category_table.add_column("Category", style="cyan")
+                        category_table.add_column("Count", style="yellow")
+                        category_table.add_column("Percentage", style="green")
+                        
+                        total_issues = statistics_summary.get("total_issues", 0)
+                        for category, count in issues_by_category.items():
+                            percentage = (count / total_issues * 100) if total_issues > 0 else 0
+                            emoji = CATEGORY_EMOJI.get(category.lower(), "")
+                            category_table.add_row(
+                                f"{emoji} {category}" if emoji else category,
+                                str(count),
+                                f"{percentage:.1f}%"
+                            )
+                        
+                        console.print(category_table)
+                    
+                    # Most common issues
+                    most_common_issues = statistics_summary.get("most_common_issues", [])
+                    if most_common_issues:
+                        console.print("\n[bold]Most Common Issues:[/bold]")
+                        issues_table = Table(show_header=True, header_style="bold")
+                        issues_table.add_column("Issue", style="cyan")
+                        issues_table.add_column("Count", style="yellow")
+                        
+                        for issue, count in most_common_issues:
+                            issues_table.add_row(
+                                issue[:100] + ("..." if len(issue) > 100 else ""),
+                                str(count)
+                            )
+                        
+                        console.print(issues_table)
+                
+                # Display key findings
+                key_findings = result.get("key_findings", [])
+                if key_findings:
+                    console.print("\n[bold]Key Findings:[/bold]")
+                    findings_table = Table(show_header=True, header_style="bold", title="Key Findings", title_style="bold blue")
+                    findings_table.add_column("Type", style="cyan")
+                    findings_table.add_column("Finding", style="yellow")
+                    findings_table.add_column("Count", style="green")
+                    
+                    for finding in key_findings:
+                        if finding.get("type") == "severity":
+                            severity = finding.get("severity", "")
+                            count = finding.get("count", 0)
+                            message = finding.get("message", f"{count} {severity} issues found")
+                            
+                            severity_style = {
+                                "critical": "bold red",
+                                "high": "bold yellow",
+                                "medium": "yellow",
+                                "low": "green",
+                                "info": "blue",
+                            }.get(severity, "white")
+                            
+                            emoji = SEVERITY_EMOJI.get(severity, "")
+                            findings_table.add_row(
+                                f"{emoji} Severity: {severity.capitalize()}" if emoji else f"Severity: {severity.capitalize()}",
+                                message,
+                                str(count),
+                                style=severity_style
+                            )
+                        elif finding.get("type") == "category":
+                            category = finding.get("category", "")
+                            count = finding.get("count", 0)
+                            message = finding.get("message", f"{count} {category} issues found")
+                            
+                            emoji = CATEGORY_EMOJI.get(category.lower(), "")
+                            findings_table.add_row(
+                                f"{emoji} Category: {category}" if emoji else f"Category: {category}",
+                                message,
+                                str(count)
+                            )
+                        elif finding.get("type") == "common_issue":
+                            message = finding.get("message", "")
+                            count = finding.get("count", 0)
+                            
+                            findings_table.add_row(
+                                "Common Issue",
+                                message[:100] + ("..." if len(message) > 100 else ""),
+                                str(count)
+                            )
+                    
+                    console.print(findings_table)
+                
+                # Display actionable recommendations
+                recommendations = result.get("recommendations", [])
+                if recommendations:
+                    console.print("\n[bold]Recommendations:[/bold]")
+                    recommendations_panel = Panel(
+                        "\n".join([f"• {recommendation}" for recommendation in recommendations]),
+                        title="Actionable Recommendations",
+                        border_style="green"
+                    )
+                    console.print(recommendations_panel)
                 
                 # Handle different output formats
                 if output_format == OutputFormat.MARKDOWN:
@@ -598,16 +819,18 @@ def run(
                                 percentage = (count / total_issues * 100) if total_issues > 0 else 0
                                 severity_style = {
                                     "critical": "bold red",
-                                    "high": "red",
+                                    "high": "bold yellow",
                                     "medium": "yellow",
                                     "low": "green",
                                     "info": "blue",
-                                }.get(severity.lower(), "white")
+                                }.get(severity, "white")
                                 
+                                emoji = SEVERITY_EMOJI.get(severity, "")
                                 severity_table.add_row(
-                                    f"[{severity_style}]{severity.upper()}[/{severity_style}]",
+                                    f"{emoji} {severity.capitalize()}" if emoji else severity.capitalize(),
                                     str(count),
-                                    f"{percentage:.1f}%"
+                                    f"{percentage:.1f}%",
+                                    style=severity_style
                                 )
                             
                             console.print(severity_table)
@@ -623,8 +846,9 @@ def run(
                             
                             for category, count in sorted(issues_by_category.items(), key=lambda x: x[1], reverse=True):
                                 percentage = (count / total_issues * 100) if total_issues > 0 else 0
+                                emoji = CATEGORY_EMOJI.get(category.lower(), "")
                                 category_table.add_row(
-                                    category.upper(),
+                                    f"{emoji} {category}" if emoji else category,
                                     str(count),
                                     f"{percentage:.1f}%"
                                 )
@@ -667,7 +891,7 @@ def run(
                                 type_display = f"[bold]{severity.upper()}[/bold]"
                                 type_style = {
                                     "critical": "bold red",
-                                    "high": "red",
+                                    "high": "bold yellow",
                                     "medium": "yellow",
                                     "low": "green",
                                     "info": "blue",
