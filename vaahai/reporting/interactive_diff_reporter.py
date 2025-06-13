@@ -48,13 +48,15 @@ class InteractiveDiffReporter:
         "rejected": "❌",
     }
     
-    def __init__(self, results: Dict[str, Any], console: Optional[Console] = None):
+    def __init__(self, results: Dict[str, Any], console: Optional[Console] = None, 
+                code_change_manager: Optional[CodeChangeManager] = None):
         """
         Initialize the interactive diff reporter.
         
         Args:
             results: Dictionary containing the review results
             console: Optional Rich console instance to use for output
+            code_change_manager: Optional CodeChangeManager instance for handling code changes
         """
         self.results = results
         self.console = console or Console()
@@ -62,8 +64,9 @@ class InteractiveDiffReporter:
         self.files = []
         self.current_issue_index = 0
         self.current_file_index = 0
-        self.code_change_manager = CodeChangeManager()
+        self.code_change_manager = code_change_manager or CodeChangeManager()
         self.issue_statuses = {}  # Track status of each issue: pending, accepted, rejected
+        self.batch_mode = False   # Whether we're in batch mode for changes
         
         # Extract issues and files from results
         if self.results.get("status") == "success":
@@ -334,7 +337,21 @@ class InteractiveDiffReporter:
             elif key.lower() == 'r':  # Reject change
                 self._reject_current_change()
                 live.update(self._generate_layout())
-    
+            elif key.lower() == 'b':  # Toggle batch mode
+                self.batch_mode = not self.batch_mode
+                status = "enabled" if self.batch_mode else "disabled"
+                self.console.print(f"[yellow]Batch mode {status}[/yellow]")
+                live.update(self._generate_layout())
+            elif key.lower() == 'u':  # Undo last change
+                self._undo_last_change()
+                live.update(self._generate_layout())
+            elif key.lower() == 'p':  # Apply pending changes (in batch mode)
+                if self.batch_mode:
+                    self._apply_pending_changes()
+                    live.update(self._generate_layout())
+                else:
+                    self.console.print("[yellow]Batch mode is not enabled. Press 'b' to enable it.[/yellow]")
+
     def _accept_current_change(self) -> None:
         """Accept the current suggested code change."""
         if not self.issues:
@@ -354,8 +371,19 @@ class InteractiveDiffReporter:
         original_code = issue.get("code_snippet", "")
         suggested_code = issue.get("suggested_code", "")
         
-        # Confirm before applying the change
-        if Confirm.ask(f"Apply suggested change to {os.path.basename(file_path)}?"):
+        if self.batch_mode:
+            # In batch mode, add to pending changes
+            self.code_change_manager.add_pending_change(
+                file_path, line_number, original_code, suggested_code
+            )
+            self.issue_statuses[issue_id] = "accepted"
+            self.console.print(f"[green]Change added to batch for {file_path}[/green]")
+        else:
+            # Confirm before applying the change if confirmation is enabled
+            if self.code_change_manager.config.get('confirm_changes', True):
+                if not Confirm.ask(f"Apply suggested change to {os.path.basename(file_path)}?"):
+                    return
+            
             # Apply the change
             success = self.code_change_manager.apply_change(
                 file_path, line_number, original_code, suggested_code
@@ -366,7 +394,7 @@ class InteractiveDiffReporter:
                 self.console.print(f"[green]Change applied to {file_path}[/green]")
             else:
                 self.console.print(f"[red]Failed to apply change to {file_path}[/red]")
-    
+
     def _reject_current_change(self) -> None:
         """Reject the current suggested code change."""
         if not self.issues:
@@ -383,12 +411,59 @@ class InteractiveDiffReporter:
             
         file_path = issue.get("file_path")
         line_number = issue.get("line_number")
+        original_code = issue.get("code_snippet", "")
+        suggested_code = issue.get("suggested_code", "")
         
         # Record the rejection
-        self.code_change_manager.reject_change(file_path, line_number)
+        self.code_change_manager.reject_change(
+            file_path, line_number, original_code, suggested_code
+        )
         self.issue_statuses[issue_id] = "rejected"
         self.console.print(f"[yellow]Change rejected for {file_path}[/yellow]")
-    
+
+    def _undo_last_change(self) -> None:
+        """Undo the last applied change."""
+        success = self.code_change_manager.undo_last_change()
+        if success:
+            self.console.print("[green]Successfully undid last change[/green]")
+            
+            # Update issue status if applicable
+            for issue_data in self.issues:
+                issue_id = issue_data["id"]
+                if self.issue_statuses.get(issue_id) == "accepted":
+                    # Find the most recently accepted issue and mark it as pending
+                    self.issue_statuses[issue_id] = "pending"
+                    break
+        else:
+            self.console.print("[yellow]No changes to undo or undo failed[/yellow]")
+
+    def _apply_pending_changes(self) -> None:
+        """Apply all pending changes in batch mode."""
+        if not self.code_change_manager.pending_changes:
+            self.console.print("[yellow]No pending changes to apply[/yellow]")
+            return
+            
+        # Confirm before applying changes
+        if self.code_change_manager.config.get('confirm_changes', True):
+            count = len(self.code_change_manager.pending_changes)
+            if not Confirm.ask(f"Apply {count} pending changes?"):
+                return
+                
+        # Apply all pending changes
+        results = self.code_change_manager.apply_pending_changes()
+        
+        # Show results
+        self.console.print(f"[green]Applied {results['applied']} changes[/green]")
+        if results['failed'] > 0:
+            self.console.print(f"[red]Failed to apply {results['failed']} changes[/red]")
+            
+        # Show details of failed changes
+        if results['failed'] > 0:
+            self.console.print("[yellow]Failed changes:[/yellow]")
+            for detail in results['details']:
+                if not detail['success']:
+                    self.console.print(f"  • {detail['file_path']} (line {detail['line_number']})")
+
     def _show_changes_summary(self) -> None:
         """Show a summary of applied and rejected changes."""
         summary = self.code_change_manager.get_summary()
@@ -397,11 +472,40 @@ class InteractiveDiffReporter:
         self.console.print(f"[green]Applied changes:[/green] {summary['applied']}")
         self.console.print(f"[yellow]Rejected changes:[/yellow] {summary['rejected']}")
         
+        if summary['pending'] > 0:
+            self.console.print(f"[blue]Pending changes:[/blue] {summary['pending']}")
+            self.console.print("[yellow]Note: Pending changes were not applied. Use 'p' to apply them in batch mode.[/yellow]")
+        
         if summary['applied'] > 0:
             self.console.print("\n[bold green]Applied Changes:[/bold green]")
             for change in summary['applied_changes']:
                 self.console.print(f"  • {change['file_path']} (line {change['line_number']})")
                 self.console.print(f"    [dim]Backup: {change['backup_path']}[/dim]")
+
+    def _generate_layout(self) -> Layout:
+        """Generate the layout for the interactive display."""
+        layout = Layout()
+        
+        # Create header, body, and footer sections
+        layout.split(
+            Layout(name="header", size=3),
+            Layout(name="body"),
+            Layout(name="footer", size=3)
+        )
+        
+        # Configure the body section
+        layout["body"].split_row(
+            Layout(name="issue_info", ratio=1),
+            Layout(name="code_display", ratio=2)
+        )
+        
+        # Fill the sections with content
+        layout["header"].update(self._generate_header())
+        layout["issue_info"].update(self._generate_issue_info())
+        layout["code_display"].update(self._generate_code_display())
+        layout["footer"].update(self._generate_footer())
+        
+        return layout
 
     def _update_issue_by_file(self) -> None:
         """Update the current issue index based on the selected file."""
@@ -425,7 +529,11 @@ class InteractiveDiffReporter:
             border_style="red"
         ))
 
-def generate_interactive_diff_report(results: Dict[str, Any], console: Optional[Console] = None) -> None:
+def generate_interactive_diff_report(
+    results: Dict[str, Any], 
+    console: Optional[Console] = None,
+    code_change_manager: Optional[CodeChangeManager] = None
+) -> None:
     """
     Generate and display an interactive diff report from review results.
     
@@ -435,7 +543,8 @@ def generate_interactive_diff_report(results: Dict[str, Any], console: Optional[
     Args:
         results: Dictionary containing the review results
         console: Optional Rich console instance to use for output
+        code_change_manager: Optional CodeChangeManager instance for handling code changes
     """
     console = console or Console()
-    reporter = InteractiveDiffReporter(results, console)
+    reporter = InteractiveDiffReporter(results, console, code_change_manager)
     reporter.display_interactive_report()

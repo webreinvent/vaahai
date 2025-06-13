@@ -30,6 +30,7 @@ from vaahai.reporting.formats import OutputFormat
 from vaahai.reporting.markdown_reporter import MarkdownReporter, generate_markdown_report
 from vaahai.reporting.html_reporter import HTMLReporter, generate_html_report
 from vaahai.reporting.interactive_diff_reporter import InteractiveDiffReporter, generate_interactive_diff_report
+from vaahai.utils.code_change_manager import CodeChangeManager
 
 # Import built-in review steps to ensure they are registered
 from vaahai.review.steps.built_in import LineLength, IndentationConsistency
@@ -91,6 +92,27 @@ def run(
         "-f",
         help="Output format for the report (rich, markdown, html, interactive)",
         case_sensitive=False,
+    ),
+    apply_changes: bool = typer.Option(
+        False,
+        "--apply-changes",
+        "-a",
+        help="Enable applying suggested code changes (only works with interactive format)",
+    ),
+    dry_run: bool = typer.Option(
+        False,
+        "--dry-run",
+        help="Show what changes would be made without actually modifying files",
+    ),
+    backup_dir: Optional[str] = typer.Option(
+        None,
+        "--backup-dir",
+        help="Directory to store backups of modified files (default: ~/.vaahai/backups)",
+    ),
+    no_confirm: bool = typer.Option(
+        False,
+        "--no-confirm",
+        help="Apply changes without asking for confirmation (use with caution)",
     ),
 ):
     """
@@ -394,8 +416,28 @@ def run(
                     # Generate interactive diff report
                     console.print(f"\n[green]Launching interactive code diff display...[/green]")
                     
-                    # Display interactive report
-                    generate_interactive_diff_report(result, console)
+                    # Configure code change manager based on CLI options
+                    config = {
+                        'dry_run': dry_run,
+                        'confirm_changes': not no_confirm
+                    }
+                    
+                    if backup_dir:
+                        config['backup_dir'] = backup_dir
+                    
+                    # Initialize code change manager
+                    code_change_manager = CodeChangeManager(config_path=None)
+                    for key, value in config.items():
+                        code_change_manager.config[key] = value
+                    
+                    # Display interactive report with code change manager if apply_changes is enabled
+                    if apply_changes:
+                        console.print("[yellow]Code change acceptance is enabled. You can accept or reject suggested changes.[/yellow]")
+                        console.print("[yellow]Use 'a' to accept, 'r' to reject, arrow keys to navigate, and 'q' to quit.[/yellow]")
+                        generate_interactive_diff_report(result, console, code_change_manager=code_change_manager)
+                    else:
+                        console.print("[yellow]Code change acceptance is disabled. Use --apply-changes to enable.[/yellow]")
+                        generate_interactive_diff_report(result, console)
                     
                     # Return early as we've already handled the output
                     console.print(f"[green]Report format:[/green] {output_format.value}")
