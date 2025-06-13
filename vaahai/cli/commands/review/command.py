@@ -27,8 +27,9 @@ from vaahai.review.runner import ReviewRunner
 from vaahai.review.steps.base import ReviewStep, ReviewStepCategory, ReviewStepSeverity
 from vaahai.review.steps.progress import ReviewStepStatus
 from vaahai.reporting.formats import OutputFormat
-from vaahai.reporting.markdown_reporter import generate_markdown_report
-from vaahai.reporting.html_reporter import generate_html_report
+from vaahai.reporting.markdown_reporter import MarkdownReporter, generate_markdown_report
+from vaahai.reporting.html_reporter import HTMLReporter, generate_html_report
+from vaahai.reporting.interactive_diff_reporter import InteractiveDiffReporter, generate_interactive_diff_report
 
 # Import built-in review steps to ensure they are registered
 from vaahai.review.steps.built_in import LineLength, IndentationConsistency
@@ -388,6 +389,17 @@ def run(
                     # Return early as we've already handled the output
                     console.print(f"[green]Report format:[/green] {output_format.value}")
                     return report_path
+                
+                elif output_format == OutputFormat.INTERACTIVE:
+                    # Generate interactive diff report
+                    console.print(f"\n[green]Launching interactive code diff display...[/green]")
+                    
+                    # Display interactive report
+                    generate_interactive_diff_report(result, console)
+                    
+                    # Return early as we've already handled the output
+                    console.print(f"[green]Report format:[/green] {output_format.value}")
+                    return None
                 
                 # Display results
                 if result["status"] == "success":
