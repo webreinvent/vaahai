@@ -18,10 +18,10 @@ from rich.columns import Columns
 from rich.layout import Layout
 from rich.live import Live
 from rich import box
-from rich.prompt import Prompt
+from rich.prompt import Prompt, Confirm
 
 from vaahai.reporting.formats import OutputFormat
-
+from vaahai.utils.code_change_manager import CodeChangeManager
 
 class InteractiveDiffReporter:
     """
@@ -41,6 +41,13 @@ class InteractiveDiffReporter:
         "info": "🔵",
     }
     
+    # Status emoji mappings
+    STATUS_EMOJIS = {
+        "pending": "⏳",
+        "accepted": "✅",
+        "rejected": "❌",
+    }
+    
     def __init__(self, results: Dict[str, Any], console: Optional[Console] = None):
         """
         Initialize the interactive diff reporter.
@@ -51,12 +58,31 @@ class InteractiveDiffReporter:
         """
         self.results = results
         self.console = console or Console()
-        self.current_issue_index = 0
-        self.current_file_index = 0
         self.issues = []
         self.files = []
-        self._extract_issues_and_files()
+        self.current_issue_index = 0
+        self.current_file_index = 0
+        self.code_change_manager = CodeChangeManager()
+        self.issue_statuses = {}  # Track status of each issue: pending, accepted, rejected
         
+        # Extract issues and files from results
+        if self.results.get("status") == "success":
+            for step_result in self.results["results"]:
+                step_id = step_result.get("step_id", "unknown")
+                for issue in step_result.get("issues", []):
+                    issue_id = f"{step_id}:{issue.get('file_path')}:{issue.get('line_number')}"
+                    self.issues.append({
+                        "step_id": step_id,
+                        "issue": issue,
+                        "id": issue_id
+                    })
+                    # Initialize status as pending
+                    self.issue_statuses[issue_id] = "pending"
+                    
+                    file_path = issue.get("file_path")
+                    if file_path and file_path not in self.files:
+                        self.files.append(file_path)
+
     def _extract_issues_and_files(self) -> None:
         """Extract all issues and files from the results for navigation."""
         if self.results.get("status") != "success":
@@ -149,32 +175,42 @@ class InteractiveDiffReporter:
             
         issue_data = self.issues[self.current_issue_index]
         issue = issue_data["issue"]
-        step_id = issue_data["step_id"]
+        issue_id = issue_data["id"]
         
-        # Create a table for issue details
-        table = Table(box=box.SIMPLE, show_header=False, expand=True)
-        table.add_column("Property", style="bold")
+        step_id = issue_data["step_id"]
+        severity = issue.get("severity", "").lower()
+        severity_emoji = self.SEVERITY_EMOJIS.get(severity, "")
+        file_path = issue.get("file_path", "")
+        line_number = issue.get("line_number", "")
+        message = issue.get("message", "")
+        
+        # Get the status and emoji
+        status = self.issue_statuses.get(issue_id, "pending")
+        status_emoji = self.STATUS_EMOJIS.get(status, "")
+        
+        # Create a table for the issue details
+        table = Table(show_header=False, box=None, padding=(0, 2))
+        table.add_column("Key", style="dim")
         table.add_column("Value")
         
         # Add issue details to the table
-        severity = issue.get("severity", "info").lower()
-        emoji = self.SEVERITY_EMOJIS.get(severity, "")
-        
         table.add_row("Step", step_id)
-        table.add_row("Severity", f"{emoji} {severity.capitalize()}")
-        table.add_row("File", issue.get("file_path", "N/A"))
-        table.add_row("Line", str(issue.get("line_number", "N/A")))
-        table.add_row("Message", issue.get("message", "N/A"))
+        table.add_row("Severity", f"{severity_emoji} {severity.title()}")
+        table.add_row("File", os.path.basename(file_path) if file_path else "")
+        table.add_row("Line", str(line_number) if line_number else "")
+        table.add_row("Message", message)
+        table.add_row("Status", f"{status_emoji} {status.title()}")
         
-        if issue.get("recommendation"):
-            table.add_row("Recommendation", issue.get("recommendation"))
+        # Create the issue info panel
+        current_issue = self.current_issue_index + 1
+        total_issues = len(self.issues)
         
         return Panel(
             table,
-            title=f"Issue {self.current_issue_index + 1}/{len(self.issues)}",
-            border_style="green"
+            title=f"Issue {current_issue}/{total_issues}",
+            border_style="blue"
         )
-    
+
     def _generate_code_display(self) -> Panel:
         """Generate the panel showing code with syntax highlighting and diff."""
         if not self.issues:
@@ -259,8 +295,9 @@ class InteractiveDiffReporter:
         help_text = Text()
         help_text.append("← → : Navigate issues | ", style="dim")
         help_text.append("↑ ↓ : Navigate files | ", style="dim")
-        help_text.append("q : Quit | ", style="dim")
-        help_text.append("Enter : Apply suggested change", style="dim green")
+        help_text.append("a : Accept | ", style="green dim")
+        help_text.append("r : Reject | ", style="red dim")
+        help_text.append("q : Quit", style="dim")
         
         return Panel(
             help_text,
@@ -274,6 +311,8 @@ class InteractiveDiffReporter:
             key = self.console.input()
             
             if key.lower() == 'q':
+                # Show summary before quitting
+                self._show_changes_summary()
                 break
             elif key == '\x1b[C':  # Right arrow
                 self.current_issue_index = (self.current_issue_index + 1) % max(1, len(self.issues))
@@ -289,10 +328,81 @@ class InteractiveDiffReporter:
                 self.current_file_index = (self.current_file_index + 1) % max(1, len(self.files))
                 self._update_issue_by_file()
                 live.update(self._generate_layout())
-            elif key == '\r':  # Enter
-                # This would be implemented in P3-T13 (Add code change acceptance mechanism)
-                self.console.print("[yellow]Code change acceptance will be implemented in a future task.[/yellow]")
+            elif key.lower() == 'a':  # Accept change
+                self._accept_current_change()
+                live.update(self._generate_layout())
+            elif key.lower() == 'r':  # Reject change
+                self._reject_current_change()
+                live.update(self._generate_layout())
     
+    def _accept_current_change(self) -> None:
+        """Accept the current suggested code change."""
+        if not self.issues:
+            return
+            
+        issue_data = self.issues[self.current_issue_index]
+        issue = issue_data["issue"]
+        issue_id = issue_data["id"]
+        
+        # Check if the issue has a suggested code change
+        if not issue.get("suggested_code"):
+            self.console.print("[yellow]No suggested code change to accept.[/yellow]")
+            return
+            
+        file_path = issue.get("file_path")
+        line_number = issue.get("line_number")
+        original_code = issue.get("code_snippet", "")
+        suggested_code = issue.get("suggested_code", "")
+        
+        # Confirm before applying the change
+        if Confirm.ask(f"Apply suggested change to {os.path.basename(file_path)}?"):
+            # Apply the change
+            success = self.code_change_manager.apply_change(
+                file_path, line_number, original_code, suggested_code
+            )
+            
+            if success:
+                self.issue_statuses[issue_id] = "accepted"
+                self.console.print(f"[green]Change applied to {file_path}[/green]")
+            else:
+                self.console.print(f"[red]Failed to apply change to {file_path}[/red]")
+    
+    def _reject_current_change(self) -> None:
+        """Reject the current suggested code change."""
+        if not self.issues:
+            return
+            
+        issue_data = self.issues[self.current_issue_index]
+        issue = issue_data["issue"]
+        issue_id = issue_data["id"]
+        
+        # Check if the issue has a suggested code change
+        if not issue.get("suggested_code"):
+            self.console.print("[yellow]No suggested code change to reject.[/yellow]")
+            return
+            
+        file_path = issue.get("file_path")
+        line_number = issue.get("line_number")
+        
+        # Record the rejection
+        self.code_change_manager.reject_change(file_path, line_number)
+        self.issue_statuses[issue_id] = "rejected"
+        self.console.print(f"[yellow]Change rejected for {file_path}[/yellow]")
+    
+    def _show_changes_summary(self) -> None:
+        """Show a summary of applied and rejected changes."""
+        summary = self.code_change_manager.get_summary()
+        
+        self.console.print("\n[bold blue]Changes Summary[/bold blue]")
+        self.console.print(f"[green]Applied changes:[/green] {summary['applied']}")
+        self.console.print(f"[yellow]Rejected changes:[/yellow] {summary['rejected']}")
+        
+        if summary['applied'] > 0:
+            self.console.print("\n[bold green]Applied Changes:[/bold green]")
+            for change in summary['applied_changes']:
+                self.console.print(f"  • {change['file_path']} (line {change['line_number']})")
+                self.console.print(f"    [dim]Backup: {change['backup_path']}[/dim]")
+
     def _update_issue_by_file(self) -> None:
         """Update the current issue index based on the selected file."""
         if not self.files or not self.issues:
@@ -305,7 +415,7 @@ class InteractiveDiffReporter:
             if issue_data["issue"].get("file_path") == current_file:
                 self.current_issue_index = i
                 break
-    
+
     def _display_error_report(self) -> None:
         """Display an error report."""
         error_message = self.results.get("error", "Unknown error")
@@ -314,7 +424,6 @@ class InteractiveDiffReporter:
             title="VaahAI Code Review Error",
             border_style="red"
         ))
-
 
 def generate_interactive_diff_report(results: Dict[str, Any], console: Optional[Console] = None) -> None:
     """
