@@ -76,7 +76,7 @@ This document tracks the tasks for the VaahAI project, organized by priority and
 | [P3-T9] | Add output format selection | 🟢 | [P1-T9], [P1-T10] | Implement InquirerPy prompt to select output format (markdown, HTML, interactive) |
 | [P3-T10] | Create markdown report generator | 🟢 | [P3-T8], [P3-T9] | Implemented MarkdownReporter class to generate structured markdown reports from review results and integrated with CLI review command |
 | [P3-T11] | Create HTML report generator | 🟢 | [P3-T8], [P3-T9] | Implement HTML formatting for code review reports with syntax highlighting |
-| [P3-T12] | Implement interactive code diff display | 🔴 | [P3-T9] | Create Rich-based display showing original and suggested code with differences highlighted |
+| [P3-T12] | Implement interactive code diff display | 🟡 | [P3-T9] | Create Rich-based display showing original and suggested code with differences highlighted |
 | [P3-T13] | Add code change acceptance mechanism | 🔴 | [P3-T12] | Implement interactive prompt for accepting or rejecting suggested code changes |
 | [P3-T14] | Implement file modification system | 🔴 | [P3-T13] | Create system to safely apply accepted changes to original files |
 | [P3-T15] | Create basic review command | 🔴 | [P3-T1], [P3-T3], [P3-T4], [P3-T5] | Implement initial `vaahai review [PATH]` command with minimal functionality |
@@ -88,6 +88,7 @@ This document tracks the tasks for the VaahAI project, organized by priority and
 
 | Task ID | Description | Status | Dependencies | Notes |
 |---------|-------------|--------|--------------|-------|
+| [P3-T12] | Implement interactive code diff display | 🟡 | [P3-T9] | Create Rich-based display showing original and suggested code with differences highlighted using Rich library |
 
 ## Completed Tasks
 
