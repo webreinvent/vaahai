@@ -35,6 +35,9 @@ class TestCodeChangeManagerUndo(unittest.TestCase):
         self.manager = CodeChangeManager()
         self.manager.backup_dir = self.test_backup_dir
         self.manager.backup_history_file = os.path.join(self.test_backup_dir, "backup_history.json")
+        
+        # Enable test mode for non-interactive testing
+        self.manager.set_test_mode(True, 'y')
     
     def tearDown(self):
         """Clean up test environment."""

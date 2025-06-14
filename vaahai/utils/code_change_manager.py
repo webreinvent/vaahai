@@ -51,6 +51,10 @@ class CodeChangeManager:
         
         # Load backup history if it exists
         self._load_backup_history()
+        
+        # For testing purposes
+        self._test_mode = False
+        self._test_confirm_response = 'y'
     
     def _load_config(self, config_path: Optional[str] = None) -> Dict[str, Any]:
         """
@@ -184,7 +188,12 @@ class CodeChangeManager:
         # Handle interactive confirmation if enabled and not in dry-run mode
         if self.config.get('confirm_changes', True) and not self.config.get('dry_run', False):
             try:
-                response = input(f"Apply change to {file_path} at line {line_number}? (y/N): ")
+                # In test mode, use the predefined response
+                if self._test_mode:
+                    response = self._test_confirm_response
+                    self.logger.debug(f"Using test response: {response}")
+                else:
+                    response = input(f"Apply change to {file_path} at line {line_number}? (y/N): ")
             except EOFError:
                 response = 'n'  # In non-interactive environments default to no
             if response.lower() != 'y':
@@ -474,3 +483,16 @@ class CodeChangeManager:
                 del self.backup_history[file_path]
         
         self._save_backup_history()
+
+    # For testing purposes
+    def set_test_mode(self, enabled: bool = True, confirm_response: str = 'y'):
+        """
+        Enable or disable test mode for non-interactive testing.
+        
+        Args:
+            enabled: Whether to enable test mode
+            confirm_response: Response to use for confirmation prompts in test mode
+        """
+        self._test_mode = enabled
+        self._test_confirm_response = confirm_response
+        self.logger.debug(f"Test mode {'enabled' if enabled else 'disabled'}")

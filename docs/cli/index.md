@@ -22,6 +22,7 @@ VaahAI CLI is built with the Typer framework and enhanced with Rich formatting f
 - [Console Utilities](console_utilities.md): Helper functions for console output
 - [Custom Help Formatting](custom_help_formatting.md): Implementation of the enhanced help system
 - [Model Command](model_command.md): Managing and selecting LLM models based on capabilities
+- [Review Command](review_command.md): Comprehensive code review with multiple output formats and interactive features
 - [CLI Architecture](/docs/architecture/cli_architecture.md): Comprehensive overview of CLI architecture, extension points, and best practices
 - [Command Template](command_template.py): Example template for creating new commands
 
@@ -64,3 +65,42 @@ Where:
 - `options` are additional flags and parameters
 
 For backward compatibility, direct command access (e.g., `vaahai helloworld` instead of `vaahai dev helloworld`) is also supported.
+
+## Featured Commands
+
+### Review Command
+
+The `review` command is a powerful code analysis tool that scans your codebase for issues related to security, performance, style, and other categories:
+
+```bash
+# Basic usage
+vaahai review path/to/file.py
+
+# With output format selection
+vaahai review path/to/file.py --format html
+
+# With interactive code change acceptance
+vaahai review path/to/file.py --format interactive --apply-changes
+
+# With filtering by category and severity
+vaahai review path/to/directory --category security --severity high
+```
+
+For detailed documentation on the review command, see [Review Command](review_command.md).
+
+### Model Command
+
+The `model` command helps you manage and select LLM models based on their capabilities:
+
+```bash
+# List available models
+vaahai model list
+
+# Get details about a specific model
+vaahai model info gpt-4
+
+# Filter models by capability
+vaahai model list --capability code
+```
+
+For more information, see [Model Command](model_command.md).

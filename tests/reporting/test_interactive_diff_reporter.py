@@ -54,6 +54,20 @@ class TestInteractiveDiffReporter(unittest.TestCase):
             "status": "success",
             "results": []
         }
+        
+        # Create a mock code change manager
+        self.mock_code_change_manager = MagicMock(spec=CodeChangeManager)
+        self.mock_code_change_manager.set_test_mode = MagicMock()
+        
+        # Set up default return value for get_summary to avoid comparison issues
+        self.mock_code_change_manager.get_summary.return_value = {
+            "applied": 0,
+            "rejected": 0,
+            "pending": 0,
+            "applied_changes": [],
+            "rejected_changes": [],
+            "pending_changes": []
+        }
 
     @patch('rich.live.Live')
     def test_display_interactive_report_success(self, mock_live):
@@ -143,19 +157,27 @@ class TestInteractiveDiffReporter(unittest.TestCase):
     
     @patch('vaahai.reporting.interactive_diff_reporter.InteractiveDiffReporter')
     def test_generate_interactive_diff_report(self, mock_reporter_class):
-        """Test the generate_interactive_diff_report helper function."""
+        """Test generating an interactive diff report."""
         # Create a mock reporter instance
-        mock_reporter = MagicMock()
-        mock_reporter_class.return_value = mock_reporter
+        mock_reporter_instance = MagicMock()
+        mock_reporter_class.return_value = mock_reporter_instance
         
-        # Call the helper function
-        generate_interactive_diff_report(self.mock_results, self.mock_console)
+        # Call the function with our mock code change manager
+        generate_interactive_diff_report(
+            self.mock_results, 
+            self.mock_console, 
+            self.mock_code_change_manager
+        )
         
-        # Verify reporter was created with the correct arguments
-        mock_reporter_class.assert_called_once_with(self.mock_results, self.mock_console)
+        # Verify the reporter was created with the right arguments
+        mock_reporter_class.assert_called_once_with(
+            self.mock_results, 
+            self.mock_console, 
+            self.mock_code_change_manager
+        )
         
         # Verify display_interactive_report was called
-        mock_reporter.display_interactive_report.assert_called_once()
+        mock_reporter_instance.display_interactive_report.assert_called_once()
     
     @patch('rich.live.Live')
     def test_handle_navigation(self, mock_live):

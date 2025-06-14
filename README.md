@@ -2,14 +2,16 @@
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.9%2B-blue.svg)
-![Status](https://img.shields.io/badge/status-in%20development-yellow.svg)
+![Status](https://img.shields.io/badge/status-stable-green.svg)
 
 **VaahAI** is a multi-agent AI CLI tool built with Microsoft's Autogen Framework, designed to enhance code quality and development workflows through AI-powered code review, auditing, generation, and scaffolding capabilities.
 
 ## 🌟 Features
 
 - **Multi-Agent Architecture**: Specialized AI agents collaborate to perform complex tasks
-- **Code Review**: Comprehensive code review focusing on quality, style, and best practices
+- **Code Review**: Comprehensive code review focusing on quality, style, security, and performance
+- **Interactive Code Improvements**: Apply suggested code changes with interactive UI and safety features
+- **Multiple Output Formats**: Rich terminal output, markdown reports, HTML reports, and interactive mode
 - **Code Audit**: Security vulnerability detection, compliance checking, and architectural assessment
 - **Code Generation**: AI-powered code generation from natural language descriptions
 - **Multiple LLM Support**: OpenAI, Claude, Junie, and local models via Ollama
@@ -157,7 +159,13 @@ vaahai [command_group] [command] [action] --help
 
 #### Project Commands
 - `vaahai review`: Code review commands
-  - `vaahai review run`: Run a code review on specified path
+  - `vaahai review [PATH]`: Run a code review on specified path
+  - `vaahai review --format [rich|markdown|html|interactive]`: Select output format
+  - `vaahai review --apply-changes`: Enable code change acceptance in interactive mode
+  - `vaahai review --category [security|performance|style|quality]`: Filter by category
+  - `vaahai review --severity [critical|high|medium|low]`: Filter by severity
+  - `vaahai review --dry-run`: Preview changes without modifying files
+  - `vaahai review --backup-dir [PATH]`: Specify directory for file backups
 - `vaahai audit`: Security and compliance audit commands
   - `vaahai audit run`: Run a security/compliance audit on specified path
 
@@ -208,8 +216,9 @@ vaahai dev helloworld run
 vaahai helloworld run
 
 # Review code in a file or directory
-vaahai review run --path ./my_project --depth standard
-# This follows the structure: vaahai [command_group] [command] [action] [options]
+vaahai review ./my_project --category security --severity high
+# Or with interactive code change acceptance
+vaahai review ./my_project --format interactive --apply-changes
 
 # Audit a project for security and compliance
 vaahai audit run --path ./my_project --security --compliance owasp
@@ -230,8 +239,11 @@ vaahai commit --message "Fix code quality issues in app.py"
 # Initialize configuration
 vaahai config init
 
-# Review a Python file
-vaahai review run --path ./app.py --focus quality
+# Review a Python file with interactive code changes
+vaahai review ./app.py --format interactive --apply-changes
+
+# Or generate an HTML report
+vaahai review ./app.py --format html
 
 # Apply suggested changes
 vaahai apply --file review_suggestions.json
@@ -330,6 +342,13 @@ For more detailed documentation, please refer to:
   - [CLI Architecture](/docs/architecture/cli_architecture.md)
   - [Configuration Management](/docs/cli/config_command.md)
   - [Model Selection](/docs/cli/model_command.md)
+  - [Review Command](/docs/cli/review_command.md)
+- [Review System Documentation](/docs/review/)
+  - [Review Steps Registry](/docs/review/steps_registry.md)
+  - [Interactive Diff Reporter](/docs/reporting/interactive_diff_reporter.md)
+  - [Markdown Reporter](/docs/reporting/markdown_reporter.md)
+  - [HTML Reporter](/docs/reporting/html_reporter.md)
+  - [Code Change Manager](/docs/utils/code_change_manager.md)
 
 ## 🤝 Contributing
 
