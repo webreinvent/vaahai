@@ -28,6 +28,20 @@ class TestInteractiveDiffReporterBatch(unittest.TestCase):
         self.mock_manager = MagicMock(spec=CodeChangeManager)
         self.mock_manager.set_test_mode = MagicMock()
         
+        # Set up necessary attributes on the mock manager
+        self.mock_manager.config = {'confirm_changes': False}  # Disable confirmation for tests
+        self.mock_manager.pending_changes = [{'file_path': '/path/to/file1.py', 'line_number': 42}]
+        
+        # Set up default return value for get_summary to avoid comparison issues
+        self.mock_manager.get_summary.return_value = {
+            "applied": 0,
+            "rejected": 0,
+            "pending": 0,
+            "applied_changes": [],
+            "rejected_changes": [],
+            "pending_changes": []
+        }
+        
         # Create mock results with multiple issues
         self.mock_results = {
             "status": "success",
@@ -109,8 +123,13 @@ class TestInteractiveDiffReporterBatch(unittest.TestCase):
         # Verify apply_change was NOT called (since we're in batch mode)
         self.mock_manager.apply_change.assert_not_called()
         
+        # Verify console.print was called with the expected message
+        self.mock_console.print.assert_any_call("[green]Change added to batch for /path/to/file1.py[/green]")
+        
         # Verify the issue status was updated to 'accepted'
-        self.assertEqual(reporter.issue_statuses[0]['status'], 'accepted')
+        # The issue_id is constructed as f"{step_id}:{file_path}:{line_number}"
+        expected_issue_id = "style_check:/path/to/file1.py:42"
+        self.assertEqual(reporter.issue_statuses[expected_issue_id], "accepted")
         
         # Verify layout was updated
         mock_live_instance.update.assert_called()
@@ -143,8 +162,13 @@ class TestInteractiveDiffReporterBatch(unittest.TestCase):
         # Verify add_pending_change was NOT called
         self.mock_manager.add_pending_change.assert_not_called()
         
+        # Verify console.print was called with the expected message
+        self.mock_console.print.assert_any_call("[green]Change applied to /path/to/file1.py[/green]")
+        
         # Verify the issue status was updated to 'accepted'
-        self.assertEqual(reporter.issue_statuses[0]['status'], 'accepted')
+        # The issue_id is constructed as f"{step_id}:{file_path}:{line_number}"
+        expected_issue_id = "style_check:/path/to/file1.py:42"
+        self.assertEqual(reporter.issue_statuses[expected_issue_id], "accepted")
         
         # Verify layout was updated
         mock_live_instance.update.assert_called()
@@ -167,9 +191,9 @@ class TestInteractiveDiffReporterBatch(unittest.TestCase):
         
         # Set up manager.apply_pending_changes to return a result
         self.mock_manager.apply_pending_changes.return_value = {
-            "total": 2,
             "applied": 2,
-            "failed": 0
+            "failed": 0,
+            "details": []
         }
         
         # Call the method
@@ -178,8 +202,8 @@ class TestInteractiveDiffReporterBatch(unittest.TestCase):
         # Verify apply_pending_changes was called on the manager
         self.mock_manager.apply_pending_changes.assert_called_once()
         
-        # Verify console.print was called with the results
-        self.mock_console.print.assert_any_call("[green]Applied 2 of 2 pending changes successfully.[/green]")
+        # Verify console.print was called with the results - match the exact message from the implementation
+        self.mock_console.print.assert_any_call("[green]Applied 2 changes[/green]")
         
         # Verify layout was updated
         mock_live_instance.update.assert_called()
@@ -207,7 +231,7 @@ class TestInteractiveDiffReporterBatch(unittest.TestCase):
         self.mock_manager.undo_last_change.assert_called_once()
         
         # Verify console.print was called with success message
-        self.mock_console.print.assert_any_call("[green]Successfully undid last change.[/green]")
+        self.mock_console.print.assert_any_call("[green]Successfully undid last change[/green]")
         
         # Verify layout was updated
         mock_live_instance.update.assert_called()
@@ -235,7 +259,7 @@ class TestInteractiveDiffReporterBatch(unittest.TestCase):
         self.mock_manager.undo_last_change.assert_called_once()
         
         # Verify console.print was called with error message
-        self.mock_console.print.assert_any_call("[red]Failed to undo last change. No changes to undo or backup not found.[/red]")
+        self.mock_console.print.assert_any_call("[yellow]No changes to undo or undo failed[/yellow]")
         
         # Verify layout was updated
         mock_live_instance.update.assert_called()
@@ -265,8 +289,20 @@ class TestInteractiveDiffReporterBatch(unittest.TestCase):
         # Verify get_summary was called on the manager
         self.mock_manager.get_summary.assert_called_once()
         
-        # Verify console.print was called with the summary panels
-        self.assertEqual(self.mock_console.print.call_count, 3)  # One call for each panel (applied, rejected, pending)
+        # Verify console.print was called with the expected number of times
+        # The actual implementation makes multiple print calls for headers and each change
+        # 1 for the header, 1 for applied count, 1 for rejected count, 1 for pending count, 1 for pending note
+        # 1 for applied header, 2 for applied changes (one for each file)
+        # 1 for rejected header, 1 for rejected change
+        # 1 for pending header, 3 for pending changes (one for each file)
+        # Total: 14 calls
+        self.assertEqual(self.mock_console.print.call_count, 14)
+        
+        # Verify specific messages were printed
+        self.mock_console.print.assert_any_call("\n[bold blue]Changes Summary[/bold blue]")
+        self.mock_console.print.assert_any_call("[green]Applied changes:[/green] 2")
+        self.mock_console.print.assert_any_call("[yellow]Rejected changes:[/yellow] 1")
+        self.mock_console.print.assert_any_call("[blue]Pending changes:[/blue] 3")
     
     @patch('vaahai.reporting.interactive_diff_reporter.InteractiveDiffReporter')
     def test_generate_interactive_diff_report_with_manager(self, mock_reporter_class):

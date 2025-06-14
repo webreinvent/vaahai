@@ -486,16 +486,30 @@ class InteractiveDiffReporter:
         self.console.print("\n[bold blue]Changes Summary[/bold blue]")
         self.console.print(f"[green]Applied changes:[/green] {summary['applied']}")
         self.console.print(f"[yellow]Rejected changes:[/yellow] {summary['rejected']}")
-        
+
         if summary['pending'] > 0:
             self.console.print(f"[blue]Pending changes:[/blue] {summary['pending']}")
             self.console.print("[yellow]Note: Pending changes were not applied. Use 'p' to apply them in batch mode.[/yellow]")
-        
+
         if summary['applied'] > 0:
             self.console.print("\n[bold green]Applied Changes:[/bold green]")
             for change in summary['applied_changes']:
-                self.console.print(f"  • {change['file_path']} (line {change['line_number']})")
-                self.console.print(f"    [dim]Backup: {change['backup_path']}[/dim]")
+                line_info = f" (line {change.get('line_number', 'N/A')})" if 'line_number' in change else ""
+                self.console.print(f"  • {change['file_path']}{line_info}")
+                if 'backup_path' in change:
+                    self.console.print(f"    [dim]Backup: {change['backup_path']}[/dim]")
+
+        if summary['rejected'] > 0:
+            self.console.print("\n[bold yellow]Rejected Changes:[/bold yellow]")
+            for change in summary['rejected_changes']:
+                line_info = f" (line {change.get('line_number', 'N/A')})" if 'line_number' in change else ""
+                self.console.print(f"  • {change['file_path']}{line_info}")
+
+        if summary['pending'] > 0:
+            self.console.print("\n[bold blue]Pending Changes:[/bold blue]")
+            for change in summary['pending_changes']:
+                line_info = f" (line {change.get('line_number', 'N/A')})" if 'line_number' in change else ""
+                self.console.print(f"  • {change['file_path']}{line_info}")
 
     def _generate_layout(self) -> Layout:
         """Generate the layout for the interactive display."""

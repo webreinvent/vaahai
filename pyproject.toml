@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "vaahai"
-version = "0.2.23"
+version = "0.2.24"
 description = "A multi AI agent CLI tool using Microsoft Autogen Framework"
 authors = ["VaahAI Team <info@example.com>"]
 readme = "readme.md"
