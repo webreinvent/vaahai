@@ -84,6 +84,29 @@ This document tracks the tasks for the VaahAI project, organized by priority and
 | [P3-T17] | Integrate statistics and findings display | 🟢 | [P3-T7], [P3-T8], [P3-T16] | Add real-time statistics and key findings display during review process |
 | [P3-T18] | Complete review command with all output options | 🟢 | [P3-T10], [P3-T11], [P3-T12], [P3-T13], [P3-T14], [P3-T17] | Finalized review command with all output formats and interactive features |
 
+### Phase 4: Code Review Improvements
+
+| Task ID | Description | Status | Dependencies | Notes |
+|---------|-------------|--------|--------------|-------|
+| [P4-T1] | Implement configuration validation utility | 🔴 | None | Create utility to check if VaahAI is properly configured via `vaahai config init` |
+| [P4-T2] | Add warning message system to all commands | 🔴 | [P4-T1] | Implement system to display warning if configuration is missing/incomplete |
+| [P4-T3] | Create user-friendly config initialization guidance | 🔴 | [P4-T2] | Add helpful instruction messages for users to properly configure VaahAI |
+| [P4-T4] | Implement `vaahai dev review` command skeleton | 🔴 | None | Create new subcommand under `vaahai dev` for enhanced debugging review |
+| [P4-T5] | Add model information display | 🔴 | [P4-T4] | Show which LLM model is being used for each step of the review process |
+| [P4-T6] | Integrate configuration verification reporting | 🔴 | [P4-T4], [P4-T1] | Display detailed configuration status in dev review output |
+| [P4-T7] | Add detailed step execution logging | 🔴 | [P4-T4] | Implement verbose logging of step execution with timing and resource usage |
+| [P4-T8] | Refactor language detection agent | 🔴 | None | Update existing language detection agent architecture for enhanced LLM integration |
+| [P4-T9] | Implement LLM-based language feature extraction | 🔴 | [P4-T8] | Create specialized prompts for LLM to identify language features from code samples |
+| [P4-T10] | Create hybrid detection system | 🔴 | [P4-T9] | Combine traditional detection methods with LLM-based analysis |
+| [P4-T11] | Add confidence scoring for language detection | 🔴 | [P4-T10] | Implement confidence metrics for language detection results |
+| [P4-T12] | Design code review prompt agent interface | 🔴 | None | Create interface for agent responsible for generating review prompts |
+| [P4-T13] | Implement language-specific prompt templates | 🔴 | [P4-T12] | Create template system for language-specific review prompts |
+| [P4-T14] | Create framework/CMS-specific review criteria generators | 🔴 | [P4-T13] | Add specialized review criteria based on detected frameworks/CMS |
+| [P4-T15] | Add custom review focus capability | 🔴 | [P4-T13], [P4-T14] | Allow users to specify focus areas for more targeted reviews |
+| [P4-T16] | Integrate prompt agent with review pipeline | 🔴 | [P4-T12], [P4-T13], [P4-T14], [P4-T15] | Connect prompt generation to review execution process |
+| [P4-T17] | Implement output format adaptation based on user preferences | 🔴 | [P4-T16] | Enhance output formatting based on user-specified preferences |
+| [P4-T18] | Create comprehensive test suite for dynamic review system | 🔴 | [P4-T17] | Add tests covering all new functionality in Phase 4 |
+
 ## Current Tasks
 
 | Task ID | Description | Status | Dependencies | Notes |
