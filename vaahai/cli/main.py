@@ -29,8 +29,8 @@ from vaahai.cli.commands.review.command import review_app
 from vaahai.cli.commands.version.command import version_app
 from vaahai.cli.utils.console import print_error, print_info
 from vaahai.cli.utils.help import create_typer_app
-# Import config warnings utility
-from vaahai.cli.utils.config_warnings import check_for_unconfigured_vaahai
+# Import warning system
+from vaahai.cli.utils.warning_system import check_and_display_warnings, WarningCategory, WarningLevel
 
 # Create the main Typer app instance with custom help formatting
 app = create_typer_app(
@@ -134,7 +134,12 @@ def callback(
     # Show configuration warnings if applicable
     # Skip warnings for 'config' commands as they might be used to fix configuration issues
     if ctx.invoked_subcommand and not ctx.invoked_subcommand.startswith("config"):
-        check_for_unconfigured_vaahai(quiet=quiet)
+        check_and_display_warnings(
+            command_name=ctx.invoked_subcommand,
+            categories=[WarningCategory.CONFIGURATION],
+            min_level=WarningLevel.WARNING,
+            quiet=quiet
+        )
 
     # Show help if no command is provided
     if ctx.invoked_subcommand is None:
