@@ -104,6 +104,11 @@ def callback(
     if ctx.obj is None:
         ctx.obj = {}
 
+    # Check for conflicting options
+    if verbose and quiet:
+        print_error("Cannot use both --verbose and --quiet options together")
+        raise typer.Exit(1)
+
     # Store global options in context
     ctx.obj["verbose"] = verbose
     ctx.obj["quiet"] = quiet
@@ -151,6 +156,7 @@ def main():
         if os.environ.get("VAAHAI_DEBUG", "").lower() in ("1", "true", "yes"):
             # Show full traceback in debug mode
             raise
+        sys.exit(1)  # Exit with error code 1 for general exceptions
 
 
 if __name__ == "__main__":

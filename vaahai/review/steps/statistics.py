@@ -200,6 +200,17 @@ class ReviewStatistics:
             "step_statistics": self.step_statistics,
         }
     
+    def get_summary(self) -> Dict[str, Any]:
+        """
+        Get a summary of the review statistics.
+        
+        This is an alias for get_statistics_summary() for backward compatibility.
+        
+        Returns:
+            Dictionary containing the statistics summary
+        """
+        return self.get_statistics_summary()
+    
     def get_file_statistics(self, file_path: str) -> Dict[str, Any]:
         """
         Get statistics for a specific file.

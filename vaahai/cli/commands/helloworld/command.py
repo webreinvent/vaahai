@@ -36,7 +36,10 @@ helloworld_app = create_typer_app(
 def detect_user_location():
     # Try to get country from locale
     try:
-        loc = locale.getdefaultlocale()
+        # Use the recommended alternatives to getdefaultlocale
+        locale.setlocale(locale.LC_ALL, '')
+        encoding = locale.getencoding()
+        loc = locale.getlocale()
         if loc and loc[0]:
             country = loc[0].split('_')[-1]
             if len(country) == 2:

@@ -12,9 +12,9 @@ from vaahai.agents.base.agent_base import AgentBase
 class TestAgentImplementation(AgentBase):
     """Test implementation of AgentBase for testing."""
     
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: Dict[str, Any] = None):
         self.initialize_called = False
-        super().__init__(config)
+        super().__init__(config or {})
         
     def initialize(self) -> None:
         self.initialize_called = True
@@ -47,7 +47,7 @@ class TestAgentBase(unittest.TestCase):
         
     def test_run_method(self):
         """Test the run method with arguments."""
-        agent = TestAgentImplementation({})
+        agent = TestAgentImplementation()
         result = agent.run("arg1", "arg2", kwarg1="value1")
         
         self.assertEqual(result["args"], ("arg1", "arg2"))
@@ -55,7 +55,7 @@ class TestAgentBase(unittest.TestCase):
         
     def test_cleanup_method(self):
         """Test the cleanup method."""
-        agent = TestAgentImplementation({})
+        agent = TestAgentImplementation()
         agent.cleanup()
         
         self.assertTrue(hasattr(agent, "cleanup_called"))

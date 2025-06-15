@@ -100,6 +100,21 @@ def run(
         "-f",
         help="Output format (rich, markdown, html, interactive)",
     ),
+    depth: str = typer.Option(
+        "standard",
+        "--depth",
+        help="Depth of the review (quick, standard, thorough)",
+    ),
+    focus: Optional[str] = typer.Option(
+        None,
+        "--focus",
+        help="Focus area for the review (style, security, performance)",
+    ),
+    severity: Optional[str] = typer.Option(
+        None,
+        "--severity",
+        help="Minimum severity level (critical, high, medium, low)",
+    ),
     apply_changes: bool = typer.Option(
         False,
         "--apply-changes",
@@ -222,33 +237,22 @@ def run(
             if show_steps:
                 os.environ["VAAHAI_STEP_TIMING"] = "1"
             
-            # Instead of trying to pass parameters directly to standard_review_run,
-            # create a wrapper function that handles the parameters correctly
-            def run_review():
-                # Create a modified version of the standard review command with our parameters
-                from vaahai.cli.commands.review.command import run as standard_run
-                from pathlib import Path
-                
-                # Convert path to Path object if it's a string
-                path_obj = Path(path) if isinstance(path, str) else path
-                
-                # Call the standard review command directly with our parameters
-                return standard_run(
-                    path=path_obj,
-                    depth="standard",  # Default to standard depth
-                    focus=None,  # Don't pass focus to avoid OptionInfo issues
-                    severity=None,  # Don't pass severity to avoid OptionInfo issues
-                    debug=debug_level != DebugLevel.OFF,
-                    format=format,
-                    apply_changes=apply_changes,
-                    dry_run=dry_run,
-                    backup_dir=backup_dir,
-                    no_confirm=no_confirm,
-                )
-            
-            # Run the review using our wrapper function
+            # Call the standard review command with our parameters
             logger.info("Starting review process...")
-            result = run_review()
+            
+            # Call the standard review run function directly with the path as a Path object
+            result = standard_review_run(
+                path=Path(path),  # Convert string path to Path object
+                format=format,
+                depth=depth,
+                focus=focus,
+                severity=severity,
+                debug=debug_level != DebugLevel.OFF,  # Convert debug_level to boolean debug flag
+                apply_changes=apply_changes,
+                dry_run=dry_run,
+                backup_dir=backup_dir,
+                no_confirm=no_confirm,
+            )
             
             # Update progress
             progress.update(review_task, status="Complete")
@@ -287,4 +291,5 @@ def run(
             if debug_level in (DebugLevel.DEBUG, DebugLevel.TRACE):
                 raise
             
+            # Return exit code 1 to indicate failure
             return 1

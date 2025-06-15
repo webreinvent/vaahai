@@ -12,12 +12,22 @@ from vaahai.agents.base.agent_registry import AgentRegistry
 class TestAgentOne(AgentBase):
     """Test agent implementation for registry testing."""
     
+    def __init__(self):
+        """Initialize without calling parent constructor to avoid pytest warning."""
+        # Skip parent constructor to avoid pytest collection warning
+        pass
+    
     def run(self, *args, **kwargs) -> Any:
         return "Agent One"
 
 
 class TestAgentTwo(AgentBase):
     """Another test agent implementation for registry testing."""
+    
+    def __init__(self):
+        """Initialize without calling parent constructor to avoid pytest warning."""
+        # Skip parent constructor to avoid pytest collection warning
+        pass
     
     def run(self, *args, **kwargs) -> Any:
         return "Agent Two"

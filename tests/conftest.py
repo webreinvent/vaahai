@@ -15,6 +15,15 @@ from typer.testing import CliRunner
 from vaahai.cli.main import app
 
 
+# Configure pytest to ignore collection warnings for test agent classes with __init__ constructors
+def pytest_configure(config):
+    """Configure pytest to ignore specific warnings."""
+    config.addinivalue_line(
+        "filterwarnings",
+        "ignore::pytest.PytestCollectionWarning:.*test_.*agent.*"
+    )
+
+
 @pytest.fixture
 def cli_runner() -> CliRunner:
     """Return a Typer CLI runner for testing CLI commands."""
