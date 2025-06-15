@@ -105,6 +105,14 @@ class LanguageDetectionAgent(AgentBase):
                 "extensions": [".css"],
                 "keywords": ["color:", "font-size:", "margin:", "padding:", "background:"],
             },
+            "c": {
+                "extensions": [".c", ".h"],
+                "keywords": ["#include <stdio.h>", "#include <stdlib.h>", "int main(", "void main(", "printf(", "scanf(", "malloc(", "free(", "struct", "typedef"],
+            },
+            "cpp": {
+                "extensions": [".cpp", ".hpp", ".cc", ".cxx"],
+                "keywords": ["#include <iostream>", "#include <vector>", "std::", "namespace", "template", "class", "public:", "private:", "protected:", "cout <<", "cin >>", "new", "delete"],
+            },
             "shell": {
                 "extensions": [".sh", ".bash"],
                 "shebang": ["bash", "sh"],
@@ -202,7 +210,11 @@ class LanguageDetectionAgent(AgentBase):
         # Aggregate results
         candidates = []
         if ext_lang:
-            candidates.append((ext_lang, 0.7))
+            # Increase confidence for C and C++ extension-based detection
+            if ext_lang in ["c", "cpp"]:
+                candidates.append((ext_lang, 0.85))
+            else:
+                candidates.append((ext_lang, 0.7))
         if shebang_lang:
             candidates.append((shebang_lang, 0.8))
         if kw_result:

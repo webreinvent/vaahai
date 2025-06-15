@@ -29,6 +29,8 @@ from vaahai.cli.commands.review.command import review_app
 from vaahai.cli.commands.version.command import version_app
 from vaahai.cli.utils.console import print_error, print_info
 from vaahai.cli.utils.help import create_typer_app
+# Import config warnings utility
+from vaahai.cli.utils.config_warnings import check_for_unconfigured_vaahai
 
 # Create the main Typer app instance with custom help formatting
 app = create_typer_app(
@@ -98,36 +100,36 @@ def callback(
         vaahai review run ./my-project       # Review code in a directory
         vaahai audit run ./my-project        # Audit code for security issues
     """
-    # Store global options in the context for use in commands
-    ctx.ensure_object(dict)
+    # Create object dictionary to store context data
+    if ctx.obj is None:
+        ctx.obj = {}
+
+    # Store global options in context
     ctx.obj["verbose"] = verbose
     ctx.obj["quiet"] = quiet
 
-    # Show version and exit if --version flag is used
+    # Handle version flag
     if version:
-        try:
-            import importlib.metadata
+        from vaahai import __version__
 
-            version_str = importlib.metadata.version("vaahai")
-        except importlib.metadata.PackageNotFoundError:
-            version_str = "unknown (development mode)"
-        console.print(f"VaahAI version: [bold green]{version_str}[/bold green]")
+        console.print(f"VaahAI version: {__version__}")
         raise typer.Exit()
-
-    # Handle conflicting options
-    if verbose and quiet:
-        print_error("Cannot use both --verbose and --quiet options together")
-        raise typer.Exit(code=1)
 
     # Handle custom config file
     if config_file:
-        config_path = Path(config_file)
+        config_path = Path(config_file).resolve()
         if not config_path.exists():
             print_error(f"Config file not found: {config_path}")
-            raise typer.Exit(code=1)
-        ctx.obj["config_file"] = config_path
+            raise typer.Exit(1)
+
+        ctx.obj["config_file"] = str(config_path)
         if verbose:
             print_info(f"Using custom config file: {config_path}")
+
+    # Show configuration warnings if applicable
+    # Skip warnings for 'config' commands as they might be used to fix configuration issues
+    if ctx.invoked_subcommand and not ctx.invoked_subcommand.startswith("config"):
+        check_for_unconfigured_vaahai(quiet=quiet)
 
     # Show help if no command is provided
     if ctx.invoked_subcommand is None:
@@ -149,7 +151,6 @@ def main():
         if os.environ.get("VAAHAI_DEBUG", "").lower() in ("1", "true", "yes"):
             # Show full traceback in debug mode
             raise
-        sys.exit(1)
 
 
 if __name__ == "__main__":

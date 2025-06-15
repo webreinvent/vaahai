@@ -166,10 +166,51 @@ def run(
     # --- Language and Framework Detection ---
     try:
         lang_agent = LanguageDetectionAgent({"name": "LangDetectCLI"})
-        lang_result = lang_agent.run(str(path))
+        
+        # Enhanced language detection for single files
+        if path.is_file():
+            # Read file content for better detection
+            with open(path, 'r', encoding='utf-8', errors='ignore') as f:
+                try:
+                    file_content = f.read()
+                    # Pass both file path and content for better detection
+                    lang_result = lang_agent.run(file_content, str(path))
+                except Exception as e:
+                    if debug:
+                        console.print(f"[yellow]Warning:[/yellow] Error reading file content: {e}")
+                    # Fallback to path-only detection
+                    lang_result = lang_agent.run(str(path), str(path))
+        else:
+            # For directories, just use the path
+            lang_result = lang_agent.run(str(path))
+            
         detected_language = lang_result.get("primary_language", {}).get("name", "Unknown")
-    except Exception:
+        
+        # Special handling for common file extensions
+        if detected_language == "Unknown" and path.is_file():
+            ext = path.suffix.lower()
+            extension_map = {
+                ".php": "PHP",
+                ".py": "Python",
+                ".js": "JavaScript",
+                ".ts": "TypeScript",
+                ".html": "HTML",
+                ".css": "CSS",
+                ".java": "Java",
+                ".rb": "Ruby",
+                ".go": "Go",
+                ".cs": "C#",
+                ".cpp": "C++",
+                ".c": "C",
+            }
+            if ext in extension_map:
+                detected_language = extension_map[ext]
+                if debug:
+                    console.print(f"[bold]Debug:[/bold] Language detected by file extension: {detected_language}")
+    except Exception as e:
         detected_language = "Unknown"
+        if debug:
+            console.print(f"[yellow]Warning:[/yellow] Language detection failed: {e}")
 
     try:
         fw_agent = FrameworkDetectionAgent({"name": "FrameworkDetectCLI"})
@@ -590,7 +631,7 @@ def run(
                         category_table.add_column("Percentage", style="green")
                         
                         total_issues = statistics_summary.get("total_issues", 0)
-                        for category, count in issues_by_category.items():
+                        for category, count in sorted(issues_by_category.items(), key=lambda x: x[1], reverse=True):
                             percentage = (count / total_issues * 100) if total_issues > 0 else 0
                             emoji = CATEGORY_EMOJI.get(category.lower(), "")
                             category_table.add_row(
@@ -600,22 +641,86 @@ def run(
                             )
                         
                         console.print(category_table)
+                        
+                        # Most common issues
+                        most_common_issues = statistics_summary.get("most_common_issues", [])
+                        if most_common_issues:
+                            console.print("\n[bold]Most Common Issues:[/bold]")
+                            common_issues_table = Table(show_header=True, header_style="bold")
+                            common_issues_table.add_column("Issue", style="cyan")
+                            common_issues_table.add_column("Count", style="yellow")
+                            
+                            for issue, count in most_common_issues[:5]:  # Show top 5
+                                common_issues_table.add_row(
+                                    issue[:100] + ("..." if len(issue) > 100 else ""),  # Truncate long messages
+                                    str(count)
+                                )
+                            
+                            console.print(common_issues_table)
                     
-                    # Most common issues
-                    most_common_issues = statistics_summary.get("most_common_issues", [])
-                    if most_common_issues:
-                        console.print("\n[bold]Most Common Issues:[/bold]")
-                        issues_table = Table(show_header=True, header_style="bold")
-                        issues_table.add_column("Issue", style="cyan")
-                        issues_table.add_column("Count", style="yellow")
+                    # Display key findings
+                    key_findings = result.get("key_findings", [])
+                    if key_findings:
+                        console.print("\n[bold]Key Findings:[/bold]")
+                        findings_table = Table(show_header=True, header_style="bold", title="Key Findings", title_style="bold blue")
+                        findings_table.add_column("Type", style="cyan")
+                        findings_table.add_column("Finding", style="yellow")
+                        findings_table.add_column("Count", style="green")
                         
-                        for issue, count in most_common_issues:
-                            issues_table.add_row(
-                                issue[:100] + ("..." if len(issue) > 100 else ""),
-                                str(count)
-                            )
+                        for finding in key_findings:
+                            if finding.get("type") == "severity":
+                                severity = finding.get("severity", "")
+                                count = finding.get("count", 0)
+                                message = finding.get("message", f"{count} {severity} issues found")
+                                
+                                severity_style = {
+                                    "critical": "bold red",
+                                    "high": "bold yellow",
+                                    "medium": "yellow",
+                                    "low": "green",
+                                    "info": "blue",
+                                }.get(severity, "white")
+                                
+                                emoji = SEVERITY_EMOJI.get(severity, "")
+                                findings_table.add_row(
+                                    f"{emoji} Severity: {severity.capitalize()}" if emoji else f"Severity: {severity.capitalize()}",
+                                    message,
+                                    str(count),
+                                    style=severity_style
+                                )
+                            elif finding.get("type") == "category":
+                                category = finding.get("category", "")
+                                count = finding.get("count", 0)
+                                message = finding.get("message", f"{count} {category} issues found")
+                                
+                                emoji = CATEGORY_EMOJI.get(category.lower(), "")
+                                findings_table.add_row(
+                                    f"{emoji} Category: {category}" if emoji else f"Category: {category}",
+                                    message,
+                                    str(count)
+                                )
+                            elif finding.get("type") == "common_issue":
+                                message = finding.get("message", "")
+                                count = finding.get("count", 0)
+                                
+                                findings_table.add_row(
+                                    "Common Issue",
+                                    message[:100] + ("..." if len(message) > 100 else ""),
+                                    str(count)
+                                )
                         
-                        console.print(issues_table)
+                        console.print(findings_table)
+                    
+                    # Display actionable recommendations
+                    recommendations = result.get("recommendations", [])
+                    if recommendations:
+                        console.print("\n[bold]Recommendations:[/bold]")
+                        recommendations_panel = Panel(
+                            "\n".join([f"• {recommendation}" for recommendation in recommendations]),
+                            title="Actionable Recommendations",
+                            border_style="green"
+                        )
+                        console.print(recommendations_panel)
                 
                 # Display key findings
                 key_findings = result.get("key_findings", [])

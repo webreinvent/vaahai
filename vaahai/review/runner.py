@@ -6,6 +6,7 @@ This module provides utilities for running multiple review steps on code.
 
 import logging
 import os
+import time
 from typing import Any, Dict, List, Optional, Set, Union, Callable
 
 from vaahai.review.steps.base import ReviewStep, ReviewStepCategory, ReviewStepSeverity
@@ -52,6 +53,8 @@ class ReviewRunner:
         self.progress = ReviewProgress()
         self.statistics = ReviewStatistics()
         self.findings_reporter = KeyFindingsReporter(self.statistics)
+        self.step_timings = {}  # Dictionary to store step timing information
+        self.collect_step_timings = os.environ.get("VAAHAI_STEP_TIMING", "").lower() in ("1", "true", "yes")
         
         # Get the registry instance
         registry = ReviewStepRegistry()
@@ -129,12 +132,23 @@ class ReviewRunner:
                 # Mark step as in progress
                 self.progress.start_step(step.id)
                 
+                # Record start time if step timing is enabled
+                start_time = time.time() if self.collect_step_timings else None
+                
                 # Execute the step
                 step_result = step.execute(context)
                 step_result["step_id"] = step.id
                 step_result["step_name"] = step.name
                 step_result["step_category"] = step.category.name
                 step_result["step_severity"] = step.severity.name
+                
+                # Record end time and calculate duration if step timing is enabled
+                if self.collect_step_timings:
+                    end_time = time.time()
+                    duration = end_time - start_time
+                    self.step_timings[step.id] = duration
+                    step_result["duration"] = duration
+                    logger.debug(f"Step {step.id} completed in {duration:.2f} seconds")
                 
                 # Mark step as completed
                 self.progress.complete_step(step.id)
@@ -158,6 +172,13 @@ class ReviewRunner:
                 
                 # Mark step as failed
                 self.progress.fail_step(step.id)
+                
+                # Record end time and calculate duration for failed step if step timing is enabled
+                if self.collect_step_timings and start_time:
+                    end_time = time.time()
+                    duration = end_time - start_time
+                    self.step_timings[step.id] = duration
+                    logger.debug(f"Step {step.id} failed after {duration:.2f} seconds")
                 
                 results.append({
                     "step_id": step.id,
@@ -191,6 +212,7 @@ class ReviewRunner:
             "statistics": statistics_summary,
             "key_findings": key_findings,
             "recommendations": recommendations,
+            "step_timings": self.step_timings,  # Include step timings in the output
             "output_format": output_format.value,
         }
     
@@ -351,6 +373,7 @@ class ReviewRunner:
             "statistics": statistics_summary,
             "key_findings": key_findings,
             "recommendations": recommendations,
+            "step_timings": self.step_timings,  # Include step timings in the output
             "output_format": output_format.value,
         }
     
@@ -392,3 +415,12 @@ class ReviewRunner:
             List of recommendation strings
         """
         return self.findings_reporter.get_actionable_recommendations()
+    
+    def get_step_timings(self) -> Dict[str, float]:
+        """
+        Get the step timings.
+        
+        Returns:
+            Dictionary of step timings where keys are step IDs and values are durations in seconds.
+        """
+        return self.step_timings
