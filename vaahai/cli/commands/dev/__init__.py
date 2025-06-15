@@ -8,6 +8,7 @@ import typer
 
 from vaahai.cli.commands.dev.prompts import prompts_app
 from vaahai.cli.commands.dev.showcase import showcase_app
+from vaahai.cli.commands.dev_review.command import dev_review_app
 from vaahai.cli.commands.helloworld.command import helloworld_app
 from vaahai.cli.utils.help import create_typer_app
 
@@ -23,3 +24,4 @@ dev_app = create_typer_app(
 dev_app.add_typer(helloworld_app, name="helloworld")
 dev_app.add_typer(showcase_app, name="showcase")
 dev_app.add_typer(prompts_app, name="prompts")
+dev_app.add_typer(dev_review_app, name="review")
