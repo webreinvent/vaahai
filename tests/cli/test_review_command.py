@@ -28,7 +28,7 @@ def test_review_run_command_with_directory():
         
         result = runner.invoke(
             app,
-            ["review", "run", temp_dir, "--no-confirm"],
+            ["review", "run", temp_dir, "--no-confirm", "--output-dir", "/tmp"],
             catch_exceptions=False
         )
         assert result.exit_code == 0
@@ -47,7 +47,7 @@ def test_review_run_command_with_options():
         
         result = runner.invoke(
             app,
-            ["review", "run", temp_dir, "--depth", "deep", "--no-confirm"],
+            ["review", "run", temp_dir, "--depth", "deep", "--no-confirm", "--output-dir", "/tmp"],
             catch_exceptions=False
         )
         assert result.exit_code == 0
@@ -72,7 +72,7 @@ def test_function():
         
         result = runner.invoke(
             app,
-            ["review", "run", test_file, "--no-confirm"],
+            ["review", "run", test_file, "--no-confirm", "--output-dir", "/tmp"],
             catch_exceptions=False
         )
         assert result.exit_code == 0
@@ -101,7 +101,7 @@ def test_function():
         
         result = runner.invoke(
             app,
-            ["review", "run", test_file, "--no-confirm"],
+            ["review", "run", test_file, "--no-confirm", "--output-dir", "/tmp"],
             catch_exceptions=False
         )
         assert result.exit_code == 0
@@ -133,7 +133,7 @@ def test_function():
         # Test markdown format
         result_md = runner.invoke(
             app,
-            ["review", "run", test_file, "--format", "markdown", "--no-confirm"],
+            ["review", "run", test_file, "--format", "markdown", "--no-confirm", "--output-dir", "/tmp"],
             catch_exceptions=False
         )
         assert result_md.exit_code == 0
@@ -142,7 +142,7 @@ def test_function():
         # Test HTML format
         result_html = runner.invoke(
             app,
-            ["review", "run", test_file, "--format", "html", "--no-confirm"],
+            ["review", "run", test_file, "--format", "html", "--no-confirm", "--output-dir", "/tmp"],
             catch_exceptions=False
         )
         assert result_html.exit_code == 0
@@ -151,7 +151,7 @@ def test_function():
         # Test rich format (default)
         result_rich = runner.invoke(
             app,
-            ["review", "run", test_file, "--format", "rich", "--no-confirm"],
+            ["review", "run", test_file, "--format", "rich", "--no-confirm", "--output-dir", "/tmp"],
             catch_exceptions=False
         )
         assert result_rich.exit_code == 0
@@ -162,7 +162,7 @@ def test_function():
         # This should run without error but not enable code changes
         result_interactive = runner.invoke(
             app,
-            ["review", "run", test_file, "--format", "interactive", "--no-confirm"],
+            ["review", "run", test_file, "--format", "interactive", "--no-confirm", "--output-dir", "/tmp"],
             catch_exceptions=False
         )
         assert result_interactive.exit_code == 0
@@ -193,7 +193,7 @@ def test_function():
             result_interactive = runner.invoke(
                 app,
                 ["review", "run", test_file, "--format", "interactive", 
-                 "--apply-changes", "--dry-run", "--no-confirm"],
+                 "--apply-changes", "--dry-run", "--no-confirm", "--output-dir", "/tmp"],
                 catch_exceptions=False
             )
             assert result_interactive.exit_code == 0
@@ -213,7 +213,7 @@ def test_function():
             result_interactive = runner.invoke(
                 app,
                 ["review", "run", test_file, "--format", "interactive", 
-                 "--apply-changes", "--backup-dir", backup_dir, "--no-confirm"],
+                 "--apply-changes", "--backup-dir", backup_dir, "--no-confirm", "--output-dir", "/tmp"],
                 catch_exceptions=False
             )
             assert result_interactive.exit_code == 0

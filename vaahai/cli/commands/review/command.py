@@ -151,6 +151,12 @@ def run(
         "--backup-dir",
         help="Directory to store backups of modified files (default: ~/.vaahai/backups)",
     ),
+    output_dir: Optional[str] = typer.Option(
+        None,
+        "--output-dir",
+        "-o",
+        help="Directory to store output report files (markdown, html)",
+    ),
     no_confirm: bool = typer.Option(
         False,
         "--no-confirm",
@@ -793,6 +799,10 @@ def run(
                     
                     # Create a report file with timestamp
                     report_path = f"vaahai_review_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md"
+                    if output_dir:
+                        # Create output directory if it doesn't exist
+                        os.makedirs(output_dir, exist_ok=True)
+                        report_path = os.path.join(output_dir, report_path)
                     with open(report_path, "w") as f:
                         f.write(markdown_report)
                     
@@ -817,6 +827,10 @@ def run(
                     
                     # Create a report file with timestamp
                     report_path = f"vaahai_review_{datetime.now().strftime('%Y%m%d_%H%M%S')}.html"
+                    if output_dir:
+                        # Create output directory if it doesn't exist
+                        os.makedirs(output_dir, exist_ok=True)
+                        report_path = os.path.join(output_dir, report_path)
                     with open(report_path, "w") as f:
                         f.write(html_report)
                     
@@ -1028,7 +1042,7 @@ def run(
                     if recommendations:
                         console.print("\n[bold green]Recommendations:[/bold green]")
                         recommendations_panel = Panel(
-                            "\n".join([f"• {rec}" for rec in recommendations]),
+                            "\n".join([f"• {recommendation}" for recommendation in recommendations]),
                             title="Actionable Steps",
                             border_style="green"
                         )
