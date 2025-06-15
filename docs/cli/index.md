@@ -21,6 +21,7 @@ VaahAI CLI is built with the Typer framework and enhanced with Rich formatting f
 - [Rich Integration](rich_integration.md): Details on Rich formatting capabilities
 - [Console Utilities](console_utilities.md): Helper functions for console output
 - [Custom Help Formatting](custom_help_formatting.md): Implementation of the enhanced help system
+- [Warning System](warning_system.md): Configuration warning system across CLI commands
 - [Model Command](model_command.md): Managing and selecting LLM models based on capabilities
 - [Review Command](review_command.md): Comprehensive code review with multiple output formats and interactive features
 - [CLI Architecture](/docs/architecture/cli_architecture.md): Comprehensive overview of CLI architecture, extension points, and best practices

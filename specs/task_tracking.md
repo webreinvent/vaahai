@@ -89,7 +89,7 @@ This document tracks the tasks for the VaahAI project, organized by priority and
 | Task ID | Description | Status | Dependencies | Notes |
 |---------|-------------|--------|--------------|-------|
 | [P4-T1] | Implement configuration validation utility | 🟢 | None | Added comprehensive validation for config completeness, API keys, models, and command-specific requirements |
-| [P4-T2] | Add warning message system to all commands | 🔴 | [P4-T1] | Implement system to display warning if configuration is missing/incomplete |
+| [P4-T2] | Add warning message system to all commands | 🟢 | [P4-T1] | Implemented reusable warning system with WarningMessage and WarningSystem classes; integrated configuration validation warnings; displays styled warnings consistently across all CLI commands except config commands |
 | [P4-T3] | Create user-friendly config initialization guidance | 🔴 | [P4-T2] | Add helpful instruction messages for users to properly configure VaahAI |
 | [P4-T4] | Implement `vaahai dev review` command skeleton | 🔴 | None | Create new subcommand under `vaahai dev` for enhanced debugging review |
 | [P4-T5] | Add model information display | 🔴 | [P4-T4] | Show which LLM model is being used for each step of the review process |
@@ -117,6 +117,7 @@ This document tracks the tasks for the VaahAI project, organized by priority and
 
 | Task ID | Description | Completion Date | Notes |
 |---------|-------------|-----------------|-------|
+| [P4-T2] | Add warning message system to all commands | 2025-06-16 | Implemented comprehensive warning system with WarningMessage and WarningSystem classes that display styled Rich panels with actionable information. Integrated with ConfigValidator to show configuration warnings across all CLI commands except config commands. Added documentation and extensive test coverage. |
 | [P3-T16] | Enhance review command with progress display | 2025-06-14 | Enhanced review command with detailed progress tracking including emoji indicators, file-level progress for directory reviews, step status visualization, and timing statistics panel. Updated ReviewRunner to support file callbacks for progress reporting. |
 | [P3-T14] | Implement file modification system | 2025-06-14 | Implemented comprehensive file modification system with batch processing, undo functionality, configuration management, and backup handling. Created extensive test suite covering all aspects of the system. |
 | [P3-T13] | Add code change acceptance mechanism | 2025-06-13 | Implemented code change acceptance in InteractiveDiffReporter with CodeChangeManager for safely applying changes to files, including backup creation, validation, and summary reporting |
@@ -171,9 +172,9 @@ None at this time.
 
 ## Next Steps
 
-1. Continue Phase 3 implementation with focus on report generators (P3-T11, P3-T12)
-2. Implement HTML report generator (P3-T11) as the next priority task
-3. Focus on implementing interactive code diff display (P3-T12) with Rich library
+1. Implement user-friendly config initialization guidance (P4-T3) as the next priority task
+2. Continue Phase 4 implementation with focus on enhancing the review command with dev features
+3. Consider implementing `vaahai dev review` command skeleton (P4-T4) after completing P4-T3
 
 ## MVP Development Strategy
 
