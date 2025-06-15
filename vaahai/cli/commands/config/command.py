@@ -28,6 +28,7 @@ from vaahai.cli.utils.console import (
 from vaahai.cli.utils.help import CustomHelpCommand, create_typer_app
 from vaahai.config.manager import ConfigManager
 from vaahai.config.llm_utils import list_providers, list_models, get_model_capabilities
+from vaahai.cli.commands.config.validate import validate_command
 
 # Create a rich console for formatted output
 console = Console()
@@ -425,3 +426,7 @@ def reset(
     else:
         print_error("Failed to reset configuration!")
         raise typer.Exit(code=1)
+
+
+# Add validate command
+config_app.command("validate", cls=CustomHelpCommand)(validate_command)
