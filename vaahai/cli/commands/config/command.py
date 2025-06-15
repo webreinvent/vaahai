@@ -28,7 +28,7 @@ from vaahai.cli.utils.console import (
 from vaahai.cli.utils.help import CustomHelpCommand, create_typer_app
 from vaahai.config.manager import ConfigManager
 from vaahai.config.llm_utils import list_providers, list_models, get_model_capabilities
-from vaahai.cli.commands.config.status_command import status_command
+from vaahai.cli.commands.config.validate import validate_command
 
 # Create a rich console for formatted output
 console = Console()
@@ -428,20 +428,5 @@ def reset(
         raise typer.Exit(code=1)
 
 
-@config_app.command("status", cls=CustomHelpCommand)
-def status(
-    ctx: typer.Context,
-    verbose: bool = typer.Option(
-        False, 
-        "--verbose", 
-        "-v", 
-        help="Show all configuration validation results, not just errors"
-    ),
-):
-    """
-    Check and display VaahAI configuration status.
-    
-    This command validates the VaahAI configuration and displays any issues 
-    or warnings that might affect VaahAI's operation.
-    """
-    return status_command(ctx, verbose)
+# Add validate command
+config_app.command("validate", cls=CustomHelpCommand)(validate_command)
