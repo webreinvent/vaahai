@@ -540,7 +540,10 @@ def run(
                     # Run on a single file
                     with open(path, 'r') as f:
                         content = f.read()
-                    result = runner.run_on_content(content, file_path=str(path), output_format=output_format, track_model_usage=track_model_usage)
+                    # Set track_model_usage on the runner instance before calling run_on_content
+                    if 'track_model_usage' in locals():
+                        runner.track_model_usage = track_model_usage
+                    result = runner.run_on_content(content, file_path=str(path), output_format=output_format)
                 else:
                     # For directory reviews, add file progress tracking
                     file_count = sum(1 for _ in Path(path).rglob('*') if _.is_file() and not any(part.startswith('.') for part in _.parts))
@@ -570,7 +573,7 @@ def run(
                             progress.update(file_progress_task, advance=1)
                     
                     # Run on a directory with the callback
-                    result = runner.run_on_directory(str(path), output_format=output_format, file_callback=file_progress_callback, track_model_usage=track_model_usage)
+                    result = runner.run_on_directory(str(path), output_format=output_format, file_callback=file_progress_callback)
                 
                 # Wait for the progress thread to catch up
                 time.sleep(0.5)

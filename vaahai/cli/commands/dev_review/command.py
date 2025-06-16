@@ -28,9 +28,13 @@ from vaahai.cli.utils.console import (
     print_warning,
 )
 from vaahai.cli.utils.help import CustomHelpCommand, create_typer_app
-from vaahai.cli.utils.warning_system import check_and_display_warnings
-from vaahai.cli.commands.review.command import run as standard_review_run
+from vaahai.cli.utils.warning_system import (
+    WarningSystem, WarningCategory, WarningLevel, WarningMessage
+)
+from vaahai.utils.config_validator import ValidationLevel, ConfigValidator
 from vaahai.config.manager import ConfigManager
+from vaahai.config.utils import get_user_config_dir, get_project_config_dir
+from vaahai.cli.commands.review.command import run as standard_review_run
 from vaahai.agents.base.agent_factory import AgentFactory
 
 # Create console for rich output
@@ -41,7 +45,7 @@ logger = logging.getLogger("vaahai.dev_review")
 
 # Create Typer app
 dev_review_app = create_typer_app(
-    name="dev-review",
+    name="review",
     help="Developer review command with enhanced diagnostics",
     add_completion=True,
     no_args_is_help=True,
@@ -290,16 +294,43 @@ def run(
 
 
 def display_configuration():
-    """Display the current configuration details."""
+    """Display the current configuration settings."""
+    console = Console()
+    
+    # Get configuration paths
+    user_config_dir = get_user_config_dir()
+    user_config_file = user_config_dir / "config.toml"
+    project_config_dir = get_project_config_dir()
+    project_config_file = project_config_dir / "config.toml" if project_config_dir else None
+    
+    # Debug information about config files
+    logger.debug(f"User config directory: {user_config_dir} (exists: {user_config_dir.exists()})")
+    logger.debug(f"User config file: {user_config_file} (exists: {user_config_file.exists()})")
+    if project_config_dir:
+        logger.debug(f"Project config directory: {project_config_dir} (exists: {project_config_dir.exists()})")
+        if project_config_file:
+            logger.debug(f"Project config file: {project_config_file} (exists: {project_config_file.exists()})")
+    
+    # Create config manager and validator
+    config_manager = ConfigManager()
+    config_validator = ConfigValidator(config_manager)
+    
+    # Check if VaahAI is configured
+    is_configured = config_validator.is_configured()
+    
+    if not is_configured:
+        console.print("[bold red]VaahAI configuration file is missing.[/]")
+        console.print("Please run [bold]vaahai config init[/] to set up your configuration.")
+        return
+    
+    # Display configuration
+    console.print("[bold green]VaahAI is configured.[/]")
+    
+    # Get and display LLM configuration
     try:
-        config_manager = ConfigManager()
-        
-        # Get configuration details
+        # Get current provider and model
         provider = config_manager.get_current_provider()
         model = config_manager.get_model(provider)
-        docker_enabled = config_manager.get("docker.enabled", False)
-        docker_image = config_manager.get("docker.image", "")
-        docker_memory = config_manager.get("docker.memory", "")
         
         # Create a table for configuration display
         config_table = Table(title="VaahAI Configuration")
@@ -309,21 +340,63 @@ def display_configuration():
         # Add configuration details to the table
         config_table.add_row("Provider", provider)
         config_table.add_row("Model", model)
+        
+        # Check if Docker is enabled
+        docker_enabled = config_manager.get("docker.enabled", False)
         config_table.add_row("Docker Enabled", str(docker_enabled))
         
         if docker_enabled:
+            docker_image = config_manager.get("docker.image", "")
+            docker_memory = config_manager.get("docker.memory", "")
             config_table.add_row("Docker Image", docker_image)
             config_table.add_row("Docker Memory", docker_memory)
         
         # Display the table
         console.print(config_table)
         
-        # Check for configuration warnings
-        check_and_display_warnings(quiet=False)
-        
     except Exception as e:
-        logger.exception(f"Error displaying configuration: {e}")
-        print_error(f"Failed to display configuration: {e}")
+        logger.error(f"Error getting LLM configuration: {e}")
+        console.print("[bold yellow]Could not retrieve LLM configuration details.[/]")
+    
+    # Display additional configuration details
+    console.print("\n[bold]Configuration Files:[/]")
+    console.print(f"User config: {user_config_file}")
+    if project_config_file and project_config_file.exists():
+        console.print(f"Project config: {project_config_file}")
+    
+    # Create a warning system instance
+    warning_system = WarningSystem()
+    
+    # Check if the configuration is valid using our existing validator
+    is_valid, results = config_validator.validate()
+    
+    # If the configuration is valid, no need to add warnings
+    if not is_valid:
+        # Add warnings based on validation results
+        for result in results:
+            if not result.valid:
+                level = {
+                    ValidationLevel.ERROR: WarningLevel.ERROR,
+                    ValidationLevel.WARNING: WarningLevel.WARNING,
+                    ValidationLevel.INFO: WarningLevel.INFO,
+                }[result.level]
+                
+                # Add a warning based on the validation result
+                warning_system.add_warning(
+                    WarningMessage(
+                        level=level,
+                        category=WarningCategory.CONFIGURATION,
+                        message=result.message,
+                        details=f"Key: {result.key}" if result.key else None,
+                    )
+                )
+    
+    # Display the warnings
+    warning_system.display_warnings(
+        categories=[WarningCategory.CONFIGURATION],
+        min_level=WarningLevel.WARNING,
+        command_context="dev review"
+    )
 
 
 def display_model_information():
