@@ -78,6 +78,7 @@ class ReviewStep(ABC):
         self.severity = severity
         self.tags = tags or set()
         self.enabled = enabled
+        self._model_info = None
     
     @abstractmethod
     def execute(self, context: Dict[str, Any]) -> Dict[str, Any]:
@@ -93,6 +94,30 @@ class ReviewStep(ABC):
             including any issues found, their locations, and recommendations.
         """
         pass
+    
+    def get_model_info(self) -> Optional[Dict[str, Any]]:
+        """
+        Get information about the LLM model used by this step.
+        
+        Returns:
+            Dictionary containing model information or None if no model was used.
+            The dictionary typically includes:
+            - provider: The LLM provider (e.g., 'openai', 'anthropic')
+            - model_name: The specific model name (e.g., 'gpt-4', 'claude-2')
+            - temperature: The temperature setting used
+            - max_tokens: The maximum tokens setting used
+            - other model-specific parameters
+        """
+        return self._model_info
+    
+    def set_model_info(self, model_info: Dict[str, Any]) -> None:
+        """
+        Set information about the LLM model used by this step.
+        
+        Args:
+            model_info: Dictionary containing model information
+        """
+        self._model_info = model_info
     
     def to_dict(self) -> Dict[str, Any]:
         """

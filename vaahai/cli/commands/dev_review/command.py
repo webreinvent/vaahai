@@ -33,21 +33,13 @@ from vaahai.cli.commands.review.command import run as standard_review_run
 from vaahai.config.manager import ConfigManager
 from vaahai.agents.base.agent_factory import AgentFactory
 
-# Set up logging with rich handler
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(message)s",
-    datefmt="[%X]",
-    handlers=[RichHandler(rich_tracebacks=True, markup=True)]
-)
-
-# Create a logger for this module
-logger = logging.getLogger("vaahai.dev_review")
-
-# Create a rich console for formatted output
+# Create console for rich output
 console = Console()
 
-# Create the dev_review command app
+# Set up logger
+logger = logging.getLogger("vaahai.dev_review")
+
+# Create Typer app
 dev_review_app = create_typer_app(
     name="dev-review",
     help="Developer review command with enhanced diagnostics",
@@ -62,6 +54,61 @@ class DebugLevel(str, Enum):
     INFO = "info"
     DEBUG = "debug"
     TRACE = "trace"
+
+
+def configure_logging(debug_level: DebugLevel, log_file: Optional[Path] = None):
+    """
+    Configure logging based on debug level and optional log file.
+    
+    Args:
+        debug_level: The debug level to set
+        log_file: Optional path to save logs to a file
+    """
+    # Set log level based on debug level
+    if debug_level == DebugLevel.DEBUG:
+        log_level = logging.DEBUG
+    elif debug_level == DebugLevel.TRACE:
+        log_level = logging.DEBUG  # Python doesn't have TRACE, use DEBUG
+    elif debug_level == DebugLevel.INFO:
+        log_level = logging.INFO
+    else:  # OFF
+        log_level = logging.WARNING
+    
+    # Configure root logger
+    root_logger = logging.getLogger()
+    root_logger.setLevel(log_level)
+    
+    # Remove existing handlers to avoid duplicates
+    for handler in root_logger.handlers[:]:
+        root_logger.removeHandler(handler)
+    
+    # Add Rich handler for console output
+    rich_handler = RichHandler(
+        rich_tracebacks=True,
+        markup=True,
+        show_time=True,
+        show_path=False,
+    )
+    rich_handler.setLevel(log_level)
+    root_logger.addHandler(rich_handler)
+    
+    # Add file handler if log file is specified
+    if log_file:
+        try:
+            # Create directory if it doesn't exist
+            log_file.parent.mkdir(parents=True, exist_ok=True)
+            
+            # Add file handler
+            file_handler = logging.FileHandler(log_file)
+            file_handler.setLevel(log_level)
+            file_handler.setFormatter(
+                logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+            )
+            root_logger.addHandler(file_handler)
+            
+            logger.info(f"Logging to file: {log_file}")
+        except Exception as e:
+            logger.error(f"Failed to set up log file: {e}")
 
 
 @dev_review_app.command("run", cls=CustomHelpCommand)
@@ -105,28 +152,28 @@ def run(
         None,
         "--format",
         "-f",
-        help="Output format (rich, markdown, html, interactive)",
+        help="Output format (text, json, markdown, html)",
     ),
-    depth: str = typer.Option(
-        "standard",
+    depth: Optional[int] = typer.Option(
+        None,
         "--depth",
-        help="Depth of the review (quick, standard, thorough)",
+        help="Maximum depth for directory traversal",
     ),
     focus: Optional[str] = typer.Option(
         None,
         "--focus",
-        help="Focus area for the review (style, security, performance)",
+        help="Focus on specific aspects (comma-separated)",
     ),
     severity: Optional[str] = typer.Option(
         None,
         "--severity",
-        help="Minimum severity level (critical, high, medium, low)",
+        help="Minimum severity level to report",
     ),
     apply_changes: bool = typer.Option(
         False,
-        "--apply-changes",
+        "--apply",
         "-a",
-        help="Apply suggested changes to files",
+        help="Apply suggested changes",
     ),
     dry_run: bool = typer.Option(
         False,
@@ -136,53 +183,35 @@ def run(
     backup_dir: Optional[Path] = typer.Option(
         None,
         "--backup-dir",
-        help="Directory to store backups of modified files",
+        help="Directory to store backups before applying changes",
     ),
     no_confirm: bool = typer.Option(
         False,
         "--no-confirm",
-        help="Don't ask for confirmation before applying changes",
+        help="Skip confirmation prompts",
     ),
 ):
     """
-    Run a code review with enhanced diagnostics and debugging information.
-
+    Run the review command with enhanced developer diagnostics.
+    
     This command extends the standard review command with additional
-    diagnostics, logging, and debug information useful for developers
-    and contributors to VaahAI.
-    
-    Examples:
-        vaahai dev review ./my-file.py
-        vaahai dev review ./my-project --debug-level debug --show-steps
-        vaahai dev review ./my-file.py --log-file ./review_debug.log
+    debugging and diagnostic options.
     """
-    # Set up logging based on debug level
-    if debug_level == DebugLevel.DEBUG:
-        logger.setLevel(logging.DEBUG)
-    elif debug_level == DebugLevel.TRACE:
-        logger.setLevel(logging.DEBUG)  # Python doesn't have TRACE, use DEBUG
-    elif debug_level == DebugLevel.INFO:
-        logger.setLevel(logging.INFO)
-    else:
-        logger.setLevel(logging.WARNING)
-    
-    # Configure log file if specified
-    if log_file:
-        file_handler = logging.FileHandler(log_file)
-        file_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
-        logger.addHandler(file_handler)
-    
-    logger.info(f"Starting developer review of {path}")
-    logger.debug(f"Debug level: {debug_level}")
-    
-    # Record start time for performance measurement
+    # Record start time for overall timing
     start_time = time.time()
+    
+    # Configure logging based on debug level
+    configure_logging(debug_level, log_file)
+    
+    # Log command invocation
+    logger.info(f"Running dev review command with debug level: {debug_level.name}")
+    logger.debug(f"Command arguments: path={path}, show_config={show_config}, show_steps={show_steps}, show_model_info={show_model_info}")
     
     # Show configuration if requested
     if show_config:
         display_configuration()
     
-    # Show model information if requested (placeholder for P4-T5)
+    # Show model information if requested
     if show_model_info:
         display_model_information()
     
@@ -215,6 +244,8 @@ def run(
                 dry_run=dry_run,
                 backup_dir=str(backup_dir) if backup_dir else None,
                 no_confirm=no_confirm,
+                collect_step_timings=show_steps,  # Enable step timing collection if requested
+                track_model_usage=show_model_info,  # Enable model tracking if requested
             )
             
             # Update progress
@@ -228,34 +259,34 @@ def run(
             # Show detailed timing information if requested
             if show_steps and hasattr(result, "step_timings") and result.step_timings:
                 timing_table = Table(title="Review Step Timings")
-                timing_table.add_column("Step", style="cyan")
-                timing_table.add_column("Duration (s)", style="green", justify="right")
-                timing_table.add_column("% of Total", style="yellow", justify="right")
+                timing_table.add_column("Step ID", style="cyan")
+                timing_table.add_column("Step Name", style="green")
+                timing_table.add_column("Duration (s)", style="yellow", justify="right")
                 
-                for step, step_time in result.step_timings.items():
-                    percentage = (step_time / duration) * 100
-                    timing_table.add_row(step, f"{step_time:.2f}", f"{percentage:.1f}%")
+                for step_id, duration in result.step_timings.items():
+                    step_name = next((s.name for s in result.steps if s.id == step_id), step_id)
+                    timing_table.add_row(step_id, step_name, f"{duration:.2f}")
                 
                 console.print(timing_table)
+            
+            # Show model information for each step if requested
+            if show_model_info and hasattr(result, "model_tracker"):
+                display_step_model_information(result.model_tracker)
             
             return result
             
         except Exception as e:
-            # Update progress
-            progress.update(review_task, status="Failed")
+            # Update progress to show error
+            progress.update(review_task, status="Error")
             
-            # Log the error with traceback
-            logger.exception(f"Error during review: {e}")
+            # Log the error
+            logger.exception(f"Error running review: {e}")
             
-            # Show error panel
-            print_error(f"Developer review failed: {e}")
+            # Display error message
+            print_error(f"Error running review: {e}")
             
-            # Re-raise if in debug mode for full traceback
-            if debug_level in (DebugLevel.DEBUG, DebugLevel.TRACE):
-                raise
-            
-            # Return exit code 1 to indicate failure
-            return 1
+            # Re-raise the exception
+            raise
 
 
 def display_configuration():
@@ -296,20 +327,109 @@ def display_configuration():
 
 
 def display_model_information():
-    """Display information about the LLM model being used (placeholder for P4-T5)."""
+    """Display information about the LLM model configuration."""
     try:
         config_manager = ConfigManager()
         provider = config_manager.get_current_provider()
         model = config_manager.get_model(provider)
         
+        # Get additional model configuration if available
+        model_config = {}
+        try:
+            model_config = config_manager.get_provider_config(provider) or {}
+        except Exception:
+            pass
+        
+        # Create a panel with model information
+        content = [
+            f"[bold]Provider:[/bold] {provider}",
+            f"[bold]Model:[/bold] {model}",
+        ]
+        
+        # Add model configuration details if available
+        if model_config:
+            content.append("[bold]Configuration:[/bold]")
+            for key, value in model_config.items():
+                if key not in ["api_key", "secret", "token", "password"]:  # Skip sensitive information
+                    content.append(f"  [cyan]{key}:[/cyan] {value}")
+        
         print_panel(
-            f"[bold]Provider:[/bold] {provider}\n"
-            f"[bold]Model:[/bold] {model}\n"
-            f"[bold]Note:[/bold] Detailed model information will be available in a future update.",
-            title="LLM Model Information",
+            "\n".join(content),
+            title="LLM Model Configuration",
             style="blue",
         )
         
     except Exception as e:
         logger.exception(f"Error displaying model information: {e}")
         print_error(f"Failed to display model information: {e}")
+
+
+def display_step_model_information(model_tracker):
+    """
+    Display information about which LLM model was used for each review step.
+    
+    Args:
+        model_tracker: The model tracker containing step model usage information
+    """
+    try:
+        # Get all model usage information
+        step_models = model_tracker.get_all_model_usage()
+        
+        if not step_models:
+            print_panel(
+                "No LLM model usage was recorded during the review process.",
+                title="LLM Model Usage",
+                style="blue",
+            )
+            return
+        
+        # Create a table for step model information
+        model_table = Table(title="LLM Model Usage by Step")
+        model_table.add_column("Step ID", style="cyan")
+        model_table.add_column("Step Name", style="green")
+        model_table.add_column("Provider", style="yellow")
+        model_table.add_column("Model", style="magenta")
+        model_table.add_column("Parameters", style="blue")
+        
+        # Add rows for each step
+        for step_id, model_info in step_models.items():
+            # Get step name if available
+            step_name = model_info.get("step_name", step_id)
+            
+            # Extract model information
+            provider = model_info.get("provider", "unknown")
+            model_name = model_info.get("model_name", "unknown")
+            
+            # Format parameters
+            parameters = []
+            for key, value in model_info.items():
+                if key not in ["provider", "model_name", "step_id", "step_name"]:
+                    parameters.append(f"{key}={value}")
+            
+            # Add row to table
+            model_table.add_row(
+                step_id,
+                step_name,
+                provider,
+                model_name,
+                ", ".join(parameters) if parameters else "default"
+            )
+        
+        # Print the table
+        console.print(model_table)
+        
+        # Print model usage summary
+        usage_summary = model_tracker.get_model_usage_summary()
+        if usage_summary:
+            summary_table = Table(title="Model Usage Summary")
+            summary_table.add_column("Model", style="cyan")
+            summary_table.add_column("Usage Count", style="yellow", justify="right")
+            
+            for model, count in usage_summary.items():
+                summary_table.add_row(model, str(count))
+            
+            console.print(summary_table)
+        
+    except Exception as e:
+        logger.exception(f"Error displaying step model information: {e}")
+        print_error(f"Failed to display step model information: {e}")
