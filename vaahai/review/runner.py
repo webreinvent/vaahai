@@ -14,6 +14,7 @@ from vaahai.review.steps.registry import ReviewStepRegistry
 from vaahai.review.steps.progress import ReviewProgress, ReviewStepStatus
 from vaahai.review.steps.statistics import ReviewStatistics
 from vaahai.review.steps.findings import KeyFindingsReporter
+from vaahai.review.steps.model_tracker import model_tracker
 
 # For output format selection
 from vaahai.reporting.formats import OutputFormat
@@ -49,30 +50,55 @@ class ReviewRunner:
             tags: Optional list of tags to filter steps by.
             enabled_only: If True, only run enabled steps.
         """
-        self.step_instances = []
+        self.registry = ReviewStepRegistry()
+        self.step_instances = self._resolve_steps(steps, categories, severities, tags, enabled_only)
         self.progress = ReviewProgress()
         self.statistics = ReviewStatistics()
-        self.findings_reporter = KeyFindingsReporter(self.statistics)
-        self.step_timings = {}  # Dictionary to store step timing information
-        self.collect_step_timings = os.environ.get("VAAHAI_STEP_TIMING", "").lower() in ("1", "true", "yes")
+        self.findings_reporter = KeyFindingsReporter()
+        self.collect_step_timings = False
+        self.step_timings = {}
+        self.track_model_usage = False
         
-        # Get the registry instance
-        registry = ReviewStepRegistry()
+        # Register all step instances with the progress tracker
+        for step in self.step_instances:
+            self.progress.register_step(step.id)
+    
+    def _resolve_steps(
+        self,
+        steps: Optional[List[Union[str, ReviewStep]]],
+        categories: Optional[List[ReviewStepCategory]],
+        severities: Optional[List[ReviewStepSeverity]],
+        tags: Optional[List[str]],
+        enabled_only: bool,
+    ) -> List[ReviewStep]:
+        """
+        Resolve the review steps to run based on the provided criteria.
         
-        # If specific steps are provided, use those
+        Args:
+            steps: Optional list of review step IDs or instances to run.
+            categories: Optional list of categories to filter steps by.
+            severities: Optional list of severities to filter steps by.
+            tags: Optional list of tags to filter steps by.
+            enabled_only: If True, only run enabled steps.
+        
+        Returns:
+            List of review step instances to run.
+        """
         if steps:
+            step_instances = []
             for step in steps:
                 if isinstance(step, ReviewStep):
-                    self.step_instances.append(step)
+                    step_instances.append(step)
                 elif isinstance(step, str):
-                    step_instance = registry.create_step_instance(step)
+                    step_instance = self.registry.create_step_instance(step)
                     if step_instance:
-                        self.step_instances.append(step_instance)
+                        step_instances.append(step_instance)
                     else:
                         logger.warning(f"Review step '{step}' not found or could not be created")
+            return step_instances
         else:
             # Otherwise, filter steps based on criteria
-            filtered_steps = registry.filter_steps(
+            filtered_steps = self.registry.filter_steps(
                 category=categories,
                 severity=severities,
                 tags=tags,
@@ -80,14 +106,12 @@ class ReviewRunner:
             )
             
             # Create instances of the filtered steps
+            step_instances = []
             for step_id, step_class in filtered_steps.items():
-                step_instance = registry.create_step_instance(step_id)
+                step_instance = self.registry.create_step_instance(step_id)
                 if step_instance:
-                    self.step_instances.append(step_instance)
-        
-        # Register all step instances with the progress tracker
-        for step in self.step_instances:
-            self.progress.register_step(step.id)
+                    step_instances.append(step_instance)
+            return step_instances
     
     def run_on_content(
         self,
@@ -148,7 +172,12 @@ class ReviewRunner:
                     duration = end_time - start_time
                     self.step_timings[step.id] = duration
                     step_result["duration"] = duration
-                    logger.debug(f"Step {step.id} completed in {duration:.2f} seconds")
+                
+                # Record model usage if tracking is enabled and step provides model info
+                if self.track_model_usage and hasattr(step, "get_model_info"):
+                    model_info = step.get_model_info()
+                    if model_info:
+                        model_tracker.record_model_usage(step.id, model_info)
                 
                 # Mark step as completed
                 self.progress.complete_step(step.id)
@@ -377,6 +406,41 @@ class ReviewRunner:
             "output_format": output_format.value,
         }
     
+    def run(
+        self,
+        path: Union[str, os.PathLike],
+        output_format: OutputFormat = OutputFormat.RICH,
+        collect_step_timings: bool = False,
+        track_model_usage: bool = False,
+    ) -> Dict[str, Any]:
+        """
+        Run all review steps on the file or directory at the given path.
+        
+        Args:
+            path: Path to the file or directory to review.
+            output_format: Optional output format for the results.
+            collect_step_timings: Whether to collect timing information for each step.
+            track_model_usage: Whether to track which model is used for each step.
+        
+        Returns:
+            Dictionary containing the aggregated results of all review steps.
+        """
+        self.collect_step_timings = collect_step_timings
+        self.track_model_usage = track_model_usage
+        
+        if os.path.isfile(path):
+            return self._run_on_file(path, output_format)
+        elif os.path.isdir(path):
+            return self._run_on_directory(path, output_format)
+        else:
+            return {
+                "status": "error",
+                "message": f"Path does not exist: {path}",
+                "results": [],
+                "total_issues": 0,
+                "output_format": output_format.value,
+            }
+            
     def get_progress(self) -> ReviewProgress:
         """
         Get the progress tracker.

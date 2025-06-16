@@ -92,7 +92,7 @@ This document tracks the tasks for the VaahAI project, organized by priority and
 | [P4-T2] | Add warning message system to all commands | 🟢 | [P4-T1] | Implemented reusable warning system with WarningMessage and WarningSystem classes; integrated configuration validation warnings; displays styled warnings consistently across all CLI commands except config commands |
 | [P4-T3] | Create user-friendly config initialization guidance | 🟢 | [P4-T2] | Add helpful instruction messages for users to properly configure VaahAI |
 | [P4-T4] | Implement `vaahai dev review` command skeleton | 🟢 | None | Create new subcommand under `vaahai dev` for enhanced debugging review |
-| [P4-T5] | Add model information display | 🔴 | [P4-T4] | Show which LLM model is being used for each step of the review process |
+| [P4-T5] | Add model information display | 🟢 | [P4-T4] | Implemented detailed LLM model information display for each review step, showing provider, model name, and parameters |
 | [P4-T6] | Integrate configuration verification reporting | 🔴 | [P4-T4], [P4-T1] | Display detailed configuration status in dev review output |
 | [P4-T7] | Add detailed step execution logging | 🔴 | [P4-T4] | Implement verbose logging of step execution with timing and resource usage |
 | [P4-T8] | Refactor language detection agent | 🔴 | None | Update existing language detection agent architecture for enhanced LLM integration |
@@ -111,12 +111,15 @@ This document tracks the tasks for the VaahAI project, organized by priority and
 
 | Task ID | Description | Status | Dependencies | Notes |
 |---------|-------------|--------|--------------|-------|
+| [P4-T6] | Integrate configuration verification reporting | 🔴 | [P4-T4], [P4-T1] | Display detailed configuration status in dev review output |
 | | | | | |
 
 ## Completed Tasks
 
 | Task ID | Description | Completion Date | Notes |
 |---------|-------------|-----------------|-------|
+| [P4-T5] | Add model information display | 2025-06-16 | Implemented comprehensive model tracking system that shows which LLM model is used for each review step. Created ModelTracker class to record model usage, enhanced ReviewStep base class with model info tracking, and updated dev review command to display detailed model information tables. |
+| [P4-T4] | Implement `vaahai dev review` command skeleton | 2025-06-15 | Created new subcommand under `vaahai dev` for enhanced debugging review with options for debug level, showing configuration, showing model information, and detailed step execution logging. |
 | [P4-T3] | Create user-friendly config initialization guidance | 2025-06-17 | Enhanced the config init command with step-by-step guidance, provider-specific instructions, contextual help, and validation feedback. Added comprehensive documentation in config_initialization.md. |
 | [P4-T2] | Add warning message system to all commands | 2025-06-16 | Implemented comprehensive warning system with WarningMessage and WarningSystem classes that display styled Rich panels with actionable information. Integrated with ConfigValidator to show configuration warnings across all CLI commands except config commands. Added documentation and extensive test coverage. |
 | [P3-T16] | Enhance review command with progress display | 2025-06-14 | Enhanced review command with detailed progress tracking including emoji indicators, file-level progress for directory reviews, step status visualization, and timing statistics panel. Updated ReviewRunner to support file callbacks for progress reporting. |

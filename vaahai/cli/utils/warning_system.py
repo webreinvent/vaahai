@@ -320,6 +320,10 @@ def check_and_display_warnings(
     if command_name.startswith("config"):
         return False
     
+    # Skip for dev review command which handles its own configuration validation
+    if command_name == "dev" or command_name == "dev review":
+        return False
+    
     # Create a new warning system for this check
     system = WarningSystem(quiet=quiet)
     

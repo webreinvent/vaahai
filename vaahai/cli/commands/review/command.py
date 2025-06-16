@@ -105,11 +105,10 @@ def run(
         help="Path to the file or directory to review",
         exists=True,
     ),
-    depth: str = typer.Option(
-        "standard",
+    depth: Optional[int] = typer.Option(
+        None,
         "--depth",
-        "-d",
-        help="Depth of the review (quick, standard, thorough)",
+        help="Maximum depth for directory traversal",
     ),
     focus: Optional[str] = typer.Option(
         None,
@@ -128,7 +127,7 @@ def run(
         "--debug",
         help="Show debug information",
     ),
-    format: str = typer.Option(
+    format: Optional[str] = typer.Option(
         None,
         "--format",
         "-f",
@@ -161,6 +160,16 @@ def run(
         False,
         "--no-confirm",
         help="Apply changes without asking for confirmation (use with caution)",
+    ),
+    collect_step_timings: bool = typer.Option(
+        False,
+        "--collect-step-timings",
+        help="Collect timings for each review step",
+    ),
+    track_model_usage: bool = typer.Option(
+        False,
+        "--track-model-usage",
+        help="Track model usage during the review",
     ),
 ):
     """
@@ -531,6 +540,9 @@ def run(
                     # Run on a single file
                     with open(path, 'r') as f:
                         content = f.read()
+                    # Set track_model_usage on the runner instance before calling run_on_content
+                    if 'track_model_usage' in locals():
+                        runner.track_model_usage = track_model_usage
                     result = runner.run_on_content(content, file_path=str(path), output_format=output_format)
                 else:
                     # For directory reviews, add file progress tracking

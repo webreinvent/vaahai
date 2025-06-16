@@ -35,6 +35,26 @@ The `--debug-level` option controls the verbosity of logging:
 - `debug`: Detailed debugging information
 - `trace`: Comprehensive tracing of all operations
 
+## Model Information Display
+
+When using the `--show-model-info` option, the command will display detailed information about the LLM models used during the review process:
+
+1. **Global Model Configuration**: Shows the currently configured LLM provider and model, along with any non-sensitive configuration parameters.
+
+2. **Per-Step Model Usage**: Displays a table showing which LLM model was used for each review step, including:
+   - Step ID and name
+   - Provider (e.g., OpenAI, Anthropic)
+   - Model name (e.g., gpt-4, claude-2)
+   - Model parameters used (temperature, max tokens, etc.)
+
+3. **Model Usage Summary**: Shows a summary of how many times each model was used during the review process.
+
+This information is valuable for:
+- Debugging model-specific issues
+- Optimizing model selection for different review steps
+- Understanding resource usage and potential costs
+- Verifying that the correct models are being used for each step
+
 ## Examples
 
 ### Basic Usage
