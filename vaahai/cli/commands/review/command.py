@@ -178,6 +178,11 @@ def run(
     This command analyzes the code in the specified path and provides
     feedback on code quality, potential bugs, and suggested improvements.
     """
+    # Defensive fix: Ensure output_dir is a string or None, not OptionInfo
+    import typer
+    if not isinstance(output_dir, (str, type(None))):
+        output_dir = None
+
     # --- Language and Framework Detection ---
     try:
         lang_agent = LanguageDetectionAgent({"name": "LangDetectCLI"})

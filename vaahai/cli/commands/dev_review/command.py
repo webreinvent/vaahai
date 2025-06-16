@@ -18,6 +18,7 @@ from rich.console import Console
 from rich.logging import RichHandler
 from rich.panel import Panel
 from rich.table import Table
+from rich.box import Box, ROUNDED
 from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TimeElapsedColumn
 
 from vaahai.cli.utils.console import (
@@ -31,8 +32,9 @@ from vaahai.cli.utils.help import CustomHelpCommand, create_typer_app
 from vaahai.cli.utils.warning_system import (
     WarningSystem, WarningCategory, WarningLevel, WarningMessage
 )
-from vaahai.utils.config_validator import ValidationLevel, ConfigValidator
 from vaahai.config.manager import ConfigManager
+from vaahai.config.llm_utils import get_api_key_from_env
+from vaahai.utils.config_validator import ConfigValidator, ValidationLevel
 from vaahai.config.utils import get_user_config_dir, get_project_config_dir
 from vaahai.cli.commands.review.command import run as standard_review_run
 from vaahai.agents.base.agent_factory import AgentFactory
@@ -294,7 +296,7 @@ def run(
 
 
 def display_configuration():
-    """Display the current configuration settings."""
+    """Display the current configuration settings with detailed verification reporting."""
     console = Console()
     
     # Get configuration paths
@@ -319,77 +321,185 @@ def display_configuration():
     is_configured = config_validator.is_configured()
     
     if not is_configured:
-        console.print("[bold red]VaahAI configuration file is missing.[/]")
+        console.print(Panel("[bold red]VaahAI configuration file is missing.[/]", 
+                           title="[bold red]Configuration Error[/]", 
+                           border_style="red"))
         console.print("Please run [bold]vaahai config init[/] to set up your configuration.")
         return
     
-    # Display configuration
-    console.print("[bold green]VaahAI is configured.[/]")
+    # Run full validation
+    is_valid, validation_results = config_validator.validate()
     
-    # Get and display LLM configuration
+    # Display overall configuration status
+    status_color = "green" if is_valid else "yellow"
+    status_text = "Valid" if is_valid else "Valid with warnings"
+    
+    console.print(Panel(
+        f"[bold {status_color}]VaahAI Configuration Status: {status_text}[/]",
+        title="[bold blue]Configuration Verification[/]",
+        border_style=status_color
+    ))
+    
+    # Create tables for different configuration aspects
+    
+    # 1. Configuration Files Table
+    files_table = Table(title="Configuration Files", box=ROUNDED)
+    files_table.add_column("File Type", style="cyan")
+    files_table.add_column("Path", style="blue")
+    files_table.add_column("Status", style="green")
+    
+    # Add user config file
+    user_file_status = "[green]✓ Exists[/]" if user_config_file.exists() else "[red]✗ Missing[/]"
+    files_table.add_row("User Config", str(user_config_file), user_file_status)
+    
+    # Add project config file if applicable
+    if project_config_file:
+        project_file_status = "[green]✓ Exists[/]" if project_config_file.exists() else "[yellow]! Not found[/]"
+        files_table.add_row("Project Config", str(project_config_file), project_file_status)
+    
+    console.print(files_table)
+    
+    # 2. LLM Provider Configuration
     try:
         # Get current provider and model
         provider = config_manager.get_current_provider()
         model = config_manager.get_model(provider)
         
-        # Create a table for configuration display
-        config_table = Table(title="VaahAI Configuration")
-        config_table.add_column("Setting", style="cyan")
-        config_table.add_column("Value", style="green")
+        # Check if API key is set (don't display the actual key)
+        api_key = config_manager.get_api_key(provider)
+        api_key_set = api_key is not None and api_key != ""
         
-        # Add configuration details to the table
-        config_table.add_row("Provider", provider)
-        config_table.add_row("Model", model)
+        # Check if API key is from environment variable
+        api_key_from_env = provider and get_api_key_from_env(provider) is not None
         
-        # Check if Docker is enabled
+        # Get model capabilities and context length
+        model_info = {}
+        try:
+            model_info = config_manager.get_model_info(model, provider)
+        except Exception as e:
+            logger.debug(f"Could not get model info: {e}")
+        
+        # Create LLM configuration table
+        llm_table = Table(title="LLM Configuration", box=ROUNDED)
+        llm_table.add_column("Setting", style="cyan")
+        llm_table.add_column("Value", style="green")
+        llm_table.add_column("Status", style="blue")
+        
+        # Add provider
+        provider_status = "[green]✓ Set[/]" if provider else "[red]✗ Not set[/]"
+        llm_table.add_row("Provider", provider or "Not set", provider_status)
+        
+        # Add model
+        model_status = "[green]✓ Set[/]" if model else "[red]✗ Not set[/]"
+        llm_table.add_row("Model", model or "Not set", model_status)
+        
+        # Add API key status (don't show the actual key)
+        api_key_status = "[green]✓ Set[/]" if api_key_set else "[red]✗ Not set[/]"
+        api_key_source = " [blue](from environment)[/]" if api_key_from_env else ""
+        llm_table.add_row("API Key", "********" if api_key_set else "Not set", f"{api_key_status}{api_key_source}")
+        
+        # Add model capabilities if available
+        if "capabilities" in model_info and model_info["capabilities"]:
+            capabilities = ", ".join(model_info["capabilities"])
+            llm_table.add_row("Capabilities", capabilities, "")
+        
+        # Add context length if available
+        if "context_length" in model_info and model_info["context_length"]:
+            context_length = f"{model_info['context_length']:,} tokens"
+            llm_table.add_row("Context Length", context_length, "")
+        
+        console.print(llm_table)
+        
+        # 3. Docker Configuration
         docker_enabled = config_manager.get("docker.enabled", False)
-        config_table.add_row("Docker Enabled", str(docker_enabled))
+        
+        docker_table = Table(title="Docker Configuration", box=ROUNDED)
+        docker_table.add_column("Setting", style="cyan")
+        docker_table.add_column("Value", style="green")
+        docker_table.add_column("Status", style="blue")
+        
+        docker_status = "[green]✓ Enabled[/]" if docker_enabled else "[yellow]! Disabled[/]"
+        docker_table.add_row("Docker Enabled", str(docker_enabled), docker_status)
         
         if docker_enabled:
             docker_image = config_manager.get("docker.image", "")
             docker_memory = config_manager.get("docker.memory", "")
-            config_table.add_row("Docker Image", docker_image)
-            config_table.add_row("Docker Memory", docker_memory)
+            
+            image_status = "[green]✓ Set[/]" if docker_image else "[yellow]! Default will be used[/]"
+            memory_status = "[green]✓ Set[/]" if docker_memory else "[yellow]! Default will be used[/]"
+            
+            docker_table.add_row("Docker Image", docker_image or "Default", image_status)
+            docker_table.add_row("Docker Memory", docker_memory or "Default", memory_status)
         
-        # Display the table
-        console.print(config_table)
+        console.print(docker_table)
+        
+        # 4. Environment Variable Overrides
+        env_vars = {}
+        for env_key, env_value in os.environ.items():
+            if env_key.startswith("VAAHAI_"):
+                config_key = env_key[7:].lower().replace("_", ".")
+                env_vars[config_key] = "********" if "api_key" in config_key.lower() else env_value
+        
+        if env_vars:
+            env_table = Table(title="Environment Variable Overrides", box=ROUNDED)
+            env_table.add_column("Config Key", style="cyan")
+            env_table.add_column("Environment Variable", style="blue")
+            env_table.add_column("Value", style="green")
+            
+            for config_key, value in env_vars.items():
+                env_var = f"VAAHAI_{config_key.upper().replace('.', '_')}"
+                env_table.add_row(config_key, env_var, value)
+            
+            console.print(env_table)
         
     except Exception as e:
         logger.error(f"Error getting LLM configuration: {e}")
-        console.print("[bold yellow]Could not retrieve LLM configuration details.[/]")
+        console.print("[bold yellow]Could not retrieve complete LLM configuration details.[/]")
     
-    # Display additional configuration details
-    console.print("\n[bold]Configuration Files:[/]")
-    console.print(f"User config: {user_config_file}")
-    if project_config_file and project_config_file.exists():
-        console.print(f"Project config: {project_config_file}")
+    # 5. Validation Results
+    if not is_valid or any(not result.valid for result in validation_results):
+        validation_table = Table(title="Configuration Validation Issues", box=ROUNDED)
+        validation_table.add_column("Level", style="cyan")
+        validation_table.add_column("Key", style="blue")
+        validation_table.add_column("Message", style="yellow")
+        
+        for result in validation_results:
+            if not result.valid:
+                level_style = {
+                    ValidationLevel.ERROR: "red",
+                    ValidationLevel.WARNING: "yellow",
+                    ValidationLevel.INFO: "blue"
+                }.get(result.level, "white")
+                
+                validation_table.add_row(
+                    f"[{level_style}]{result.level.value.upper()}[/]",
+                    result.key or "N/A",
+                    result.message
+                )
+        
+        console.print(validation_table)
     
     # Create a warning system instance
     warning_system = WarningSystem()
     
-    # Check if the configuration is valid using our existing validator
-    is_valid, results = config_validator.validate()
-    
-    # If the configuration is valid, no need to add warnings
-    if not is_valid:
-        # Add warnings based on validation results
-        for result in results:
-            if not result.valid:
-                level = {
-                    ValidationLevel.ERROR: WarningLevel.ERROR,
-                    ValidationLevel.WARNING: WarningLevel.WARNING,
-                    ValidationLevel.INFO: WarningLevel.INFO,
-                }[result.level]
-                
-                # Add a warning based on the validation result
-                warning_system.add_warning(
-                    WarningMessage(
-                        level=level,
-                        category=WarningCategory.CONFIGURATION,
-                        message=result.message,
-                        details=f"Key: {result.key}" if result.key else None,
-                    )
+    # Add warnings based on validation results
+    for result in validation_results:
+        if not result.valid:
+            level = {
+                ValidationLevel.ERROR: WarningLevel.ERROR,
+                ValidationLevel.WARNING: WarningLevel.WARNING,
+                ValidationLevel.INFO: WarningLevel.INFO,
+            }[result.level]
+            
+            # Add a warning based on the validation result
+            warning_system.add_warning(
+                WarningMessage(
+                    level=level,
+                    category=WarningCategory.CONFIGURATION,
+                    message=result.message,
+                    details=f"Key: {result.key}" if result.key else None,
                 )
+            )
     
     # Display the warnings
     warning_system.display_warnings(
