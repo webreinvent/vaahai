@@ -7,6 +7,11 @@ This module provides utilities for running multiple review steps on code.
 import logging
 import os
 import time
+try:
+    import psutil
+    _psutil_available = True
+except ImportError:
+    _psutil_available = False
 from typing import Any, Dict, List, Optional, Set, Union, Callable
 
 from vaahai.review.steps.base import ReviewStep, ReviewStepCategory, ReviewStepSeverity
@@ -58,6 +63,7 @@ class ReviewRunner:
         self.collect_step_timings = False
         self.step_timings = {}
         self.track_model_usage = False
+        self.step_execution_logs = []  # Store per-step timing/resource logs
         
         # Register all step instances with the progress tracker
         for step in self.step_instances:
@@ -152,6 +158,20 @@ class ReviewRunner:
             self.statistics.add_file(file_path)
         
         for step in self.step_instances:
+            step_log = {
+                "step_id": step.id,
+                "step_name": getattr(step, "name", step.id),
+                "start_time": None,
+                "end_time": None,
+                "duration": None,
+                "mem_before": None,
+                "mem_after": None,
+            }
+            # Timing and memory before
+            step_log["start_time"] = time.time()
+            if _psutil_available:
+                step_log["mem_before"] = psutil.Process().memory_info().rss
+            
             try:
                 # Mark step as in progress
                 self.progress.start_step(step.id)
@@ -219,6 +239,13 @@ class ReviewRunner:
                     "issues": [],
                     "duration": self.progress.get_step_duration(step.id),
                 })
+            
+            # Timing and memory after
+            step_log["end_time"] = time.time()
+            step_log["duration"] = step_log["end_time"] - step_log["start_time"]
+            if _psutil_available:
+                step_log["mem_after"] = psutil.Process().memory_info().rss
+            self.step_execution_logs.append(step_log)
         
         # Get progress summary
         progress_summary = self.progress.get_progress_summary()
@@ -242,6 +269,7 @@ class ReviewRunner:
             "key_findings": key_findings,
             "recommendations": recommendations,
             "step_timings": self.step_timings,  # Include step timings in the output
+            "step_execution_logs": self.step_execution_logs,  # Include step execution logs in the output
             "output_format": output_format.value,
         }
     
@@ -403,6 +431,7 @@ class ReviewRunner:
             "key_findings": key_findings,
             "recommendations": recommendations,
             "step_timings": self.step_timings,  # Include step timings in the output
+            "step_execution_logs": self.step_execution_logs,  # Include step execution logs in the output
             "output_format": output_format.value,
         }
     

@@ -1112,3 +1112,24 @@ def run(
             console.print("Try adjusting the focus area or severity level.")
     
     console.print(f"[green]Report format:[/green] {output_format.value}")
+
+    step_logs = result.get("step_execution_logs", [])
+    if step_logs:
+        from rich.table import Table
+        from rich.box import ROUNDED
+        import datetime
+        console.print("\n[bold]Step Execution Timings:[/bold]")
+        table = Table(title="Step Execution Log", box=ROUNDED)
+        table.add_column("Step Name", style="cyan")
+        table.add_column("Duration (s)", style="green")
+        if any(l.get("mem_before") is not None for l in step_logs):
+            table.add_column("Mem Before (MB)", style="yellow")
+            table.add_column("Mem After (MB)", style="yellow")
+        for log in step_logs:
+            duration = f"{log['duration']:.3f}" if log['duration'] is not None else "-"
+            row = [log["step_name"], duration]
+            if "mem_before" in log and log["mem_before"] is not None:
+                row.append(f"{log['mem_before']/1024/1024:.1f}")
+                row.append(f"{log['mem_after']/1024/1024:.1f}" if log["mem_after"] is not None else "-")
+            table.add_row(*row)
+        console.print(table)
