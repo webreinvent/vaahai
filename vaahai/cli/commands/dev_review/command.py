@@ -28,9 +28,10 @@ from vaahai.cli.utils.console import (
     print_warning,
 )
 from vaahai.cli.utils.help import CustomHelpCommand, create_typer_app
-from vaahai.cli.utils.config_warnings import display_config_warnings
+from vaahai.cli.utils.warning_system import check_and_display_warnings
 from vaahai.cli.commands.review.command import run as standard_review_run
 from vaahai.config.manager import ConfigManager
+from vaahai.agents.base.agent_factory import AgentFactory
 
 # Set up logging with rich handler
 logging.basicConfig(
@@ -87,6 +88,12 @@ def run(
         "--show-steps",
         "-s",
         help="Show detailed review steps and timing",
+    ),
+    show_model_info: bool = typer.Option(
+        False,
+        "--show-model-info",
+        "-m",
+        help="Show LLM model information for each step",
     ),
     log_file: Optional[Path] = typer.Option(
         None,
@@ -145,81 +152,41 @@ def run(
     and contributors to VaahAI.
     
     Examples:
-        vaahai dev-review run ./my-file.py
-        vaahai dev-review run ./my-project --debug-level debug --show-steps
-        vaahai dev-review run ./my-file.py --log-file ./review_debug.log
+        vaahai dev review ./my-file.py
+        vaahai dev review ./my-project --debug-level debug --show-steps
+        vaahai dev review ./my-file.py --log-file ./review_debug.log
     """
-    start_time = time.time()
-    
-    # Configure logging based on debug level
-    if debug_level == DebugLevel.OFF:
-        log_level = logging.WARNING
-    elif debug_level == DebugLevel.INFO:
-        log_level = logging.INFO
-    elif debug_level == DebugLevel.DEBUG:
-        log_level = logging.DEBUG
+    # Set up logging based on debug level
+    if debug_level == DebugLevel.DEBUG:
+        logger.setLevel(logging.DEBUG)
     elif debug_level == DebugLevel.TRACE:
-        log_level = logging.DEBUG  # Python doesn't have TRACE, use DEBUG
-        os.environ["VAAHAI_TRACE"] = "1"  # Set environment variable for trace-level logging
+        logger.setLevel(logging.DEBUG)  # Python doesn't have TRACE, use DEBUG
+    elif debug_level == DebugLevel.INFO:
+        logger.setLevel(logging.INFO)
+    else:
+        logger.setLevel(logging.WARNING)
     
-    # Set log level for our logger
-    logger.setLevel(log_level)
-    
-    # Configure file logging if requested
+    # Configure log file if specified
     if log_file:
         file_handler = logging.FileHandler(log_file)
         file_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
         logger.addHandler(file_handler)
-        logger.info(f"Logging to file: {log_file}")
     
-    # Log basic information
-    logger.info(f"Starting developer review of: {path}")
-    logger.info(f"Debug level: {debug_level.value}")
-    logger.debug(f"Command context: {ctx.obj}")
+    logger.info(f"Starting developer review of {path}")
+    logger.debug(f"Debug level: {debug_level}")
     
-    # Check configuration status
-    if show_config or debug_level in (DebugLevel.DEBUG, DebugLevel.TRACE):
-        logger.info("Checking configuration status...")
-        config_valid = display_config_warnings(show_all=True)
-        if not config_valid:
-            logger.warning("Configuration validation failed")
-        
-        # Show detailed configuration if in debug mode
-        if debug_level in (DebugLevel.DEBUG, DebugLevel.TRACE):
-            try:
-                config_manager = ConfigManager()
-                config_data = config_manager.get_all()
-                logger.debug("Current configuration:")
-                for section, values in config_data.items():
-                    if section == "providers":
-                        # Mask API keys in provider section
-                        providers_copy = {}
-                        for provider, provider_config in values.items():
-                            provider_copy = provider_config.copy()
-                            if "api_key" in provider_copy:
-                                provider_copy["api_key"] = "********"
-                            providers_copy[provider] = provider_copy
-                        logger.debug(f"  {section}: {providers_copy}")
-                    else:
-                        logger.debug(f"  {section}: {values}")
-            except Exception as e:
-                logger.error(f"Error retrieving configuration: {e}")
+    # Record start time for performance measurement
+    start_time = time.time()
     
-    # Show system information
-    if debug_level in (DebugLevel.DEBUG, DebugLevel.TRACE):
-        logger.debug("System information:")
-        logger.debug(f"  Python version: {sys.version}")
-        logger.debug(f"  Platform: {sys.platform}")
-        logger.debug(f"  Current directory: {os.getcwd()}")
-        logger.debug(f"  Environment variables:")
-        for key, value in os.environ.items():
-            if key.startswith("VAAHAI_"):
-                if "KEY" in key or "TOKEN" in key or "SECRET" in key:
-                    logger.debug(f"    {key}: ********")
-                else:
-                    logger.debug(f"    {key}: {value}")
+    # Show configuration if requested
+    if show_config:
+        display_configuration()
     
-    # Create a progress display for the review process
+    # Show model information if requested (placeholder for P4-T5)
+    if show_model_info:
+        display_model_information()
+    
+    # Create progress display
     with Progress(
         SpinnerColumn(),
         TextColumn("[bold blue]{task.description}"),
@@ -227,30 +194,26 @@ def run(
         TextColumn("[bold]{task.fields[status]}"),
         TimeElapsedColumn(),
         console=console,
-        transient=True,
     ) as progress:
-        # Add a task for the overall review process
-        review_task = progress.add_task("[bold]Running developer review...", total=None, status="In progress")
+        # Add a task for the review process
+        review_task = progress.add_task(
+            "Running developer review...", 
+            total=1, 
+            status="In Progress"
+        )
         
         try:
-            # Set up step timing if requested
-            if show_steps:
-                os.environ["VAAHAI_STEP_TIMING"] = "1"
-            
-            # Call the standard review command with our parameters
-            logger.info("Starting review process...")
-            
-            # Call the standard review run function directly with the path as a Path object
+            # Call the standard review command with additional debug information
             result = standard_review_run(
-                path=Path(path),  # Convert string path to Path object
-                format=format,
+                path=Path(path),
                 depth=depth,
                 focus=focus,
                 severity=severity,
                 debug=debug_level != DebugLevel.OFF,  # Convert debug_level to boolean debug flag
+                format=format,
                 apply_changes=apply_changes,
                 dry_run=dry_run,
-                backup_dir=backup_dir,
+                backup_dir=str(backup_dir) if backup_dir else None,
                 no_confirm=no_confirm,
             )
             
@@ -293,3 +256,60 @@ def run(
             
             # Return exit code 1 to indicate failure
             return 1
+
+
+def display_configuration():
+    """Display the current configuration details."""
+    try:
+        config_manager = ConfigManager()
+        
+        # Get configuration details
+        provider = config_manager.get_current_provider()
+        model = config_manager.get_model(provider)
+        docker_enabled = config_manager.get("docker.enabled", False)
+        docker_image = config_manager.get("docker.image", "")
+        docker_memory = config_manager.get("docker.memory", "")
+        
+        # Create a table for configuration display
+        config_table = Table(title="VaahAI Configuration")
+        config_table.add_column("Setting", style="cyan")
+        config_table.add_column("Value", style="green")
+        
+        # Add configuration details to the table
+        config_table.add_row("Provider", provider)
+        config_table.add_row("Model", model)
+        config_table.add_row("Docker Enabled", str(docker_enabled))
+        
+        if docker_enabled:
+            config_table.add_row("Docker Image", docker_image)
+            config_table.add_row("Docker Memory", docker_memory)
+        
+        # Display the table
+        console.print(config_table)
+        
+        # Check for configuration warnings
+        check_and_display_warnings(quiet=False)
+        
+    except Exception as e:
+        logger.exception(f"Error displaying configuration: {e}")
+        print_error(f"Failed to display configuration: {e}")
+
+
+def display_model_information():
+    """Display information about the LLM model being used (placeholder for P4-T5)."""
+    try:
+        config_manager = ConfigManager()
+        provider = config_manager.get_current_provider()
+        model = config_manager.get_model(provider)
+        
+        print_panel(
+            f"[bold]Provider:[/bold] {provider}\n"
+            f"[bold]Model:[/bold] {model}\n"
+            f"[bold]Note:[/bold] Detailed model information will be available in a future update.",
+            title="LLM Model Information",
+            style="blue",
+        )
+        
+    except Exception as e:
+        logger.exception(f"Error displaying model information: {e}")
+        print_error(f"Failed to display model information: {e}")
