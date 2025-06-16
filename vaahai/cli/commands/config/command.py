@@ -91,7 +91,9 @@ def init(
             "- LLM provider selection\n"
             "- API keys\n"
             "- Model preferences\n"
-            "- Docker settings",
+            "- Docker settings\n\n"
+            "[italic]Follow the prompts and provide the requested information. "
+            "You can update these settings later using 'vaahai config set' or run this wizard again.[/italic]",
             title="Configuration Wizard",
             style="blue",
         )
@@ -104,6 +106,17 @@ def init(
     
     # Initialize config manager
     config_manager = ConfigManager(config_dir / "config.toml")
+    
+    # Display step-by-step guidance
+    if not quiet:
+        print_info("\n[bold]Step 1: LLM Provider Selection[/bold]")
+        print_info(
+            "VaahAI supports multiple LLM providers. Select the one you have an account with.\n"
+            "If you're not sure which to choose:\n"
+            "- OpenAI is widely used and offers strong performance\n"
+            "- Anthropic Claude provides longer context windows\n"
+            "- Ollama allows running models locally without API keys"
+        )
     
     # Get available providers
     providers = list_providers()
@@ -130,6 +143,38 @@ def init(
         project_config.save(user_level=False)
         print_success(f"Updated project-level configuration with {provider} as default provider")
     
+    # API key guidance
+    if not quiet:
+        print_info("\n[bold]Step 2: API Key Configuration[/bold]")
+        print_info(
+            f"An API key is required to authenticate with {provider}.\n"
+            f"If you don't have an API key for {provider}:"
+        )
+        
+        # Provider-specific guidance
+        if provider.lower() == "openai":
+            print_info(
+                "- Create an account at https://platform.openai.com/signup\n"
+                "- Generate an API key at https://platform.openai.com/api-keys\n"
+                "- Your API key will start with 'sk-'"
+            )
+        elif provider.lower() == "anthropic":
+            print_info(
+                "- Create an account at https://console.anthropic.com/signup\n"
+                "- Generate an API key at https://console.anthropic.com/settings/keys\n"
+                "- Your API key will start with 'sk-ant-'"
+            )
+        elif provider.lower() == "ollama":
+            print_info(
+                "- Ollama is a local model provider and doesn't require an API key\n"
+                "- You can leave this blank if using the default local setup\n"
+                "- Only enter a key if you're connecting to a remote Ollama instance"
+            )
+        else:
+            print_info(f"- Visit the {provider} website to create an account and generate an API key")
+            
+        print_info("Your API key will be stored securely in your configuration file.")
+    
     # Set API key
     current_api_key = config_manager.get_api_key(provider)
     masked_key = "********" if current_api_key else ""
@@ -152,6 +197,17 @@ def init(
             config_path = f"providers.{provider}.api_key"
             config_manager.set(config_path, api_key)
     
+    # Model selection guidance
+    if not quiet:
+        print_info("\n[bold]Step 3: Model Selection[/bold]")
+        print_info(
+            f"Select a model from {provider} to use with VaahAI.\n"
+            "Different models have different capabilities and costs:\n"
+            "- Larger models generally provide better results but cost more\n"
+            "- Some models are optimized for specific tasks like coding or reasoning\n"
+            "- Consider your specific use case when selecting a model"
+        )
+    
     # Select model
     try:
         models = list_models(provider)
@@ -165,9 +221,30 @@ def init(
             
             config_manager.set_model(model, provider)
             print_success(f"Model for {provider} set to {model}")
+            
+            # Show model capabilities
+            try:
+                capabilities = get_model_capabilities(provider, model)
+                if capabilities and not quiet:
+                    capability_text = ", ".join(cap.replace("_", " ").title() for cap in capabilities)
+                    print_info(f"Model capabilities: {capability_text}")
+            except Exception:
+                pass  # Silently ignore capability lookup failures
     except Exception as e:
         print_warning(f"Could not retrieve models for {provider}: {str(e)}")
         print_info("You can set your model later with 'vaahai model set'")
+    
+    # Docker settings guidance
+    if not quiet:
+        print_info("\n[bold]Step 4: Docker Configuration[/bold]")
+        print_info(
+            "Docker allows running LLMs in containers for better isolation and portability.\n"
+            "You can enable Docker if you want to:\n"
+            "- Run models in an isolated environment\n"
+            "- Ensure consistent dependencies across different systems\n"
+            "- Manage resource allocation for model inference\n"
+            "If you're not familiar with Docker, you can safely skip this step."
+        )
     
     # Configure Docker settings
     use_docker = inquirer.confirm(
@@ -178,6 +255,12 @@ def init(
     config_manager.set("docker.enabled", use_docker)
     
     if use_docker:
+        if not quiet:
+            print_info(
+                "\nDocker requires an image to run LLMs.\n"
+                "The default image is usually sufficient, but you can specify a custom one if needed."
+            )
+            
         docker_image = inquirer.text(
             message="Enter Docker image for LLMs:",
             default=config_manager.get("docker.image", ""),
@@ -185,6 +268,13 @@ def init(
         
         config_manager.set("docker.image", docker_image)
         
+        if not quiet:
+            print_info(
+                "\nYou can limit the memory available to Docker containers.\n"
+                "This helps prevent LLMs from using too much system memory.\n"
+                "Example values: 8g (8 gigabytes), 512m (512 megabytes)"
+            )
+            
         docker_memory = inquirer.text(
             message="Enter Docker memory limit (e.g., 8g):",
             default=config_manager.get("docker.memory", "8g"),
@@ -194,7 +284,23 @@ def init(
     
     # Save configuration
     if config_manager.save(user_level=True):
-        print_success("Configuration saved successfully!")
+        print_success("\nConfiguration saved successfully!")
+        
+        # Validate the configuration and provide next steps
+        errors = config_manager.validate()
+        if errors:
+            print_warning("\nConfiguration saved, but there are some issues to address:")
+            for error in errors:
+                print_warning(f"- {error}")
+            print_info("\nYou can fix these issues by running 'vaahai config validate --fix'")
+        else:
+            print_success("\n✅ Your VaahAI configuration is complete and valid!")
+            print_info(
+                "\n[bold]Next Steps:[/bold]\n"
+                "1. Run 'vaahai config show' to verify your configuration\n"
+                "2. Try 'vaahai hello' to test your setup with a simple command\n"
+                "3. Explore other commands with 'vaahai --help'"
+            )
     else:
         print_error("Failed to save configuration!")
         raise typer.Exit(code=1)
