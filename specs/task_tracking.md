@@ -106,6 +106,12 @@ This document tracks the tasks for the VaahAI project, organized by priority and
 | [P4-T16] | Integrate prompt agent with review pipeline | 🔴 | [P4-T12], [P4-T13], [P4-T14], [P4-T15] | Connect prompt generation to review execution process |
 | [P4-T17] | Implement output format adaptation based on user preferences | 🔴 | [P4-T16] | Enhance output formatting based on user-specified preferences |
 | [P4-T18] | Create comprehensive test suite for dynamic review system | 🔴 | [P4-T17] | Add tests covering all new functionality in Phase 4 |
+| [P4-BF1] | Fix VaahAI Dev Review Config Warning | 🟢 | [P4-T4], [P4-T5] | Fixed issue where "VaahAI configuration file is missing" warning appeared erroneously when running `vaahai dev review run` command despite proper configuration setup |
+
+### Phase 5: Code Review Improvements
+
+| Task ID | Description | Status | Dependencies | Notes |
+|---------|-------------|--------|--------------|-------|
 
 ## Current Tasks
 
