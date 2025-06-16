@@ -25,6 +25,7 @@ VaahAI CLI is built with the Typer framework and enhanced with Rich formatting f
 - [Configuration Initialization](config_initialization.md): User-friendly guidance for setting up VaahAI configuration
 - [Model Command](model_command.md): Managing and selecting LLM models based on capabilities
 - [Review Command](review_command.md): Comprehensive code review with multiple output formats and interactive features
+- [Dev Review Command](dev_review_command.md): Enhanced debugging review command with diagnostics and model information
 - [CLI Architecture](/docs/architecture/cli_architecture.md): Comprehensive overview of CLI architecture, extension points, and best practices
 - [Command Template](command_template.py): Example template for creating new commands
 

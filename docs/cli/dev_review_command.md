@@ -17,6 +17,7 @@ Where `PATH` can be a file, directory, or URL.
 | `--debug-level [off\|info\|debug\|trace]` | Set the debug level for detailed logging (default: off) |
 | `--show-config / --no-show-config` | Show detailed configuration information (default: False) |
 | `--show-steps / --no-show-steps` | Show detailed step timing information (default: False) |
+| `--show-model-info / --no-show-model-info` | Show LLM model information for each step (default: False) |
 | `--log-file TEXT` | Path to log file for debug output |
 | `--format TEXT` | Output format (rich, markdown, html, interactive) |
 | `--apply-changes / --no-apply-changes` | Apply suggested code changes (default: False) |
@@ -66,6 +67,14 @@ Run a review and display timing information for each review step:
 
 ```bash
 vaahai dev review run path/to/file.py --show-steps
+```
+
+### Show Model Information
+
+Run a review and display LLM model information for each step:
+
+```bash
+vaahai dev review run path/to/file.py --show-model-info
 ```
 
 ### Output to HTML Format

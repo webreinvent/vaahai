@@ -91,7 +91,7 @@ This document tracks the tasks for the VaahAI project, organized by priority and
 | [P4-T1] | Implement configuration validation utility | 🟢 | None | Added comprehensive validation for config completeness, API keys, models, and command-specific requirements |
 | [P4-T2] | Add warning message system to all commands | 🟢 | [P4-T1] | Implemented reusable warning system with WarningMessage and WarningSystem classes; integrated configuration validation warnings; displays styled warnings consistently across all CLI commands except config commands |
 | [P4-T3] | Create user-friendly config initialization guidance | 🟢 | [P4-T2] | Add helpful instruction messages for users to properly configure VaahAI |
-| [P4-T4] | Implement `vaahai dev review` command skeleton | 🟡 | None | Create new subcommand under `vaahai dev` for enhanced debugging review |
+| [P4-T4] | Implement `vaahai dev review` command skeleton | 🟢 | None | Create new subcommand under `vaahai dev` for enhanced debugging review |
 | [P4-T5] | Add model information display | 🔴 | [P4-T4] | Show which LLM model is being used for each step of the review process |
 | [P4-T6] | Integrate configuration verification reporting | 🔴 | [P4-T4], [P4-T1] | Display detailed configuration status in dev review output |
 | [P4-T7] | Add detailed step execution logging | 🔴 | [P4-T4] | Implement verbose logging of step execution with timing and resource usage |
@@ -166,6 +166,7 @@ This document tracks the tasks for the VaahAI project, organized by priority and
 | [P3-T15] | Create basic review command | 2025-06-14 | Implemented basic review command with language and framework detection, updated CLI tests to verify detection output. |
 | [P3-T17] | Integrate statistics and findings display | 2025-07-02 | Add real-time statistics and key findings display during review process |
 | [P3-T18] | Complete review command with all output options | 2025-06-25 | Finalized review command with all output formats (rich, markdown, html, interactive) and interactive features including code change acceptance, backup handling, and comprehensive error handling |
+| [P4-T4] | Implement `vaahai dev review` command skeleton | 2025-06-16 | Enhanced the dev review command with debugging capabilities including model information display, configuration verification, and step execution logging. Added new options for showing model info and updated documentation. |
 
 ## Current Blockers
 
