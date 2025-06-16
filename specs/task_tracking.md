@@ -84,29 +84,17 @@ This document tracks the tasks for the VaahAI project, organized by priority and
 | [P3-T17] | Integrate statistics and findings display | 🟢 | [P3-T7], [P3-T8], [P3-T16] | Add real-time statistics and key findings display during review process |
 | [P3-T18] | Complete review command with all output options | 🟢 | [P3-T10], [P3-T11], [P3-T12], [P3-T13], [P3-T14], [P3-T17] | Finalized review command with all output formats and interactive features |
 
-### Phase 4: Code Review Improvements
+### Phase 4: AI Agent-Driven Review Flow
 
 | Task ID | Description | Status | Dependencies | Notes |
 |---------|-------------|--------|--------------|-------|
-| [P4-T1] | Implement configuration validation utility | 🟢 | None | Added comprehensive validation for config completeness, API keys, models, and command-specific requirements |
-| [P4-T2] | Add warning message system to all commands | 🟢 | [P4-T1] | Implemented reusable warning system with WarningMessage and WarningSystem classes; integrated configuration validation warnings; displays styled warnings consistently across all CLI commands except config commands |
-| [P4-T3] | Create user-friendly config initialization guidance | 🟢 | [P4-T2] | Add helpful instruction messages for users to properly configure VaahAI |
-| [P4-T4] | Implement `vaahai dev review` command skeleton | 🟢 | None | Create new subcommand under `vaahai dev` for enhanced debugging review |
-| [P4-T5] | Add model information display | 🟢 | [P4-T4] | Implemented detailed LLM model information display for each review step, showing provider, model name, and parameters |
-| [P4-T6] | Integrate configuration verification reporting | 🟢 | [P4-T4], [P4-T1] | Display detailed configuration status in dev review output |
-| [P4-T7] | Add detailed step execution logging | 🔴 | [P4-T4] | Implement verbose logging of step execution with timing and resource usage |
-| [P4-T8] | Refactor language detection agent | 🔴 | None | Update existing language detection agent architecture for enhanced LLM integration |
-| [P4-T9] | Implement LLM-based language feature extraction | 🔴 | [P4-T8] | Create specialized prompts for LLM to identify language features from code samples |
-| [P4-T10] | Create hybrid detection system | 🔴 | [P4-T9] | Combine traditional detection methods with LLM-based analysis |
-| [P4-T11] | Add confidence scoring for language detection | 🔴 | [P4-T10] | Implement confidence metrics for language detection results |
-| [P4-T12] | Design code review prompt agent interface | 🔴 | None | Create interface for agent responsible for generating review prompts |
-| [P4-T13] | Implement language-specific prompt templates | 🔴 | [P4-T12] | Create template system for language-specific review prompts |
-| [P4-T14] | Create framework/CMS-specific review criteria generators | 🔴 | [P4-T13] | Add specialized review criteria based on detected frameworks/CMS |
-| [P4-T15] | Add custom review focus capability | 🔴 | [P4-T13], [P4-T14] | Allow users to specify focus areas for more targeted reviews |
-| [P4-T16] | Integrate prompt agent with review pipeline | 🔴 | [P4-T12], [P4-T13], [P4-T14], [P4-T15] | Connect prompt generation to review execution process |
-| [P4-T17] | Implement output format adaptation based on user preferences | 🔴 | [P4-T16] | Enhance output formatting based on user-specified preferences |
-| [P4-T18] | Create comprehensive test suite for dynamic review system | 🔴 | [P4-T17] | Add tests covering all new functionality in Phase 4 |
-| [P4-BF1] | Fix VaahAI Dev Review Config Warning | 🟢 | [P4-T4], [P4-T5] | Fixed issue where "VaahAI configuration file is missing" warning appeared erroneously when running `vaahai dev review run` command despite proper configuration setup |
+| [P4-T1] | Refactor language/framework/CMS detection to use Autogen agent | 🟡 | None | Replace static detection with an agent that analyzes code and returns language, framework, and CMS |
+| [P4-T2] | Implement AI-based review prompt generation agent | 🔴 | [P4-T1] | Agent generates context-aware review prompt based on detected language/framework/CMS |
+| [P4-T3] | AI-driven code review execution | 🔴 | [P4-T2] | Pass code and generated prompt to review agent, which returns review results |
+| [P4-T4] | Multi-format AI-generated review output | 🔴 | [P4-T3] | Agent returns results in user-selected format (rich, markdown, html) with proper structure and styling |
+| [P4-T5] | Integrate agent-based step execution logging | 🔴 | [P4-T3] | Log agent interactions, timings, and resource usage for each AI-driven step; present logs in CLI and reports |
+| [P4-T6] | Agent-driven configuration verification | 🔴 | None | Use agent to verify configuration completeness/correctness and suggest improvements |
+| [P4-T7] | Agent-enhanced progress, findings, and recommendations | 🔴 | [P4-T3] | Agents summarize progress, extract key findings, and generate actionable recommendations after review |
 
 ### Phase 5: Code Review Improvements
 
@@ -117,7 +105,7 @@ This document tracks the tasks for the VaahAI project, organized by priority and
 
 | Task ID | Description | Status | Dependencies | Notes |
 |---------|-------------|--------|--------------|-------|
-| [P4-T7] | Add detailed step execution logging | 🔴 | [P4-T4] | Implement verbose logging of step execution with timing and resource usage |
+| [P4-T7] | Agent-enhanced progress, findings, and recommendations | 🔴 | [P4-T3] | Agents summarize progress, extract key findings, and generate actionable recommendations after review |
 | | | | | |
 
 ## Completed Tasks
@@ -175,7 +163,7 @@ This document tracks the tasks for the VaahAI project, organized by priority and
 | [P3-T12] | Implement interactive code diff display | 2025-06-13 | Implemented InteractiveDiffReporter class to display interactive code diffs with syntax highlighting, side-by-side comparison, and keyboard navigation |
 | [P3-T15] | Create basic review command | 2025-06-14 | Implemented basic review command with language and framework detection, updated CLI tests to verify detection output. |
 | [P3-T17] | Integrate statistics and findings display | 2025-07-02 | Add real-time statistics and key findings display during review process |
-| [P3-T18] | Complete review command with all output options | 2025-06-25 | Finalized review command with all output formats (rich, markdown, html, interactive) and interactive features including code change acceptance, backup handling, and comprehensive error handling |
+| [P3-T18] | Complete review command with all output options | 2025-06-25 | Finalized review command with all output formats (rich, markdown, html) and interactive features including code change acceptance, backup handling, and comprehensive error handling |
 | [P4-T4] | Implement `vaahai dev review` command skeleton | 2025-06-16 | Enhanced the dev review command with debugging capabilities including model information display, configuration verification, and step execution logging. Added new options for showing model info and updated documentation. |
 
 ## Current Blockers
