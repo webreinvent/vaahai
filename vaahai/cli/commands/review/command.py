@@ -44,6 +44,10 @@ from vaahai.review.steps.built_in import HardcodedSecrets, SQLInjection
 from vaahai.review.steps.built_in import InefficientLoops, LargeMemoryUsage
 
 # Import detection agents
+# Unified detection agent
+from vaahai.review.agents.detection import LLMLanguageFrameworkCMSDetectionAgent
+
+# Legacy detection agents (used as fallback)
 from vaahai.agents.applications.language_detection.agent import LanguageDetectionAgent
 from vaahai.agents.applications.framework_detection.agent import FrameworkDetectionAgent
 
@@ -185,28 +189,86 @@ def run(
 
     # --- Language and Framework Detection ---
     try:
-        lang_agent = LanguageDetectionAgent({"name": "LangDetectCLI"})
+        # Create the LLM detection agent
+        llm_detection_agent = LLMLanguageFrameworkCMSDetectionAgent({"name": "LLMDetectCLI"})
         
-        # Enhanced language detection for single files
+        # Enhanced language and framework detection for single files
         if path.is_file():
             # Read file content for better detection
             with open(path, 'r', encoding='utf-8', errors='ignore') as f:
                 try:
                     file_content = f.read()
-                    # Pass both file path and content for better detection
-                    lang_result = lang_agent.run(file_content, str(path))
+                    # Pass both file content and path for better detection
+                    detect_result = llm_detection_agent.run(file_content, str(path))
                 except Exception as e:
                     if debug:
                         console.print(f"[yellow]Warning:[/yellow] Error reading file content: {e}")
-                    # Fallback to path-only detection
-                    lang_result = lang_agent.run(str(path), str(path))
+                    # Fallback to using existing agents
+                    lang_agent = LanguageDetectionAgent({"name": "LangDetectCLI"})
+                    fw_agent = FrameworkDetectionAgent({"name": "FrameworkDetectCLI"})
+                    lang_result = lang_agent.run(str(path))
+                    fw_result = fw_agent.run(str(path))
+                    detected_language = lang_result.get("primary_language", {}).get("name", "Unknown")
+                    detected_framework = fw_result.get("primary_framework", {}).get("name", "Unknown")
+                    detected_cms = "Unknown"
+                    if debug:
+                        console.print("[yellow]Warning:[/yellow] Falling back to separate detection agents")
+                    # Skip the rest of this try block
+                    raise ValueError("Fallback to separate detection agents")
         else:
-            # For directories, just use the path
-            lang_result = lang_agent.run(str(path))
+            # For directories, use a representative sample of files for detection
+            sample_files = []
+            for root, _, files in os.walk(str(path), topdown=True):
+                for file in files:
+                    # Skip hidden files and directories
+                    if file.startswith('.'):
+                        continue
+                    # Skip common non-code files
+                    if file.endswith(('.png', '.jpg', '.jpeg', '.gif', '.svg', '.ico', '.pdf', '.zip')):
+                        continue
+                    sample_files.append(os.path.join(root, file))
+                    if len(sample_files) >= 5:  # Limit to 5 sample files
+                        break
+                if len(sample_files) >= 5:
+                    break
             
-        detected_language = lang_result.get("primary_language", {}).get("name", "Unknown")
+            # Combine content from sample files
+            combined_content = ""
+            for file_path in sample_files[:3]:  # Use at most 3 files to avoid exceeding token limits
+                try:
+                    with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+                        combined_content += f.read()[:1000] + "\n\n"  # Limit each file to 1000 chars
+                except Exception:
+                    pass
+            
+            if combined_content:
+                detect_result = llm_detection_agent.run(combined_content, str(path))
+            else:
+                # Fallback to using existing agents
+                lang_agent = LanguageDetectionAgent({"name": "LangDetectCLI"})
+                fw_agent = FrameworkDetectionAgent({"name": "FrameworkDetectCLI"})
+                lang_result = lang_agent.run(str(path))
+                fw_result = fw_agent.run(str(path))
+                detected_language = lang_result.get("primary_language", {}).get("name", "Unknown")
+                detected_framework = fw_result.get("primary_framework", {}).get("name", "Unknown")
+                detected_cms = "Unknown"
+                if debug:
+                    console.print("[yellow]Warning:[/yellow] Falling back to separate detection agents")
+                # Skip the rest of this try block
+                raise ValueError("Fallback to separate detection agents")
         
-        # Special handling for common file extensions
+        # Extract the detected language, framework, and CMS
+        detected_language = detect_result.get("primary_language", {}).get("name", "Unknown")
+        detected_framework = detect_result.get("primary_framework", {}).get("name", "Unknown") 
+        detected_cms = detect_result.get("primary_cms", {}).get("name", "Unknown")
+        
+        if detected_cms == "None" or detected_cms is None:
+            detected_cms = "Unknown"
+        
+        if detected_framework == "None" or detected_framework is None:
+            detected_framework = "Unknown"
+            
+        # Special handling for common file extensions if language is unknown
         if detected_language == "Unknown" and path.is_file():
             ext = path.suffix.lower()
             extension_map = {
@@ -228,16 +290,44 @@ def run(
                 if debug:
                     console.print(f"[bold]Debug:[/bold] Language detected by file extension: {detected_language}")
     except Exception as e:
-        detected_language = "Unknown"
-        if debug:
-            console.print(f"[yellow]Warning:[/yellow] Language detection failed: {e}")
-
-    try:
-        fw_agent = FrameworkDetectionAgent({"name": "FrameworkDetectCLI"})
-        fw_result = fw_agent.run(str(path))
-        detected_framework = fw_result.get("primary_framework", {}).get("name", "Unknown")
-    except Exception:
-        detected_framework = "Unknown"
+        try:
+            # Fallback to using existing agents
+            lang_agent = LanguageDetectionAgent({"name": "LangDetectCLI"})
+            fw_agent = FrameworkDetectionAgent({"name": "FrameworkDetectCLI"})
+            
+            if path.is_file():
+                # Read file content for better detection
+                with open(path, 'r', encoding='utf-8', errors='ignore') as f:
+                    try:
+                        file_content = f.read()
+                        # Pass both file path and content for better detection
+                        lang_result = lang_agent.run(file_content, str(path))
+                    except Exception:
+                        # Fallback to path-only detection
+                        lang_result = lang_agent.run(str(path), str(path))
+            else:
+                # For directories, just use the path
+                lang_result = lang_agent.run(str(path))
+                
+            detected_language = lang_result.get("primary_language", {}).get("name", "Unknown")
+            
+            try:
+                fw_result = fw_agent.run(str(path))
+                detected_framework = fw_result.get("primary_framework", {}).get("name", "Unknown")
+            except Exception:
+                detected_framework = "Unknown"
+                
+            detected_cms = "Unknown"
+            
+            if debug:
+                console.print(f"[yellow]Warning:[/yellow] Unified detection failed: {e}")
+                console.print("[yellow]Warning:[/yellow] Falling back to separate detection agents")
+        except Exception as e2:
+            detected_language = "Unknown"
+            detected_framework = "Unknown"
+            detected_cms = "Unknown"
+            if debug:
+                console.print(f"[yellow]Warning:[/yellow] All detection methods failed: {e2}")
 
     # Enable debug logging if debug flag is set
     if debug:
@@ -249,6 +339,7 @@ def run(
             f"[bold]Reviewing:[/bold] {path}\n"
             f"[bold]Language:[/bold] {detected_language}\n"
             f"[bold]Framework:[/bold] {detected_framework}\n"
+            f"[bold]CMS:[/bold] {detected_cms}\n"
             f"[bold]Depth:[/bold] {depth}\n"
             f"[bold]Focus:[/bold] {focus or 'All areas'}\n"
             f"[bold]Severity:[/bold] {severity or 'All levels'}",
@@ -372,48 +463,50 @@ def run(
         # Filter step instances based on category and severity
         filter_task = progress.add_task("Filtering review steps...", total=1)
         
-        filtered_instances = []
-        for step in step_instances:
-            # Filter by category if specified
-            if category and step.category != category:
-                if debug:
-                    console.print(f"  - [red]✗[/red] {step.id}: Filtered out due to category mismatch (step: {step.category.name}, filter: {category.name})")
-                continue
-                
-            # Filter by severity based on depth
-            step_severity_ordinal = severity_order.get(step.severity, 3)
-            if step_severity_ordinal <= min_severity_ordinal:
-                filtered_instances.append(step)
-                if debug:
-                    console.print(f"  - [green]✓[/green] {step.id}: Included in filtered steps")
-            else:
-                if debug:
-                    console.print(f"  - [red]✗[/red] {step.id}: Filtered out due to severity (step: {step.severity.name} (ordinal: {step_severity_ordinal}), min: {min_severity_level.name} (ordinal: {min_severity_ordinal}))")
+        selected_steps = []
+        if all_steps:
+            for step_id, step_class in all_steps.items():
+                step_instance = step_class() # Instantiate the step
+                # Check category
+                if category and step_instance.category != category:
+                    if debug:
+                        console.print(f"[bold]Debug:[/bold] Skipping step {step_id} due to category mismatch (expected {category.name}, got {step_instance.category.name})")
+                    continue
+                # Check severity
+                # Ensure step_instance.severity is a ReviewStepSeverity enum member
+                if not isinstance(step_instance.severity, ReviewStepSeverity):
+                    if debug:
+                        console.print(f"[bold]Debug:[/bold] Skipping step {step_id} due to invalid severity type: {type(step_instance.severity)}")
+                    # Potentially log this as an issue with the step definition
+                    continue
+
+                if severity_order.get(step_instance.severity, 99) > severity_order.get(min_severity_level, -1):
+                    if debug:
+                        console.print(f"[bold]Debug:[/bold] Skipping step {step_id} due to severity mismatch (min_severity: {min_severity_level.name}, step_severity: {step_instance.severity.name})")
+                    continue
+                selected_steps.append(step_instance)
         
-        progress.update(filter_task, completed=1, description=f"Selected {len(filtered_instances)} review steps")
+        progress.update(filter_task, completed=1, description=f"Selected {len(selected_steps)} review steps after filtering")
         
-        # Debug: Show which steps will be run
-        if debug and filtered_instances:
-            console.print("\n[bold]Debug:[/bold] Steps that will be run:")
-            for step in filtered_instances:
-                console.print(f"  - {step.id}: {step.__class__.__name__} (Category: {step.category.name}, Severity: {step.severity.name})")
-        elif debug and not filtered_instances:
-            console.print("\n[bold red]Debug:[/bold red] No steps will be run after filtering.")
-        
-        # Create a ReviewRunner with the filtered instances
-        runner = ReviewRunner(steps=filtered_instances)
-        
-        # Create a progress display for the review steps
-        if filtered_instances:
-            # Add a task for overall progress
+        if debug:
+            console.print(f"[bold]Debug:[/bold] Selected {len(selected_steps)} review steps after filtering:")
+            for step in selected_steps:
+                console.print(f"  - {step.id}: {step.name} (Category: {step.category.name}, Severity: {step.severity.name})")
+
+        result = {} # Initialize result here
+
+        if selected_steps:
+            runner = ReviewRunner(selected_steps)
+            
+            # Create a progress display for the review steps
             overall_task = progress.add_task(
                 "Running review steps...", 
-                total=len(filtered_instances)
+                total=len(selected_steps)
             )
             
             # Add tasks for each review step
             step_tasks = {}
-            for step in filtered_instances:
+            for step in selected_steps:
                 step_tasks[step.id] = progress.add_task(
                     f"[cyan]{step.id}[/cyan] ({step.category.name})",
                     total=1,
@@ -436,7 +529,7 @@ def run(
                     last_stats_update = time.time()
                     stats_update_interval = 2.0  # Update statistics every 2 seconds
                     
-                    while completed_steps < len(filtered_instances):
+                    while completed_steps < len(selected_steps):
                         # Get current progress
                         progress_info = runner.get_progress().get_progress_summary()
                         
@@ -532,7 +625,7 @@ def run(
                             time.sleep(0.1)
                             
                             # Exit if all steps are completed
-                            if completed_steps >= len(filtered_instances):
+                            if completed_steps >= len(selected_steps):
                                 break
                 
                 # Start the progress update in a separate thread
@@ -545,9 +638,6 @@ def run(
                     # Run on a single file
                     with open(path, 'r') as f:
                         content = f.read()
-                    # Set track_model_usage on the runner instance before calling run_on_content
-                    if 'track_model_usage' in locals():
-                        runner.track_model_usage = track_model_usage
                     result = runner.run_on_content(content, file_path=str(path), output_format=output_format)
                 else:
                     # For directory reviews, add file progress tracking
@@ -1077,7 +1167,7 @@ def run(
                         
                         for step_id, step_result in step_results.items():
                             # Find the step instance with this ID
-                            step_instance = next((s for s in filtered_instances if s.id == step_id), None)
+                            step_instance = next((s for s in selected_steps if s.id == step_id), None)
                             category_name = step_instance.category.name if step_instance else "Unknown"
                             issues_count = len(step_result.get("issues", []))
                             duration = step_result.get("duration", 0)
