@@ -4,10 +4,10 @@
 
 This document is to implement and track the following steps for the VaahAI project. Use appropriate labels for each step.
 
-~~## Status Legend
+## Status Legend
 - 🔴 Not Started
 - 🟡 In Progress
-- 🟢 Completed~~
+- 🟢 Completed
 
 
 Note: Poetry is the package manager used in this project.
